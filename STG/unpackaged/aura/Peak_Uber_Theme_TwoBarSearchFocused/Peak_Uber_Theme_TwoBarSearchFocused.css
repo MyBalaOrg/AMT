@@ -1,0 +1,65 @@
+/**
+ * dreamforce17-theme - Generates the assets used for Peak Lightning
+ * @version 1.0.0
+ * @author 7Summits
+ *
+ * COMPILED FILE DO NOT DIRECTLY EDIT
+ */
+.THIS .content {
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 5%;
+}
+.THIS .content .contentBody {
+  height: 100%;
+}
+.THIS .content .search {
+  position: relative;
+}
+.THIS .content .search .searchIcon {
+  position: absolute;
+  z-index: 9999;
+  top: 28px;
+  left: 12px;
+}
+.THIS .content .search .searchIcon svg {
+  fill: #333;
+}
+.THIS .content .search .big-search-container {
+  height: auto;
+}
+.THIS .content .search .big-search-container .image-wrapper {
+  display: none;
+}
+.THIS .content .search .big-search-container .search-wrapper {
+  padding: 0;
+}
+.THIS .content .search .big-search-container .search-wrapper .search-input-group .search-field {
+  font-size: 1rem;
+  padding: 0 1rem 0 3rem;
+}
+.THIS .content .search .big-search-container .search-wrapper .search-input-group button.slds-button {
+  display: none;
+}
+.THIS .content .search .big-search-container .search-wrapper .search-input-group ::-webkit-input-placeholder {
+  font-size: 1rem;
+}
+.THIS .content .search .big-search-container .search-wrapper .search-input-group ::-moz-placeholder {
+  font-size: 1rem;
+}
+.THIS .content .search .big-search-container .search-wrapper .search-input-group :-ms-input-placeholder {
+  font-size: 1rem;
+}
+.THIS .content .search .big-search-container .search-wrapper .result-container {
+  position: absolute;
+  width: 100%;
+  /* Hiding the Questions Components in search dropdown */
+}
+.THIS .content .search .big-search-container .search-wrapper .result-container .lookup__menu {
+  border: 1px solid #ccc;
+  border-top: 0;
+  background-color: #fff;
+}
+.THIS .content .search .big-search-container .search-wrapper .result-container .continue-post-wrapper {
+  display: none;
+}

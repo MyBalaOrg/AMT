@@ -1,0 +1,13 @@
+.THIS {
+    padding:0 2rem;
+    box-shadow:0 2px 4px rgba(0,0,0,.07);
+}
+
+.THIS .slds-icon__container {
+    background-color:#003a5d;
+    border-radius:2rem;
+}
+
+.THIS div.heading {
+    color:#003a5d;    
+}

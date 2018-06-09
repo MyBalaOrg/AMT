@@ -1,0 +1,32 @@
+.THIS {
+    position: relative;
+}
+
+.THIS .search-box-body {
+    width: 100%;
+}
+
+.THIS .result-items-box-body {
+    width: 100%;
+    overflow-y: auto;
+    position: absolute;
+    z-index: 10;
+    background-color: #fff;
+    max-height: 250px;
+}
+
+.THIS .filter__disabled {
+    cursor: not-allowed;
+}
+
+.THIS .list-item {
+    width:100%;
+}
+
+.THIS .list-item:hover {
+    background-color: #d8edff;
+}
+
+.THIS .hide-results {
+    display: none !important;
+}

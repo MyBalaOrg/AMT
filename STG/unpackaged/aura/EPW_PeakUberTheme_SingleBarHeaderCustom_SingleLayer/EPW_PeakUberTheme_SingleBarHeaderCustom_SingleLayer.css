@@ -1,0 +1,180 @@
+/**
+ * dreamforce17-theme - Generates the assets used for Peak Lightning
+ * @version 1.0.0
+ * @author 7Summits
+ *
+ * COMPILED FILE DO NOT DIRECTLY EDIT
+ */
+.THIS .content {
+  height: 100%;
+  margin: 0 auto;
+}
+.THIS .content .contentBody {
+  height: 100%;
+}
+.THIS .content .contentBody .navbar {
+    flex: 1;
+    /*display: inline-table;*/
+}
+.THIS .content .contentBody .navbar .appLauncher {
+  display: none;
+}
+.THIS .content .contentBody .navbar .forceCommunityNavigationMenu,
+.THIS .content .contentBody .navbar .forceCommunityGlobalNavigation {
+ /* color: #333; */
+  border: 0;
+  background: transparent none;
+}
+.THIS .content .contentBody .navbar .forceCommunityNavigationMenu .menuItemLink,
+.THIS .content .contentBody .navbar .forceCommunityGlobalNavigation .menuItemLink,
+.THIS .content .contentBody .navbar .forceCommunityNavigationMenu ul.comm-navigation__list li a,
+.THIS .content .contentBody .navbar .forceCommunityGlobalNavigation ul.comm-navigation__list li a {
+  color: #333;
+}
+.THIS .content .contentBody .navbar .forceCommunityNavigationMenu .menuItemLink:hover,
+.THIS .content .contentBody .navbar .forceCommunityGlobalNavigation .menuItemLink:hover,
+.THIS .content .contentBody .navbar .forceCommunityNavigationMenu ul.comm-navigation__list li a:hover,
+.THIS .content .contentBody .navbar .forceCommunityGlobalNavigation ul.comm-navigation__list li a:hover {
+  color: #333;
+  background-color: transparent;
+}
+.THIS .content .contentBody .search .slds-icon-utility-search svg {
+  fill: #333;
+}
+.THIS .content .contentBody .notifications button {
+  margin: 0;
+}
+.THIS .content .contentBody .notifications button svg {
+  fill: #333;
+}
+/* .THIS .content .contentBody .profile .selfServiceProfileMenu,
+.THIS .content .contentBody .profile .selfServiceUserProfileMenu {
+  position: relative;
+  margin-top: 0;
+}
+.THIS .content .contentBody .profile .selfServiceProfileMenu .uiPopupTrigger,
+.THIS .content .contentBody .profile .selfServiceUserProfileMenu .uiPopupTrigger {
+  padding: 0;
+}
+.THIS .content .contentBody .profile .selfServiceProfileMenu .selfServiceProfileMenuTrigger,
+.THIS .content .contentBody .profile .selfServiceUserProfileMenu .selfServiceProfileMenuTrigger {
+  position: static;
+  top: 0;
+  height: 54px;
+  padding: 12px 0;
+}
+.THIS .content .contentBody .profile .selfServiceProfileMenu .selfServiceProfileMenuTrigger .trigger-link,
+.THIS .content .contentBody .profile .selfServiceUserProfileMenu .selfServiceProfileMenuTrigger .trigger-link {
+  padding: 0;
+  color: #333;
+}
+.THIS .content .contentBody .profile .selfServiceProfileMenu .selfServiceProfileMenuTrigger .trigger-link > img,
+.THIS .content .contentBody .profile .selfServiceUserProfileMenu .selfServiceProfileMenuTrigger .trigger-link > img {
+  min-width: 30px;
+} 
+.THIS .content .contentBody .profile .selfServiceProfileMenu .selfServiceProfileMenuTrigger .trigger-link:hover,
+.THIS .content .contentBody .profile .selfServiceUserProfileMenu .selfServiceProfileMenuTrigger .trigger-link:hover {
+  color: #333;
+}
+.THIS .content .contentBody .profile .selfServiceProfileMenu .selfServiceProfileMenuTrigger .trigger-link:focus,
+.THIS .content .contentBody .profile .selfServiceUserProfileMenu .selfServiceProfileMenuTrigger .trigger-link:focus {
+  color: #333;
+  box-shadow: none;
+}
+.THIS .content .contentBody .profile .selfServiceProfileMenu .selfServiceProfileMenuTrigger .trigger-link .profileName,
+.THIS .content .contentBody .profile .selfServiceUserProfileMenu .selfServiceProfileMenuTrigger .trigger-link .profileName {
+  display: none;
+} */
+.THIS .navSearch {
+  position: absolute;
+  z-index: 999;
+  display: none;
+  width: 100%;
+  margin-top: 1px;
+  background-color: #fff;
+  box-shadow: 0 2px 6px 0 rgba(153, 153, 153, 0.5);
+}
+.THIS .navSearch.navSearch-active__content {
+  display: block;
+}
+.THIS .navSearch .navSearch-container {
+  height: 100%;
+  margin: 0 auto;
+  padding: 1rem 0;
+}
+.THIS .navSearch .navSearch-container .searchBody-icon {
+  width: 50px;
+  padding: 14px 0;
+  text-align: center;
+}
+.THIS .navSearch .navSearch-container .searchBody-search {
+  flex: 1;
+}
+.THIS .navSearch .navSearch-container .big-search-container {
+  height: auto;
+}
+.THIS .navSearch .navSearch-container .big-search-container .image-wrapper {
+  display: none;
+}
+.THIS .navSearch .navSearch-container .big-search-container .search-wrapper {
+  padding: 0;
+}
+.THIS .navSearch .navSearch-container .big-search-container .search-wrapper .search-input-group .search-field {
+  font-size: 1rem;
+  border: 1px solid #ccc;
+}
+.THIS .navSearch .navSearch-container .big-search-container .search-wrapper .search-input-group button.slds-button {
+  display: none;
+}
+.THIS .navSearch .navSearch-container .big-search-container .search-wrapper .search-input-group ::-webkit-input-placeholder {
+  font-size: 1rem;
+}
+.THIS .navSearch .navSearch-container .big-search-container .search-wrapper .search-input-group ::-moz-placeholder {
+  font-size: 1rem;
+}
+.THIS .navSearch .navSearch-container .big-search-container .search-wrapper .search-input-group :-ms-input-placeholder {
+  font-size: 1rem;
+}
+.THIS .navSearch .navSearch-container .big-search-container .search-wrapper .result-container {
+  position: absolute;
+  width: 100%;
+  /* Hiding the Questions Components in search dropdown */
+}
+.THIS .navSearch .navSearch-container .big-search-container .search-wrapper .result-container .lookup__menu {
+  border: 1px solid #ccc;
+  border-top: 0;
+  background-color: #fff;
+}
+.THIS .navSearch .navSearch-container .big-search-container .search-wrapper .result-container .continue-post-wrapper {
+  display: none;
+}
+.THIS .navSearch .slds-icon-utility-search svg,
+.THIS .navSearch .slds-icon-utility-close svg {
+  fill: #333;
+}
+
+.THIS div.navbar.slds-p-horizontal_medium > div > div > div > forcecommunity-global-navigation-list > div > nav > ul {
+    margin-bottom: 0 !important;
+}
+
+.THIS .navbar a {
+    color: white !important;
+}
+
+.THIS div.slds-p-right_x-small.search > a > span > span.lightningPrimitiveIcon > svg,
+.THIS .notifications svg {
+    fill: white !important;
+}
+
+.THIS svg {
+    width: 21px !important;
+    height: 21px !important;
+}
+
+@media (min-width: 510px) {
+    .THIS .logo img {
+        max-height: 24px !important;
+        max-width: 230px !important;
+        width: auto !important;
+    }
+}

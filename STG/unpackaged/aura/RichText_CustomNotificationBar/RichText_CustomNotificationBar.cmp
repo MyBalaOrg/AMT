@@ -1,0 +1,32 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	
+    <!--attributes -->
+    <aura:attribute name = "positionOfBar" type = "String" default="fixed" description="Render the position of the notification bar"/>
+    <aura:attribute name = "positionTop" type = "Integer" default="134" description="Render the top position of the notification bar"/>
+    <aura:attribute name = "positionBottom" type = "Integer" default="unset" description="Render the bottom position of the notification bar"/>
+    <aura:attribute name = "positionRight" type = "Integer" default="unset" description="Render the right position of the notification bar"/>
+    <aura:attribute name = "positionLeft" type = "Integer" default="unset" description="Render the left position of the notification bar"/>
+    <aura:attribute name = "inputNotificationString" type = "String" default="unset" description="To store the text to be displayed in the notification bar"/>
+   	<aura:attribute name= "fontColor" type = "String" default="#FFA500" description="Font color of the text e.g. #FFA500" />
+    <aura:attribute name= "fontFamily" type = "String" default="Arial,sans-serif" description="Font color of the text e.g. #FFA500" />
+    <aura:attribute name= "fontSize" type = "Integer" default="13" description="Font color of the text e.g. #FFA500" />
+    <aura:attribute name= "backgroundColor" type = "String" default="white" description="Background color of the bar e.g. #FFA500" />
+    <!--attributes -->
+    
+    <div class="comp"
+         style="{! join('',
+                not(empty(v.positionOfBar)) ? 'position: '+v.positionOfBar+';' : '',
+                not(empty(v.positionTop)) ? 'top: '+v.positionTop+'px;' : '',
+                not(empty(v.positionBottom)) ? 'bottom: '+v.positionBottom+'px;' : '',
+                not(empty(v.positionRight)) ? 'right: '+v.positionRight+'px;' : '',
+                not(empty(v.positionLeft)) ? 'left: '+v.positionLeft+'px;' : '',
+                not(empty(v.fontColor)) ? 'color: '+v.fontColor+';' : '',
+                not(empty(v.fontFamily)) ? 'font-family: '+v.fontFamily+';' : '',
+                not(empty(v.fontSize)) ? 'font-size: '+v.fontSize+'px;' : '',
+                not(empty(v.backgroundColor)) ? 'background-color: '+v.backgroundColor+';' : ''
+                )}">
+        <lightning:formattedText linkify="true" value="{!v.inputNotificationString}"/>
+    
+    </div>
+    
+</aura:component>

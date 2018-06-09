@@ -1,0 +1,63 @@
+.THIS {
+    font-family: OpenSans,Helvetica,Arial,sans-serif;
+    font-size: 13px;
+}
+
+.THIS td {
+    padding: 20px;
+}
+
+.THIS .labels, .THIS .main-title {
+    font-weight: bold;
+}
+
+.THIS .labels {
+    text-transform: uppercase;
+    font-size: 16px;
+}
+
+.THIS .main-title {
+    font-size: 20px;
+}
+
+.THIS .main-title .slds-icon-action-preview {
+    background: transparent;
+}
+
+.THIS .dot::after{
+    content: "\000B7";
+    margin: 0 .25rem;
+    font-size: .75rem;
+    color: #000;
+    
+}
+
+.THIS .preiew-icon, .THIS .total-views {
+    color: #b5a6a6;
+}
+
+.THIS .doc-icon {
+    padding-right: 10px;
+}
+
+.THIS .doc-icon span {
+    border-radius: 50%;
+}
+
+.THIS .last-pulished-date {
+    font-size: 10px;
+    color: #8f9db1;
+    font-style: italic;
+}
+
+.THIS .summary {
+    /*background-color: #D4d8d9;*/
+    background-color: #E6E9EB;
+    font-style: italic;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.THIS .record-type {
+    text-transform: uppercase;
+}

@@ -1,0 +1,48 @@
+<aura:component controller="EIS_FileAttachmentCtrl">
+    <aura:attribute name="parentId" type="String" access="public" />
+    <aura:attribute name="documentList" type="ContentDocumentLink[]" access="public" />
+    <aura:attribute name="label" type="String" access="public" default="Choose file ..." />
+    <aura:attribute name="fileSelectedMsg" type="String" access="public" default="" />
+    <aura:attribute name="disable" type="Boolean" access="public" default="false" />
+	<aura:attribute name="frameSrc" type="String" access="public"/>
+    <aura:attribute name="vfHost" type="String" access="public" default="" />
+    <aura:attribute name="lcHost" type="String" access="public"/>
+	
+    <aura:registerEvent name="toggleLightningSpinner" type="c:EIS_BooleanEvent" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+	
+    <div class="slds-grid slds-wrap">
+        <aura:if isTrue="{! !v.disable }">
+            <iframe id="{! 'iframe-' + v.parentId }" src="{! v.frameSrc}" class="vfFrame" scrolling="no"/>
+            <div class="slds-p-horizontal_small slds-size_1-of-1" >
+                <label class="slds-p-horizontal_small input-file" onclick="{! c.chooseFile }">
+                    <lightning:icon class="slds-p-right_x-small slds-p-top_xx-small" iconName="utility:upload" size="x-small"/>
+                    {! empty(v.fileSelectedMsg) ? v.label : v.fileSelectedMsg }
+                </label>
+                <aura:if isTrue="{! not(empty(v.fileSelectedMsg)) }">
+                    <span class="slds-m-left_large save-icon" onclick="{! c.saveFile }">
+                        <c:EIS_LightningIcon iconName="utility:save" iconSize="small"
+                                             cursor="pointer" fillColor="icon-endeavour"/>
+                    </span>
+                </aura:if>
+            </div>
+        </aura:if>
+        <div class="slds-p-horizontal_small slds-p-top_xx-small slds-size_1-of-1" >
+            <aura:iteration items="{!v.documentList}" var="doc" indexVar="docIndex">
+                <aura:if isTrue="{! !v.disable }">
+                    <span class="slds-m-right_small" onclick="{! c.deleteFile }"
+                          data-document-id="{! doc.Id }" data-document-index="{! docIndex }">
+                        <c:EIS_LightningIcon iconName="utility:delete" iconSize="x-small"
+                                             cursor="pointer" hoverColor="icon-trash"/>
+                    </span>
+                </aura:if>
+                <a href="{!$Label.c.Domain_Base_Url + '' + doc.ContentDocument.LatestPublishedVersionId}" target="_blank">
+                    {!doc.ContentDocument.Title}
+                </a>
+                <br/>
+            </aura:iteration>
+        </div>
+    </div>
+
+</aura:component>

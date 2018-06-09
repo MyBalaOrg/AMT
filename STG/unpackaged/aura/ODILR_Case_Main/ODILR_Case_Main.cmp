@@ -1,0 +1,85 @@
+<aura:component implements="lightning:actionOverride,flexipage:availableForRecordHome,force:hasRecordId" 
+                access="global" controller="ODILR_Case_MainCtrl">
+    <aura:attribute name="recordTypes" type="String[]" access="public" />
+    <aura:attribute name="recordTypeName" type="String" access="public" />
+    <aura:attribute name="recordTypeId" type="String" access="public" />
+    <aura:attribute name="disableRecordType" type="Boolean" default="false" access="public" />
+    <aura:attribute name="sectionWrappers" type="ODILR_Case_MainCtrl.CaseSectionWrapper[]" access="public" />
+    <aura:attribute name="sectionWrappersBottom" type="ODILR_Case_MainCtrl.CaseSectionWrapper[]" access="public" />
+    <aura:attribute name="tabsWrappers" type="ODILR_Case_MainCtrl.CaseSectionWrapper[]" access="public" />
+    <aura:attribute name="tabList" type="String[]" access="public" />
+    <aura:attribute name="selectedTab" type="String" access="public" />
+    <aura:attribute name="errorMessage" type="String" default="" access="private" />
+    
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+    <aura:handler name="toggleLightningSpinner" event="c:EIS_BooleanEvent" action="{! c.handleToggleLightningSpinner }"/>
+    <aura:handler name="saveButtonClicked" event="c:EIS_BooleanEvent" action="{! c.handleSaveButtonClicked }"/>
+    
+    <lightning:spinner aura:id="audit-loading" variant="brand" size="large" class="fidget-spinner"/>
+    
+    <div class="{! 'slds-grid slds-wrap case-main-body' + (empty(v.recordId) ? ' new-case-main-body' : '') }" >
+        <!-- ERROR MESSAGE -->
+        <div class="{! 'slds-size_1-of-1 ' + (empty(v.errorMessage) ? '':'slds-p-bottom_small') }">
+            <c:EIS_ErrorMessage message="{! v.errorMessage }" rendered="{! !empty(v.errorMessage) }" />
+        </div>
+        
+        <!-- RECORD TYPE SELECTION FOR NEW CASE -->
+        <aura:if isTrue="{! !empty(v.recordId) }">
+            <div class="slds-size_1-of-1 slds-p-bottom_medium slds-align_absolute-center">
+                <lightning:select name="recordTypeSelect" label="Record Type: " value="{! v.recordTypeName }"
+                                  onchange="{! c.onchangeSelectRecordType }" class="slds-size_1-of-4" disabled="{! v.disableRecordType }" >
+                    <aura:iteration var="recordType" items="{! v.recordTypes }">
+                        <option value="{! recordType }" selected="{! equals(recordType, v.recordTypeName) }">{! recordType }</option>
+                    </aura:iteration>
+                </lightning:select>
+            </div>
+        </aura:if>
+        
+        <!-- SECTION FIELDS -->
+        <aura:iteration var="section" items="{! v.sectionWrappers }">
+            <div class="slds-size_1-of-1">
+                <c:ODILR_Case_SectionDetails caseWrappers="{! section.caseWrappers }" displaySection="true" newCaseCreation="{! empty(v.recordId) }"
+                                             sectionName="{! section.sectionName }" sldsFieldSize="{! section.sldsFieldSize }" 
+                                             aura:id="case-section-detail" />
+            </div>
+        </aura:iteration>
+        
+        <!-- TAB FIELDS -->
+        <div class="slds-size_1-of-1 slds-p-top_small slds-p-bottom_large">
+            <div class="slds-size_1-of-1">
+                <aura:iteration var="tabName" items="{! v.tabList }">
+                    <button class="{! 'case-detail-tab slds-button slds-button_brand slds-m-top_x-small' 
+                                   + (equals(v.selectedTab, tabName) ? ' selected-tab' : '') }"
+                            value="{! tabName }" onclick="{! c.onclickCaseTab }">
+                        {! tabName }
+                    </button>
+                </aura:iteration>
+            </div>
+            <aura:iteration var="tabWrapper" items="{! v.tabsWrappers }" >
+                <aura:if isTrue="{! equals(v.selectedTab, tabWrapper.sectionName) }">
+                    <c:ODILR_Case_TabDetails caseWrappers="{! tabWrapper.caseWrappers }" sldsFieldSize="{! tabWrapper.sldsFieldSize }" 
+                                             newCaseCreation="{! empty(v.recordId) }" aura:id="case-tab-details" />
+                </aura:if>
+            </aura:iteration>
+        </div>
+        
+        <!-- SECTION FIELDS BOTTOM -->
+        <aura:iteration var="sectionBottom" items="{! v.sectionWrappersBottom }">
+            <div class="slds-size_1-of-1">
+                <c:ODILR_Case_SectionDetails caseWrappers="{! sectionBottom.caseWrappers }" displaySection="true" newCaseCreation="{! empty(v.recordId) }"
+                                             sectionName="{! sectionBottom.sectionName }" sldsFieldSize="{! sectionBottom.sldsFieldSize }" 
+                                             aura:id="case-section-detail" />
+            </div>
+        </aura:iteration>
+        
+        <aura:if isTrue="{! empty(v.recordId) }">
+            <!-- SAVE BUTTON FOR NEW CASE -->
+            <div class="slds-size_1-of-1 slds-align_absolute-center slds-p-top_medium">
+                <button class="slds-p-horizontal_xx-large slds-button slds-button_brand" 
+                        value="{! $Label.c.EIS_Form_Button_Save }" onclick="{! c.createNewCaseRecord }" >
+                    {! $Label.c.EIS_Form_Button_Save }
+                </button>
+            </div>
+        </aura:if>
+    </div>
+</aura:component>

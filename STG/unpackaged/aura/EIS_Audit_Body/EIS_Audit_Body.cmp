@@ -1,0 +1,140 @@
+<!--
+*@Changes
+* Lakshmi 01/05/2018 - Changes to fix ARSS-142 
+-->
+<aura:component controller="EIS_Audit_BodyCtrl">
+    <aura:attribute name="audit" type="Audit_Inspections__c" access="public" />
+    <aura:attribute name="auditId" type="String" access="public" />
+    <aura:attribute name="sideTabList" type="EIS_Audit_BodyCtrl.SideTab[]" access="public" />
+    <aura:attribute name="selectedSideTabIndex" type="Integer" access="public" default="0" />
+    <aura:attribute name="customSectionList" type="EIS_Audit_BodyCtrl.QuestionSection[]" access="public" />
+    <aura:attribute name="tabName" type="String" access="public" default="{! $Label.c.EIS_Audit_Form_Tab_Protocol }" />
+    <aura:attribute name="userIsAPM" type="Boolean" access="public" default="false" />
+    <aura:attribute name="disableFindings" type="Boolean" access="public" default="false" />
+    <aura:attribute name="disablePositiveFindings" type="Boolean" access="public" default="false" />
+    <aura:attribute name="disableCorrectiveActions" type="Boolean" access="public" default="false" />
+    <aura:attribute name="disableHeaderButtons" type="Boolean" access="public" default="false" />
+    <aura:attribute name="positiveFinding" type="Boolean" access="public" default="false" />
+    <aura:attribute name="editPFIndex" type="Integer" access="private" default="-1" />
+    <aura:attribute name="positiveFindingList" type="String[]" access="public" />
+    <aura:attribute name="positiveFindingDeptList" type="String[]" access="public" />
+    <aura:attribute name="errorMessage" type="String" access="private" />
+    <aura:attribute name="missingQuestionList" type="String[]" access="public" />
+    <aura:attribute name="pfDeptBtnList" type="List" access="public" />
+    
+    <aura:registerEvent name="toggleLightningSpinner" type="c:EIS_BooleanEvent" />
+    
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
+    <aura:handler name="change" value="{! v.audit }" action="{! c.handleAuditChange }"/>
+    
+    <aura:method name="handleSubmissionStatus" action="{! c.handleHeaderButtonClicked }" access="public">
+        <aura:attribute name="newSubmitStatus" type="String" default="" />
+        <aura:attribute name="rejectionNote" type="String" default="" />
+    </aura:method>
+    
+    <div class="slds-grid slds-wrap">
+        <div class="slds-size_1-of-6">
+            <aura:iteration var="sideTab" items="{! v.sideTabList }" indexVar="pIndex">
+                <button class="{! 'slds-size_1-of-1 side-tab slds-button slds-button_' + (sideTab.selected ? 'brand':'neutral') }"
+                        value="{! pIndex }" onclick="{! c.onclickSideTab }" disabled="{! sideTab.disabled }">
+                    <span>{! sideTab.label }</span>
+                    
+                    <b>{! and(equals(v.tabName, $Label.c.EIS_Audit_Form_Tab_Department),
+                              equals(v.audit.RecordType.DeveloperName, $Label.c.EIS_Audit_Inspection_Form_Record_Type)) ? 
+                          '  (' + ((sideTab.label == 'Engineering' &amp;&amp; (v.audit.EIS_Department_Weight_Engineering__c == 0 || v.audit.EIS_Department_Weight_Engineering__c == null)) || (sideTab.label == 'Environment' &amp;&amp; (v.audit.EIS_Department_Weight_Environment__c == 0 || v.audit.EIS_Department_Weight_Environment__c == null)) || (sideTab.label == 'Material' &amp;&amp; (v.audit.EIS_Department_Weight_Material__c == 0 || v.audit.EIS_Department_Weight_Material__c == null)) || (sideTab.label == 'Mechanical' &amp;&amp; (v.audit.EIS_Department_Weight_Mechanical__c == 0 || v.audit.EIS_Department_Weight_Mechanical__c == null)) || (sideTab.label == 'Transportation' &amp;&amp; (v.audit.EIS_Department_Weight_Transportation__c == 0 || v.audit.EIS_Department_Weight_Transportation__c == null)) ? '0' : sideTab.departmentScore) + ')' : '' }</b>
+                </button>
+            </aura:iteration>
+        </div>
+        
+        <div class="slds-size_5-of-6 slds-p-left_x-small">
+            <aura:if isTrue="{! !empty(v.errorMessage) }">
+                <!-- BEGIN FORM LEVEL ERROR MESSAGE -->
+                <div class="slds-size_1-of-1 slds-m-vertical_xxx-small slds-p-left_xx-large" style="color: #c23934;">
+                    {! v.errorMessage }
+                </div>
+                <!-- END FORM LEVEL ERROR MESSAGE -->
+            </aura:if>
+            <aura:if isTrue="{! !empty(v.missingQuestionList) }">
+                <!-- BEGIN FORM LEVEL VALIDATION MESSAGE -->
+                <div class="slds-size_1-of-1 slds-m-vertical_xxx-small slds-p-left_xx-large" style="color: #c23934;">
+                    {! $Label.c.EIS_Form_Error_Msg_Submit_Validation }
+                    <aura:iteration var="missingQuestions" items="{! v.missingQuestionList }">
+                        <div class="slds-p-left_large"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{! missingQuestions }</p></div>
+                    </aura:iteration>
+                </div>
+                <!-- END FORM LEVEL VALIDATION MESSAGE -->
+            </aura:if>
+            
+            <aura:if isTrue="{! v.positiveFinding }">
+                <!-- BEGIN POSITIVE FINDINGS -->
+                <div class="slds-size_1-of-1 slds-p-horizontal_small">
+                	<label class="slds-p-around_x-small">{! $Label.c.EIS_Form_Label_Positive_Finding }</label>
+                    <textarea aura:id="positive-finding-textarea" class="slds-textarea" placeholder="{! $Label.c.EIS_Form_Placeholder_Enter_Text }" 
+                              value="" onkeypress="{! c.onkeypressPositiveFinding }" disabled="{! v.disablePositiveFindings }" />
+                    <div>
+                        <aura:iteration var="deptBtn" items="{! v.pfDeptBtnList }" indexVar="pfdIndex">
+                            <button class="{! 'slds-m-horizontal_xx-small pf-dept-btn slds-button slds-button_' + (deptBtn.selected ? 'brand' : 'neutral') }"
+                                    value="{! pfdIndex }" onclick="{! c.onclickDeptResponsibility }"
+                                    disabled="{! ((deptBtn.label == 'Engineering' &amp;&amp; (v.audit.EIS_Department_Weight_Engineering__c == 0 || v.audit.EIS_Department_Weight_Engineering__c == null)) || (deptBtn.label == 'Environment' &amp;&amp; (v.audit.EIS_Department_Weight_Environment__c == 0 || v.audit.EIS_Department_Weight_Environment__c == null)) || (deptBtn.label == 'Material' &amp;&amp; (v.audit.EIS_Department_Weight_Material__c == 0 || v.audit.EIS_Department_Weight_Material__c == null)) || (deptBtn.label == 'Mechanical' &amp;&amp; (v.audit.EIS_Department_Weight_Mechanical__c == 0 || v.audit.EIS_Department_Weight_Mechanical__c == null)) || (deptBtn.label == 'Transportation' &amp;&amp; (v.audit.EIS_Department_Weight_Transportation__c == 0 || v.audit.EIS_Department_Weight_Transportation__c == null)) ? true : false) }">
+                                {! deptBtn.label }
+                            </button>
+                        </aura:iteration>
+                        <button class="slds-float_right slds-m-horizontal_xx-small pf-btn-save slds-button slds-button_brand"
+                                onclick="{! c.onclickSavePositiveFinding }" disabled="{! v.disablePositiveFindings }">
+                            {! v.editPFIndex >= 0 ? ($Label.c.EIS_Form_Button_Edit_Positive_Finding + ' ' + (v.editPFIndex + 1)) : $Label.c.EIS_Form_Button_Save_Positive_Finding }
+                        </button>
+                        <button class="slds-float_right slds-m-horizontal_xx-small pf-btn-clear slds-button slds-button_neutral"
+                                onclick="{! c.clearPositiveFinding }">
+                            {! $Label.c.EIS_Form_Button_Clear }
+                        </button>
+                    </div>
+                    <div class="slds-p-around_medium slds-m-around_medium positive-finding-wrapper">
+                        <aura:iteration var="compliment" items="{! v.positiveFindingList }" indexVar="pfIndex">
+                            <div class="slds-size_1-of-1 slds-p-around_small slds-m-bottom_small">
+                                <lightning:icon class="slds-float_left slds-m-right_small" iconName="standard:reward" size="medium"/>
+                                <span>{! compliment }</span>
+                                <span class="slds-m-horizontal_x-small" data-pfindex="{! pfIndex }"
+                                      onclick="{! c.onclickEditPositiveFinding }">
+                                    <c:EIS_LightningIcon iconName="utility:edit" iconSize="x-small"
+                                                         cursor="pointer" hoverColor="icon-brand"/>
+                                </span>
+                                <aura:if isTrue="{! !v.disablePositiveFindings }">
+                                    <span class="slds-float_right" data-pfindex="{! pfIndex }" onclick="{! c.onclickDeletePositiveFinding }">
+                                        <c:EIS_LightningIcon iconName="utility:delete" iconSize="x-small"
+                                                             cursor="pointer" hoverColor="icon-trash"/>
+                                    </span>
+                                </aura:if>
+                            </div>
+                        </aura:iteration>
+                        
+                        <p class="slds-grid slds-wrap pf-dept-counters">
+                            <span class="slds-size_1-of-5 slds-p-top_xx-small slds-align_absolute-center">
+                                {! '# ' + $Label.c.EIS_Finding_Department_Engineering + ': ' + v.audit.EIS_Positive_Finding_Engineering__c }
+                            </span>
+                            <span class="slds-size_1-of-5 slds-p-top_xx-small slds-align_absolute-center">
+                                {! '# ' + $Label.c.EIS_Finding_Department_Environment + ': ' + v.audit.EIS_Positive_Finding_Environment__c } 
+                            </span>
+                            <span class="slds-size_1-of-5 slds-p-top_xx-small slds-align_absolute-center">
+                                {! '# ' + $Label.c.EIS_Finding_Department_Material + ': ' + v.audit.EIS_Positive_Finding_Material__c } 
+                            </span>
+                            <span class="slds-size_1-of-5 slds-p-top_xx-small slds-align_absolute-center">
+                                {! '# ' + $Label.c.EIS_Finding_Department_Mechanical + ': ' + v.audit.EIS_Positive_Finding_Mechanical__c } 
+                            </span>
+                            <span class="slds-size_1-of-5 slds-p-top_xx-small slds-align_absolute-center">
+                                {! '# ' + $Label.c.EIS_Finding_Department_Transportation + ': ' + v.audit.EIS_Positive_Finding_Transportation__c } 
+                            </span>
+                        </p>
+                    </div>
+                </div>
+                <!-- END POSITIVE FINDINGS -->
+                
+                <aura:set attribute="else">
+                    <aura:iteration var="section" items="{! v.customSectionList }" indexVar="sIndex">
+                        <c:EIS_Audit_QuestionSection audit="{! v.audit }" customSection="{! section }" sectionIndex="{! sIndex }" userIsAPM="{! v.userIsAPM }"
+                                                     disableFindings="{! v.disableFindings }" disableCorrectiveActions="{! v.disableCorrectiveActions }"/>
+                    </aura:iteration>
+                </aura:set>
+            </aura:if>
+        </div>
+    </div>
+</aura:component>

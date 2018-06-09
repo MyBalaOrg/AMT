@@ -1,0 +1,21 @@
+<aura:component controller="CarouselController" implements="forceCommunity:availableForAllPageTypes" access="global" >
+	
+    <aura:attribute name="portalContent" type="Portal_Content__c" />
+   	<aura:handler name="init" value="{!this}" action="{!c.fetchContentDetails}"/>    
+    
+    <div id='full-article-content'>
+        <div class='header-container'>
+        	<img src="{!$Resource.CEO_Employee_Advisory_Header}" class = "header-logo__img"/> 
+        </div>
+       <div class='content-container slds-m-top__medium'>
+        	<ui:outputText value="{!v.portalContent.Title__c}" class='slds-text-heading_medium article-title'/>
+            <div class='slds-m-top__medium description slds-text-longform'>
+           		<aura:unescapedHtml value="{!v.portalContent.Content__c}"/>
+            </div>
+        </div>
+         <div class='footer-container'>
+        	<img src="{!$Resource.CEO_Employee_Advisory_Footer}" class = "header-logo__img"/> 
+        </div>
+    </div>
+    
+</aura:component>

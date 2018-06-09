@@ -1,0 +1,154 @@
+<aura:component controller = "EIS_Inspection_MainHeaderCtrl" implements="force:hasRecordId" >
+    <aura:attribute name="disableHeaderButtons" type="Boolean" access="public" default="false" />
+    <aura:attribute name="inspection" type="Audit_Inspections__c" access="public" />
+    <aura:attribute name="barColor" type="String" access="private" />
+    <aura:attribute name="barMessage" type="String" access="private" />
+    <aura:attribute name="reportClassName" type="String" access="private" />
+    <aura:attribute name="correctiveClassName" type="String" access="private" />
+    <aura:attribute name="openReasonForRejection" type="Boolean" access="private" default="false" />
+    <aura:attribute name="openClickConfirmation" type="Boolean" access="private" default="false" />
+    <aura:attribute name="confirmationModalLabels" type="Map" access="private" default="{}" />
+	<aura:attribute name="ContentSize" type="double"/>
+    <aura:handler name="change" value="{!v.inspection }" action="{!c.handleInspectionChange }"/>
+    
+    <aura:registerEvent name="headerButtonClicked" type="c:EIS_BooleanEvent"/>
+    
+    <div class="slds-page-header s1FixedFullWidth forceHighlightsStencilDesktop" id="inspection-main-header">
+        <div class="slds-grid slds-wrap slds-grid_pull-padded">
+            <div class="slds-p-horizontal_small slds-size_3-of-12" >
+                <div class="slds-col slds-has-flexi-truncate">
+                    <div class="slds-media slds-m-left_medium">
+                        <div class="slds-media__figure" onclick="{! c.toggleInspectionInactivity }" style="cursor:pointer;">
+                            <aura:if isTrue="{! v.inspection.EIS_Is_Active__c }">
+                            	<lightning:icon iconName="standard:task" size="large"/>
+                            	<aura:set attribute="else">
+                                	<lightning:icon iconName="standard:empty" size="large"/>
+                                </aura:set>
+                            </aura:if>
+                            
+                        </div>
+                        <div class="slds-media__body" >
+                            <p class="slds-text-title_caps slds-line-height_reset">{!v.inspection.RecordType.Name}</p>
+                            <h1 class="slds-page-header__title slds-m-right_small slds-align-middle slds-truncate" title="">{!v.inspection.Name}</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-p-horizontal_xx-small slds-size_2-of-12 slds-text-align_center" >
+                <aura:if isTrue="{! equals(v.inspection.RecordType.DeveloperName, $Label.c.EIS_Food_Car_Inspection_Form_Record_Type) }">
+                    <h2 class="slds-text-heading_small">
+                        {! $Label.c.EIS_Inspection_Form_Header_Train }
+                    </h2>
+                    <p class="slds-text-heading_medium">{! v.inspection.EIS_Train__c }</p>
+                    <aura:set attribute="else">
+                        <h2 class="slds-text-heading_small">
+                            {! $Label.c.EIS_Inspection_Form_Header_Facility }
+                        </h2>
+                        <p class="slds-text-heading_medium">{! v.inspection.PH_Facility__r.Name }</p>
+                    </aura:set>
+                </aura:if>
+            </div>
+            <div class="slds-p-horizontal_xx-small slds-size_1-of-12 slds-text-align_center" >
+                <h2 class="slds-text-heading_small">{! $Label.c.EIS_Inspection_Form_Header_Score }</h2>
+                <p class="slds-text-heading_medium">{! v.inspection.PH_Score__c }</p>
+            </div>
+            <div class="slds-p-horizontal_xx-small slds-size_2-of-12 slds-text-align_center" >
+                <h2 class="slds-text-heading_small">{! $Label.c.EIS_Inspection_Form_Header_Report_Status }</h2> 
+                <p class="{! v.reportClassName + ' slds-text-heading_medium' }" style="text-transform: uppercase;">
+                    <b>{!v.inspection.PH_Report_Status__c}</b>
+                </p>
+            </div>
+            <div class="slds-p-horizontal_xx-small slds-size_2-of-12 slds-text-align_center" >
+                <h2 class="slds-text-heading_small">{! $Label.c.EIS_Inspection_Form_Header_Corrective_Status }</h2> 
+                <p class="{! v.correctiveClassName + ' slds-text-heading_medium' }" >{!v.inspection.PH_Corrective_Action_Status__c}</p>
+            </div>
+            <div class="slds-p-horizontal_xx-small slds-size_2-of-12" >
+                <aura:if isTrue="{! or(equals(v.inspection.PH_Submission_Status__c, $Label.c.EIS_Audit_Inspection_Submit_Status_Draft),
+                                 	   equals(v.inspection.PH_Submission_Status__c, $Label.c.EIS_Audit_Inspection_Submit_Status_Reject)) }">
+                    <button class="slds-button slds-button_brand slds-float_right custom-button-size submit-button"
+                            value="{! $Label.c.EIS_Audit_Inspection_Submit_Status_Submit }" 
+                            onclick="{! c.onclickHeaderButton }" disabled="{! v.disableHeaderButtons }">
+                        {! $Label.c.EIS_Form_Button_Submit }
+                    </button>
+                </aura:if>
+                <aura:if isTrue="{! or(equals(v.inspection.PH_Submission_Status__c, $Label.c.EIS_Audit_Inspection_Submit_Status_Submit),
+                                 	   equals(v.inspection.PH_Submission_Status__c, $Label.c.EIS_Audit_Inspection_Submit_Status_Approve)) }">
+                    <button class="slds-button orange-bg slds-float_right custom-button-size"
+                            value="{! $Label.c.EIS_Audit_Inspection_Submit_Status_Reject }" 
+                            onclick="{! c.onclickHeaderButton }" disabled="{! v.disableHeaderButtons }">
+                        {! $Label.c.EIS_Form_Button_Reject }
+                    </button>
+                </aura:if>
+                <aura:if isTrue="{! equals(v.inspection.PH_Submission_Status__c, $Label.c.EIS_Audit_Inspection_Submit_Status_Approve) }">
+                    <h2 class="slds-text-heading_small">{! $Label.c.EIS_Inspection_Form_Header_Submit_Status }</h2>
+                    <p class="green-text slds-text-heading_large" style="font-size:large; text-transform:uppercase;">
+                        {! $Label.c.EIS_Audit_Inspection_Submit_Status_Approve }
+                    </p>
+                </aura:if>
+                <aura:if isTrue="{! equals(v.inspection.PH_Submission_Status__c, $Label.c.EIS_Audit_Inspection_Submit_Status_Reject) }">
+                    <h2 class="slds-text-heading_small">{! $Label.c.EIS_Inspection_Form_Header_Submit_Status }</h2>
+                    <p class="red-text slds-text-heading_large" style="font-size:large; text-transform:uppercase;">
+                        {! $Label.c.EIS_Audit_Inspection_Submit_Status_Reject }
+                    </p>
+                </aura:if>
+                <aura:if isTrue="{! equals(v.inspection.PH_Submission_Status__c, $Label.c.EIS_Audit_Inspection_Submit_Status_Submit) }">
+                    <button class="slds-button green-bg slds-float_right custom-button-size"
+                            value="{! $Label.c.EIS_Audit_Inspection_Submit_Status_Approve }" 
+                            onclick="{! c.onclickHeaderButton }" disabled="{! v.disableHeaderButtons }">
+                        {! $Label.c.EIS_Form_Button_Approve }
+                    </button>
+                </aura:if>
+            </div>
+        </div>
+        <div class="slds-grid slds-wrap" style="margin-top:1em;">
+            <div class="{! v.barColor }" style="width:100%;">
+                <span class="slds-align_absolute-center">{! v.barMessage }</span>
+            </div>
+        </div>
+    </div>
+    
+    <aura:if isTrue="{! v.openReasonForRejection }">
+        <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+            <div class="slds-modal__container">
+                <div class="slds-modal__header">
+                    <h2 id="header99" class="slds-text-heading_medium">{! $Label.c.EIS_Inspection_Form_Header_Reject_Reason }</h2>
+                </div>
+                
+                <div class="slds-modal__content slds-p-around_medium">
+                    <p class="slds-p-bottom_xx-small slds-p-left_x-small">{! $Label.c.EIS_Inspection_Form_Rejection_Input_Label }</p>
+                    <textarea aura:id="reason-for-rejection" class="slds-textarea"
+                              style="width:100%;height:10em;" 
+                              placeholder="{! $Label.c.EIS_Form_Placeholder_Rejection_Reason }"
+                              value="{! v.inspection.EIS_Reason_For_Rejection__c }">
+                    </textarea>
+                </div>
+                
+                <div class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick="{! c.closeReasonForRejection }" >{! $Label.c.EIS_Form_Button_Cancel }</button>
+                    <button class="slds-button slds-button_brand" onclick="{! c.submitReasonForRejection }">{! $Label.c.EIS_Form_Button_Save_Reject }</button>
+                </div>
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+    <aura:if isTrue="{! v.openClickConfirmation }">
+        <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+            <div class="slds-modal__container">
+                <div class="slds-modal__header">
+                    <h2 id="header99" class="slds-text-heading_medium">{! v.confirmationModalLabels.header }</h2>
+                </div>
+                
+                <div class="slds-modal__content slds-p-around_medium">
+                    <p class="slds-p-bottom_xx-small slds-p-left_x-small">{! v.confirmationModalLabels.body }</p>
+                </div>
+                
+                <div class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick="{! c.closeConfirmationModal }" >{! $Label.c.EIS_Form_Button_No }</button>
+                    <button class="slds-button slds-button_brand" onclick="{! c.fireHeaderButtonClickedEvents }">{! $Label.c.EIS_Form_Button_Yes }</button>
+                </div>
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+</aura:component>

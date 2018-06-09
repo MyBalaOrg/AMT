@@ -1,0 +1,110 @@
+<aura:component controller="EPW_CustomRichContentController" implements="flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes">
+    <!--attributes-->
+    <aura:attribute name="showTileHeader" type="Boolean" description="Tile header can be hidden" default="true" />
+    <aura:attribute name="showLogo" type="Boolean" description="Control the appearance of the logo image" default="true" />
+    
+    <aura:attribute name="tileHeader" type="String" description="Header of the tile" default="none" />
+    <aura:attribute name="headerBackgroundcolor" type="String" description="Background color of the header" default="transparent" />
+    <aura:attribute name="titleFontColor" type="String" description="Title Font Color" default="black" />
+    <aura:attribute name="titleFontSize" type="Integer" description="Title Font Size" default="14" required="true" />
+    <aura:attribute name="tileContentBackgroundColor" type="String" description="Tile Content Background color" default="transparent" />
+    <aura:attribute name="headerIndents" type="Boolean" description="Controls the header indents" default="true" />
+    <aura:attribute name="showDivider" type="Boolean" description="Controls the divider" default="true" />
+    <aura:attribute name="showBorder" type="Boolean" description="Controls the border" default="true" />
+    <aura:attribute name="borderCornerRadius" type="Integer" description="Border Corder Radius" default="0" />
+    <aura:attribute name="shadow" type="String" description="3D shadow" default="0 2px 4px 0 rgba(0,0,0,0.2)" />
+    
+    <aura:attribute name="application" type="String" description="Application from which the content is to be fetched" />
+    <aura:attribute name="objectName" type="String" description="Object (API Name) from which the content is to be fetched" />
+    <aura:attribute name="recordType" type="String" description="Record type (Label) from which the content is to be fetched" />
+    <aura:attribute name="fieldName" type="String" description="Field (API Name) from which the content is to be fetched" />
+    <!--<aura:attribute name="recordId" type="String" description="The Title of the record that will be displayed" />-->
+    <aura:attribute name="title" type="String" description="The Title of the record that will be displayed" />
+    <!--<aura:attribute name="height" type="Integer" description="Height of the component" />-->
+    <aura:attribute name="height" type="Integer" description="Height of the component"/>
+    <aura:attribute name="tileFooter" type="String" description="Tile Footer" />
+    <aura:attribute name="tileFooterURL" type="String" description="Tile Footer URL" />
+    
+    <aura:attribute name="richContent" type="Object" description="Portal Content record" />
+    <aura:attribute name="richContentThumbnail" type="Object" description="Thumbnail" />
+    
+    <aura:attribute name="imageCircle" type="Boolean" default="false" />
+	<aura:attribute name="headerHeight" type="String" description="Height of Header" />
+	
+    <!--/attributes-->
+    
+    <!--component-->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <!--<aura:handler event="aura:doneRendering" action="{!c.doneRendering}"/>-->
+    <!--/component-->
+    
+    <!--component-->
+    <!--<div class="{!'slds-tile ' + (v.showBorder ? 'slds-border_bottom slds-border_left slds-border_right slds-border_top' : '')}" >-->
+    <div class="slds-tile comp" style="{! join(' ',
+                                       not(empty(v.shadow)) ? 'box-shadow: '+v.shadow+';' : '',
+                                       not(empty(v.borderCornerRadius)) ? 'border-radius: '+v.borderCornerRadius+'px;' : '') }" >
+        <div class="header slds-truncate" style="{! join(' ',
+                                                 v.showTileHeader ? 'display: block;' : 'display: none;',
+												 empty(v.headerHeight) ? 'height:50px; line-height:50px' : 'height: ' + v.headerHeight + 'px;','line-height: ' + v.headerHeight + 'px;',
+                                                 or(empty(v.headerBackgroundcolor),v.headerBackgroundcolor == 'none') ? '' : 'background-color: '+v.headerBackgroundcolor+';',
+                                                 or(empty(v.titleFontColor),v.titleFontColor == 'none') ? '' : 'color: '+v.titleFontColor+';',
+                                                 'font-size: ' + v.titleFontSize + 'px;',
+                                                 v.showDivider ? 'border-bottom: 1px solid #d4d4d4;' : '',
+                                                 v.showBorder ? 'border-top: 1px solid #d4d4d4; border-right: 1px solid #d4d4d4; border-left: 1px solid #d4d4d4;' : '',
+                                                 not(empty(v.borderCornerRadius)) ? 'border-radius: '+v.borderCornerRadius+'px '+v.borderCornerRadius+'px 0px 0px;' : '') }">
+            
+            <div class="tileHeader slds-truncate" style="{!$Browser.formFactor != 'DESKTOP' ? 'cursor: pointer;' : 'cursor: default' }" onclick="{!$Browser.formFactor != 'DESKTOP' ? c.toggleHeader : ''}">
+                <section class="slds-clearfix">
+                    <div class="slds-float--left ">
+                        <aura:if isTrue="{!$Browser.formFactor != 'DESKTOP' ? true : false}">
+                            <lightning:icon class="slds-show icn" aura:id="articleOne" iconName="utility:add" size="x-small" alternativeText="Indicates add"/>
+                            <lightning:icon class="slds-hide icn" aura:id="articleOne" iconName="utility:dash" size="x-small" alternativeText="Indicates dash"/>
+                        </aura:if>
+                    </div>
+                    <div class="slds-truncate" style="{!v.headerIndents ? 'margin-left: 1.5rem;' : 'margin-left: 0rem;'}">
+                        {! not(or(empty(v.title),v.title=='none')) ? v.title : '' }</div>
+                </section>
+            </div>
+        </div> 
+        <div aura:id="compBody" style="{!join(
+                                       'overflow:auto; ',
+                                       or(empty(v.tileContentBackgroundColor),v.tileContentBackgroundColor == 'none') ? '' : 'background-color: '+v.tileContentBackgroundColor+';',
+                                       v.showBorder ? 'border-bottom: 1px solid #d4d4d4; border-right: 1px solid #d4d4d4; border-left: 1px solid #d4d4d4;' : '',
+                                       not(empty(v.borderCornerRadius)) ? 'border-radius: 0px 0px '+v.borderCornerRadius+'px '+v.borderCornerRadius+'px;' : '')}" >
+            <!--<div class="{!'content ' + (v.showBorder ? 'slds-border_bottom slds-border_left slds-border_right slds-border_bottom' : '')}" style="{!and(not(empty(v.tileFooter)), not(empty(v.tileFooterURL))) ? 'height: ' + (v.height - 41) + 'px;' : 'height: ' + v.height  + 'px;' }" >-->
+            <div class="content" style="{!and(not(empty(v.tileFooter)), not(empty(v.tileFooterURL))) ? 'height: ' + (v.height - 41) + 'px;' : 'height: ' + v.height  + 'px;' }" >
+                <!--<lightning:layout class="logo-and-content" horizontalAlign="spread">-->
+                <div class= "slds-grid slds-wrap">
+                    <aura:if isTrue="{!and(v.richContentThumbnail != null, v.showLogo)}" >
+                        <!--<lightning:layoutItem class="thumbnail" >-->
+                        <div  id="leftCol" style="padding-top:0px; display:inline-block; max-width:10%;">
+                            <lightning:formattedRichText value="{!v.richContentThumbnail}" />
+                        </div>
+
+                        <div class="slds-size_10-of-12" id="rightCol" style="padding-left:20px; padding-right:20px; padding-top:0px; display:inline-block; max-width:100%">
+                            <lightning:formattedRichText value="{!v.richContent}" />
+                        </div>
+                        <!--</lightning:layoutItem>-->
+
+                        <aura:set attribute="else">
+                            <div style="padding-right:20px; padding-top:0px;">
+                                <lightning:formattedRichText value="{!v.richContent}" />
+                            </div>
+                        </aura:set>
+
+                    </aura:if>
+                       
+                </div> 
+                <!--</lightning:layout>-->
+                
+                <aura:if isTrue="{!and(not(empty(v.tileFooter)), not(empty(v.tileFooterURL)))}" >
+                    <a class="link" onclick="{!c.navigateToURL}">
+                        {!v.tileFooter}
+                    </a>
+                </aura:if> 
+                
+            </div>
+            
+        </div>
+    </div>
+</aura:component>

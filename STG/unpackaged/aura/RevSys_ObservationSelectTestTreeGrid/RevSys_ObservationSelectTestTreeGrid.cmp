@@ -1,0 +1,27 @@
+<aura:component >
+    
+    <!-- <aura:handler name="init" value="{!this}" action="{!c.createTreeGrid}"/> -->
+
+    <aura:attribute name="selectionState" type="Integer" access="public" />
+    <aura:attribute name="selectedEmpList" type="SearchTabularItemWrapper[]" access="public" />
+    <aura:attribute name="cmpState" type="Integer" access="public" />
+    <aura:attribute name="selectedRecordType" type="RecordType" access="public" />
+    <aura:attribute name="testWithObservationsList" type="RevSys_TestWithObservationsWrapper[]" access="public" />
+    <aura:attribute name="treeColumns" type="List" access="public" />
+    <aura:attribute name="testList" type="Object[]" access="public" />
+    
+	<aura:method name="createTreeGrid" action="{! c.createTreeGrid }" />
+    
+    <aura:if isTrue="{! and(equals(v.selectionState, v.cmpState),  equals(v.selectedRecordType.Name, $Label.c.RevSys_Observation_RT_Label_Test_1872)) }">
+        <div class="slds-size_1-of-1 slds-p-around_medium">
+            <lightning:treeGrid columns="{! v.treeColumns }"
+                                data="{! v.testList }"
+                                keyField="testNumber"
+                                onrowselection="{!c.handleOnRowSelection}"
+                                hideCheckboxColumn="{! equals(v.selectionState, 3)}"
+                                aura:id="testTree"
+                                />
+            
+        </div>
+    </aura:if>
+</aura:component>

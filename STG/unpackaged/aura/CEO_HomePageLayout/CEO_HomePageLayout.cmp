@@ -1,0 +1,74 @@
+<aura:component implements="forceCommunity:layout" access="global" >
+    <aura:attribute name="header" type="Aura.Component[]" />
+    <aura:attribute name="content" type="Aura.Component[]" />
+    <aura:attribute name="topTile" type="Aura.Component[]" />
+    <aura:attribute name="centerLeft" type="Aura.Component[]" />
+    <aura:attribute name="centerRight" type="Aura.Component[]" />
+    <aura:attribute name="bottomTile1" type="Aura.Component[]" />
+    <aura:attribute name="bottomTile2" type="Aura.Component[]" />
+    <aura:attribute name="bottomTile3" type="Aura.Component[]" />
+    <aura:attribute name="footer" type="Aura.Component[]" />
+    
+    <div class="main-layout">
+        <div class="header">
+            <lightning:layout >
+                <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="12" largeDeviceSize="12" >
+                    {!v.header}
+                </lightning:layoutItem>
+            </lightning:layout>
+        </div>   
+        <div class="topTile"> 
+             <div>
+                <lightning:layout >
+                    <lightning:layoutItem class="topTile-main" size="12" smallDeviceSize="12" mediumDeviceSize="12" largeDeviceSize="12" >
+                        {!v.topTile}
+                    </lightning:layoutItem>
+                </lightning:layout>
+            </div>
+        
+        
+            <div class="center-tiles">
+                <lightning:layout multipleRows="true" >
+                    <lightning:layoutItem class="center-tile" size="12" smallDeviceSize="12" mediumDeviceSize="4" largeDeviceSize="4" >
+                        {!v.centerLeft}
+                    </lightning:layoutItem>
+                    <lightning:layoutItem class="center-tile" size="12" smallDeviceSize="12" mediumDeviceSize="8" largeDeviceSize="8" >
+                        {!v.centerRight}
+                    </lightning:layoutItem>
+                </lightning:layout>
+            </div>
+            
+            
+            <div class="bottom-tiles">
+                <lightning:layout multipleRows="true" >
+                    <lightning:layoutItem class="bottom-tile" size="12" smallDeviceSize="12" mediumDeviceSize="4" largeDeviceSize="4" >
+                        {!v.bottomTile1}
+                    </lightning:layoutItem>
+                    <lightning:layoutItem class="bottom-tile" size="12" smallDeviceSize="12" mediumDeviceSize="4" largeDeviceSize="4" >
+                        {!v.bottomTile2}
+                    </lightning:layoutItem>
+                    <lightning:layoutItem class="bottom-tile" size="12" smallDeviceSize="12" mediumDeviceSize="4" largeDeviceSize="4" >
+                        {!v.bottomTile3}
+                    </lightning:layoutItem>
+                </lightning:layout>
+            </div>
+            <div class="content"> 
+             <div>
+                <lightning:layout >
+                    <lightning:layoutItem class="content-main" size="12" smallDeviceSize="12" mediumDeviceSize="12" largeDeviceSize="12" >
+                        {!v.content}
+                    </lightning:layoutItem>
+                </lightning:layout>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <lightning:layout >
+                <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="12" largeDeviceSize="12" >
+                    {!v.footer}
+                </lightning:layoutItem>
+            </lightning:layout>
+        </div>
+    </div>
+  </div>
+</aura:component>

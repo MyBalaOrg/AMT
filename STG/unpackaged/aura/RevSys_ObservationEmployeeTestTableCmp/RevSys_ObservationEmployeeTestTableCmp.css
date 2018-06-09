@@ -1,0 +1,12 @@
+.THIS thead th{
+	background-color: rgb(0, 95, 178);
+	color: white;
+}
+
+.THIS .icnChk svg {
+	fill: green;
+}
+
+.THIS .icnClose svg {
+	fill: red;
+}

@@ -1,0 +1,131 @@
+<aura:component >
+    <aura:attribute name="modalTitle" type="String" access="public" default="Search Results" />
+	<aura:attribute name="fieldLabels" type="String[]" access="public"/>
+    <aura:attribute name="resultList" type="SearchTabularItemWrapper[]" access="public" />
+    <aura:attribute name="filteredList" type="SearchTabularItemWrapper[]" access="public" />
+    <aura:attribute name="filterKeyList" type="String[]" access="private" />
+    <aura:attribute name="openResultModal" type="Boolean" access="public" />
+    <aura:attribute name="isMultiSelect" type="Boolean" access="public" default="true" />
+    <aura:attribute name="selectedItemWrapper" type="SearchTabularItemWrapper" access="public" />
+    <aura:attribute name="showInlineResult" type="Boolean" access="public" default="false" />
+    <aura:attribute name="showTable" type="Boolean" access="public" default="true" />
+    
+    <aura:registerEvent name="confirmedItemSelections" type="c:RevSys_GeneralPurposeEvt" />
+    <aura:registerEvent name="sendSelectedItems" type="c:RevSys_GeneralPurposeEvt" />
+    
+    <aura:if isTrue="{! v.showInlineResult }">
+        <!-- <aura:if isTrue="{! v.showTable }"> -->
+            <div class="slds-p-vertical_medium">
+                <table class="slds-table slds-table--bordered slds-table--cell-buffer slds-table_fixed-layout">
+                    <thead>
+                        <tr class="slds-text-title_caps">
+                            <th style="width:15%"></th>
+                            <aura:iteration var="label" items="{! v.fieldLabels }" indexVar="labelIndex">
+                                <th class="slds-cell-wrap">
+                                    <label title="{! label }">
+                                        {! label }
+                                    </label>
+                                </th>
+                            </aura:iteration>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>FILTERS:</td>
+                            <aura:iteration var="filterKey" items="{! v.filterKeyList }" indexVar="keyIndex">
+                                <td>
+                                    <input type="text" value="{! filterKey }" data-col-index="{! keyIndex }" 
+                                           onkeyup="{! c.onkeyupFilterResults }" onblur="{! c.onblurFilterResults }"
+                                           style="padding-left:0.5em; padding-right:0.5em; width:95%;"/>
+                                </td>
+                            </aura:iteration>
+                        </tr>
+                        
+                        <aura:iteration var="filteredItem" items="{! v.filteredList }">
+                            <tr>
+                                <td class="slds-align_absolute-center" >
+                                    <aura:if isTrue="{! v.isMultiSelect }" >
+                                        <ui:inputCheckbox text="{! filteredItem }" value="{! filteredItem.selected }" click="{! c.handleOnSelect }"/>
+                                        <aura:set attribute="else">
+                                            <div class="slds-p-top_small">
+                                                <ui:inputRadio text="{! filteredItem }" value="{! filteredItem.selected }" name="filteredItem" change="{! c.onRadio }" click="{! c.handleOnSelect }" />
+                                            </div>
+                                        </aura:set>
+                                    </aura:if>
+                                </td>
+                                <aura:iteration var="value" items="{! filteredItem.fieldValues }">
+                                    <td class="slds-p-horizontal_medium slds-cell-wrap">
+                                        <ui:outputText value="{! value }" />
+                                    </td>
+                                </aura:iteration>
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                </table>
+            </div>
+        <!-- </aura:if> -->
+        
+        <aura:set attribute="else">
+            <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+                <div class="slds-modal__container">
+                    <div class="slds-modal__header">
+                        <h2 id="header99" class="slds-text-heading_medium">{! v.modalTitle }</h2>
+                    </div>
+                    
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <table class="slds-table slds-table--bordered slds-table--cell-buffer">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th style="min-width:2rem;"></th>
+                                    <aura:iteration var="label" items="{! v.fieldLabels }" indexVar="labelIndex">
+                                        <th class="slds-cell-wrap">
+                                            <label title="{! label }">
+                                                {! label }
+                                            </label>
+                                        </th>
+                                    </aura:iteration>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>FILTERS:</td>
+                                    <aura:iteration var="filterKey" items="{! v.filterKeyList }" indexVar="keyIndex">
+                                        <td>
+                                            <input type="text" value="{! filterKey }" data-col-index="{! keyIndex }" 
+                                                   onkeyup="{! c.onkeyupFilterResults }" onblur="{! c.onblurFilterResults }"
+                                                   style="padding-left:0.5em; padding-right:0.5em;"/>
+                                        </td>
+                                    </aura:iteration>
+                                </tr>
+
+                                <aura:iteration var="filteredItem" items="{! v.filteredList }">
+                                    <tr>
+                                        <td class="slds-align_absolute-center">
+                                            <aura:if isTrue="{! v.isMultiSelect }" >
+                                                <ui:inputCheckbox value="{! filteredItem.selected }" />
+                                                <aura:set attribute="else">
+                                                    <ui:inputRadio text="{! filteredItem }" name="filteredItem" change="{! c.onRadio }" />
+                                                </aura:set>
+                                            </aura:if>
+                                        </td>
+                                        <aura:iteration var="value" items="{! filteredItem.fieldValues }">
+                                            <td class="slds-p-horizontal_medium slds-cell-wrap">
+                                                <ui:outputText value="{! value }" />
+                                            </td>
+                                        </aura:iteration>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick="{! c.closeSearchResultModal }">Close</button>
+                        <button class="slds-button slds-button_brand" onclick="{! c.confirmItemSelections }">Confirm Selections</button>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:set>
+    </aura:if>
+</aura:component>

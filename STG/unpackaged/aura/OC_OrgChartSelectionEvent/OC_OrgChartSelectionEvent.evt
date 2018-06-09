@@ -1,0 +1,4 @@
+<aura:event type="APPLICATION" description="propagate selected contact" >
+    <aura:attribute name="selectedObject" type="Sobject" />
+    <aura:attribute name="selectedContact" type="Sobject"/>
+</aura:event>

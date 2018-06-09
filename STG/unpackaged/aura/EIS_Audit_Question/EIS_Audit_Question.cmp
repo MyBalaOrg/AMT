@@ -1,0 +1,127 @@
+<aura:component controller="EIS_Audit_QuestionSectionCtrl">
+    <aura:attribute name="audit" type="Audit_Inspections__c" access="public" />
+    <aura:attribute name="userIsAPM" type="Boolean" access="public" default="false" />
+    <aura:attribute name="disableFindings" type="Boolean" access="public" default="false" />
+    <aura:attribute name="disableCorrectiveActions" type="Boolean" access="public" default="false" />
+    <aura:attribute name="customQuestion" type="EIS_Audit_BodyCtrl.Question" access="public" />
+    <aura:attribute name="displayToolTip" type="Boolean" access="private" default="false" />
+    
+    <aura:registerEvent name="toggleLightningSpinner" type="c:EIS_BooleanEvent" />
+    
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
+    <aura:handler name="deleteObservation" event="c:EIS_Audit_UpdateObjectEvent" action="{! c.handleDeleteObservation }"/>
+    
+    <div class="{! (v.customQuestion.display ? 'display-border ' : '') + 
+                   (v.customQuestion.question.EIS_Corrected__c ? 'corrected' : v.customQuestion.question.EIS_Criticality__c) + '-border' }">
+        <div class="{! 'slds-grid slds-wrap slds-p-horizontal_small question-title ' + 
+                       v.customQuestion.question.EIS_Criticality__c + (v.customQuestion.display ? ' display-observation' : '')}"
+             onclick="{! c.toggleQuestionSelection }">
+            <div class="slds-size_10-of-12">
+                <label><b>{! v.customQuestion.question.EIS_Metadata_Question_Id__c }</b>{! ' ' + v.customQuestion.question.EIS_Question_Text__c }</label>
+            </div>
+            <div class="slds-size_2-of-12 slds-text-align_center">
+                <!-- BEGIN QUESTION TOOLTIP -->
+                <aura:if isTrue="{! !empty(v.customQuestion.metaQuestion) }">
+                    <div class="slds-float_right slds-text-align_left slds-p-top_xxx-small" style="position:relative;"
+                         onmouseover="{! c.showToolTip }" onmouseout="{! c.hideToolTip }" >
+                        <aura:if isTrue="{! v.displayToolTip }">
+                            <div class="slds-popover slds-popover_tooltip slds-rise-from-ground slds-nubbin_right-top question-tooltip" 
+                                 role="tooltip" style="position:absolute;">
+                                <div class="slds-popover__body">
+                                    <p><b>{! $Label.c.EIS_Form_Tooltip_Label_Question_Citation }: </b>{! v.customQuestion.metaQuestion.Question_Citation__c }</p>
+                                    <p><b>{! $Label.c.EIS_Form_Tooltip_Label_Review_Checklist }: </b>{! v.customQuestion.metaQuestion.Review_Checklist__c }</p>
+                                </div>
+                            </div>
+                        </aura:if>
+                        <c:EIS_LightningIcon iconName="utility:info" iconSize="x-small" />
+                    </div>
+                </aura:if>
+                <!-- END QUESTION TOOLTIP -->
+                
+                <ui:inputCheckbox class="{! 'slds-m-top_xxx-small ' + (v.customQuestion.question.EIS_Corrected__c ? 'corrected' : v.customQuestion.question.EIS_Criticality__c) }" 
+                                  disabled="true" value="{! v.customQuestion.question.EIS_Issued__c }"/>
+                <aura:if isTrue="{! v.customQuestion.display }">
+                    <span class="{! (v.customQuestion.question.EIS_Corrected__c ? 'corrected' : v.customQuestion.question.EIS_Criticality__c) + '-text' }">
+                        {! equals(v.customQuestion.question.EIS_Criticality__c, $Label.c.EIS_Questions_Criticality_Critical) ? 
+                       	   $Label.c.EIS_Corrective_Action_Type_Immediate : $Label.c.EIS_Corrective_Action_Type_Long_Term }
+                    </span>
+                </aura:if>
+            </div>
+        </div>
+        
+        <div class="slds-p-horizontal_x-small slds-size_1-of-1">
+            <aura:if isTrue="{! v.customQuestion.display }">
+                <div class="slds-grid slds-wrap slds-m-bottom_small slds-size_1-of-1 observation-level-box">
+                    <div class="slds-size_1-of-2 slds-p-left_large slds-p-bottom_x-small ">
+                        <label>{! $Label.c.EIS_Form_Label_Observation_Level }</label><br/>
+                        <button class="{! 'slds-button obs-level-left slds-button_'
+                                       + (equals(v.customQuestion.question.EIS_Observation_Level__c, $Label.c.EIS_Questions_Obs_Level_PV) ? 'brand' : 'neutral') }"
+                                value="{! $Label.c.EIS_Questions_Obs_Level_PV }" data-field-name="v.customQuestion.question.EIS_Observation_Level__c" 
+                                disabled="{! v.disableFindings }" onclick="{! c.updateObservationLevelFields }">
+                            {! $Label.c.EIS_Questions_Obs_Level_PV }
+                        </button>
+                        <button class="{! 'slds-button obs-level-right slds-button_'
+                                       + (equals(v.customQuestion.question.EIS_Observation_Level__c, $Label.c.EIS_Questions_Obs_Level_MP) ? 'brand' : 'neutral') }"
+                                value="{! $Label.c.EIS_Questions_Obs_Level_MP }" data-field-name="v.customQuestion.question.EIS_Observation_Level__c"  
+                                disabled="{! v.disableFindings }" onclick="{! c.updateObservationLevelFields }">
+                            {! $Label.c.EIS_Questions_Obs_Level_MP }
+                        </button>
+                    </div>
+                    <div class="slds-size_1-of-4">
+                        <aura:if isTrue="{! equals(v.customQuestion.question.EIS_Observation_Level__c, $Label.c.EIS_Questions_Obs_Level_PV) }">
+                            <div class="slds-p-horizontal_xx-small slds-p-bottom_x-small slds-size_1-of-1">
+                                <label>{! $Label.c.EIS_Questions_Obs_Level_PV + ' of' }</label><br/>
+                                <button class="{! 'slds-button slds-m-right_xx-small slds-button_' 
+                                               + (equals(v.customQuestion.question.EIS_Potential_Violation__c, $Label.c.EIS_Questions_PV_State) ? 'brand' : 'neutral') }"
+                                        value="{! $Label.c.EIS_Questions_PV_State }" data-field-name="v.customQuestion.question.EIS_Potential_Violation__c" 
+                                        disabled="{! v.disableFindings }" onclick="{! c.updateObservationLevelFields }">
+                                    {! $Label.c.EIS_Questions_PV_State }
+                                </button>
+                                <button class="{! 'slds-button slds-m-right_xx-small slds-button_' 
+                                               + (equals(v.customQuestion.question.EIS_Potential_Violation__c, $Label.c.EIS_Questions_PV_Federal) ? 'brand' : 'neutral') }"
+                                        value="{! $Label.c.EIS_Questions_PV_Federal }" data-field-name="v.customQuestion.question.EIS_Potential_Violation__c"
+                                        disabled="{! v.disableFindings }" onclick="{! c.updateObservationLevelFields }">
+                                    {! $Label.c.EIS_Questions_PV_Federal }
+                                </button>
+                            </div>
+                        </aura:if>
+                    </div>
+                    <div class="slds-size_1-of-4 slds-align_absolute-center">
+                        <button class="{! 'slds-button slds-m-top_xx-small slds-button_' 
+                                       + (v.customQuestion.question.EIS_Repeat_Violation__c ? 'brand' : 'neutral') }"
+                                style="border-radius: 0px;" onclick="{! c.updateObservationLevelFields }"
+                                value="{! !v.customQuestion.question.EIS_Repeat_Violation__c }"
+                                data-field-name="v.customQuestion.question.EIS_Repeat_Violation__c"
+                                disabled="{! v.disableFindings }">
+                            {! $Label.c.EIS_Form_Button_Repeat_Violation }
+                        </button>
+                    </div>
+                </div>
+                
+                <aura:iteration var="customObservation" items="{! v.customQuestion.customObservationList }" indexVar="oIndex">
+                    <c:EIS_Audit_Observation aura:id="audit-observation"
+                                             audit="{! v.audit }" question="{! v.customQuestion.question }"
+                                             userIsAPM="{! v.userIsAPM }"
+                                             disableFindings="{! v.disableFindings }"
+                                             disableCorrectiveActions="{! v.disableCorrectiveActions }"
+                                             customObservation="{! customObservation }"
+                                             obsNum="{! oIndex + 1 }" />
+                </aura:iteration>
+                
+                <div class="slds-size_1-of-2" >
+                    <aura:if isTrue="{! !v.disableFindings }">
+                        <div class="slds-p-bottom_xx-small slds-align_absolute-center">
+                            <span onclick="{! c.addObservation }">
+                                <c:EIS_LightningIcon iconName="utility:new" iconSize="small"
+                                                     cursor="pointer" hoverColor="icon-brand"
+                                                     label="{! $Label.c.EIS_Form_Icon_Label_Add_Observation }" />
+                            </span>
+                        </div>
+                    </aura:if>
+                </div>
+                <div class="slds-size_1-of-2" ></div>
+            </aura:if>
+        </div>
+    </div>
+    
+</aura:component>

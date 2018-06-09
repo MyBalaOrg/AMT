@@ -1,0 +1,23 @@
+<!--
+// ****************************************************************************************************************
+// Component: Display SObject Fields Component
+// Author:  Nathan Shinn, Deloitte Digital
+// Date:    Feb 14, 2017
+// Description: Used to render SObject Fields on a page/Component
+//
+// Modifications: 
+// 1.00: Created     
+// ****************************************************************************************************************  
+-->
+<aura:component >
+    <!-- Field description and value attributes -->
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+	<aura:attribute name="objSobject" type="Sobject" />
+    <aura:attribute name="fieldapi" type="String" />
+    <aura:attribute name="fielvalue" type="String" />
+    
+    <!-- the field rendered as an output text -->
+    <div class="slds-truncate" title="{!v.fielvalue}">
+        <ui:outputText value="{!v.fielvalue}" class="slds-truncate"/></div>
+
+</aura:component>

@@ -1,0 +1,25 @@
+<aura:component >
+    <aura:attribute name="obsRecordTypes" type="RecordType[]" access="public" />
+    <aura:attribute name="selectedRecordType" type="RecordType" access="public" />
+    <aura:attribute name="currentIndex" type="Integer" default="0" access="public" />
+    <aura:attribute name="obsTemplate" type="Observation__c" access="public" />
+    <aura:attribute name="selectionState" type="Integer" access="public" />
+    <aura:attribute name="cmpState" type="Integer" access="public" />
+    
+    <aura:if isTrue="{! equals(v.selectionState, v.cmpState) }">
+        <div class="slds-size_1-of-1 slds-p-around_medium ">
+            <div class="slds-grid slds-wrap slds-align_absolute-center">
+                <aura:iteration var="obsRT" items="{! v.obsRecordTypes }" indexVar="fIndex">
+                    <!--div class="slds-size_1-of-1 slds-align_absolute-center">
+                        <div class="slds-box slds-size_1-of-4">
+                            {! obsRT.Name }
+                        </div>
+                    </div-->
+                    <lightning:input type="radio" class="slds-p-horizontal_medium select-test-radio"
+                                     label="{! obsRT.Name }" name="test-form-select" value="{! fIndex }" 
+                                     checked="{! equals(v.obsTemplate.RecordTypeId, obsRT.Id) }" onchange="{! c.onchangeTestFormSelect }" /> 
+                </aura:iteration>
+            </div>
+        </div>
+    </aura:if>
+</aura:component>

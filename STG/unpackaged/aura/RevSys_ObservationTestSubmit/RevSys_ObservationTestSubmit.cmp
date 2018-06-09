@@ -1,0 +1,37 @@
+<aura:component access="public">
+    <aura:attribute name="recordTypes" type="RecordType[]" access="public" />
+    <aura:attribute name="selectedRecordType" type="RecordType" access="public" />
+    <aura:attribute name="currentIndex" type="Integer" default="0" access="public" />
+    <aura:attribute name="theObject" type="Object" access="public" />
+    <aura:attribute name="selectionState" type="Integer" access="public" />
+    <aura:attribute name="cmpState" type="Integer" access="public" />
+    <aura:attribute name="label" type="String" access="public" />   
+    <aura:attribute name="submitMessage" type="String[]" access="public" />  
+    <aura:attribute name="SubmitStatusMessage" type="String" access="public" /> 
+   
+    
+    <aura:if isTrue="{! or(and(equals(v.selectionState, v.cmpState), !equals(v.selectedRecordType.Name, $Label.c.RevSys_Observation_RT_Label_Test_1872)), and(equals(v.selectionState, 4), equals(v.selectedRecordType.Name, $Label.c.RevSys_Observation_RT_Label_Test_1872))) }">
+    	<!--div class="slds-size_1-of-1 slds-p-left_medium"-->
+            <div id="msg" class = "slds-grid slds-size_1-of-1 slds-align_absolute-center slds-grow slds-m-bottom_small">
+                <center>
+                    <img src="{!$Resource.AmtrakLogo}"/>   
+                    <br/>  
+                    <br/>                    
+                    {!v.SubmitStatusMessage}
+                    <br/>
+                    
+                    <aura:iteration items="{!v.submitMessage}" var="msg1" indexVar="idx">   
+                        <div class="slds-truncate slds-cell-wrap slds-grow" title="0-definition">{!msg1}<br/></div>           
+                    </aura:iteration>
+                    <br/>  
+                    
+                    <button class="slds-button slds-button--neutral" onclick="{! c.gotoNewObservation }">
+                        Start new observation
+                    </button>
+                    <button class="slds-button slds-button--neutral" onclick="{! c.gotoHomePage }">
+                        Return to home
+                    </button>
+                </center>
+            </div>
+    </aura:if>
+</aura:component>

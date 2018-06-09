@@ -1,0 +1,200 @@
+<aura:component controller="ODILR_Case_MainCtrl">
+    <aura:attribute name="caseWrappers" type="ODILR_Case_MainCtrl.CaseWrapper[]" access="public" />
+    <aura:attribute name="sectionName" type="String" access="public" />
+    <aura:attribute name="recordId" type="String" access="public" />
+    <aura:attribute name="recordTypeName" type="String" access="public" />
+    <aura:attribute name="editMode" type="Boolean" default="false" access="public" />
+    <aura:attribute name="newCaseCreation" type="Boolean" default="false" access="public" />
+    <aura:attribute name="errorMessage" type="String" default="" access="private" />
+    <aura:attribute name="displayHelperTextKey" type="String" default="" access="private" />
+    <aura:attribute name="displaySection" type="Boolean" default="true" access="public" />
+    <aura:attribute name="sldsFieldSize" type="String" default="slds-size_1-of-3" access="public" />
+    
+    <aura:registerEvent name="toggleLightningSpinner" type="c:EIS_BooleanEvent" />
+    <aura:registerEvent name="saveButtonClicked" type="c:EIS_BooleanEvent" />
+    
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+    <aura:handler name="fetchSearchItems" event="c:EIS_Audit_UpdateObjectEvent" action="{! c.handleFetchSearchItemsEvent }"/>
+    <aura:handler name="searchItemSelected" event="c:EIS_Audit_UpdateObjectEvent" action="{! c.handleSearchItemSelectedEvent }"/>
+    
+    <div class="slds-grid slds-wrap slds-p-bottom_small">
+        <div class="slds-size_1-of-1" >
+            <div class="slds-section__title">
+                <div class="{! (v.displaySection ? 'open-section' : 'close-section') + ' slds-button slds-section__title-action' }" 
+                     onclick="{! c.toggleDisplaySection }" >
+                    <aura:if isTrue="{! v.displaySection }">
+                        <lightning:icon class="slds-p-right_x-small" iconName="utility:chevrondown" size="xx-small" variant="inverse"/>
+                        <aura:set attribute="else">
+                            <lightning:icon class="slds-p-right_x-small" iconName="utility:chevronup" size="xx-small" variant="inverse"/>
+                        </aura:set>
+                    </aura:if>
+                    <span class="slds-truncate" title="{! v.sectionName }">{! v.sectionName }</span>
+                </div>
+            </div>
+        </div>
+        
+        <aura:if isTrue="{! v.displaySection }">
+            <div class="slds-size_3-of-4 slds-p-top_xx-small">
+                <aura:if isTrue="{! !empty(v.errorMessage) }">
+                    <ui:outputText class="slds-text-color_error" value="{! v.errorMessage }" />
+                </aura:if>
+            </div>
+            <div class="slds-size_1-of-4 slds-p-top_xx-small">
+                <aura:if isTrue="{! !v.newCaseCreation }">
+                    <button class="slds-float_right slds-m-horizontal_small slds-button slds-button_brand" 
+                            value="{! $Label.c.EIS_Form_Button_Save }" onclick="{! c.toggleEditMode }" >
+                        {! v.editMode ? $Label.c.EIS_Form_Button_Save : $Label.c.EIS_Form_Button_Edit }
+                    </button>
+                    <aura:if isTrue="{! v.editMode }">
+                        <button class="slds-float_right slds-m-left_small slds-button slds-button_neutral" 
+                                value="{! $Label.c.EIS_Form_Button_Cancel }" onclick="{! c.toggleEditMode }" >
+                            {! $Label.c.EIS_Form_Button_Cancel }
+                        </button>
+                    </aura:if>
+                </aura:if>
+            </div>
+            <div class="{! 'slds-size_1-of-1' + (v.newCaseCreation ? ' slds-p-top_medium' : '') }">
+                <div class="slds-grid slds-wrap">
+                    <aura:if isTrue="{! v.editMode }">
+                        <aura:iteration var="caseWrapper" items="{! v.caseWrappers }" indexVar="index">
+                            <aura:if isTrue="{! caseWrapper.accessible }">
+                                <div class="{! v.sldsFieldSize + ' slds-p-horizontal_medium slds-p-bottom_medium' }">
+                                    <label>{! caseWrapper.fieldLabel }
+                                        <aura:if isTrue="{! !empty(caseWrapper.helperText) }">
+                                            <span class="slds-m-left_small slds-text-align_left slds-p-top_xxx-small" style="position:relative;"
+                                                  data-field-name="{! caseWrapper.fieldName }" onmouseover="{! c.showToolTip }" onmouseout="{! c.hideToolTip }" >
+                                                <aura:if isTrue="{! equals(v.displayHelperTextKey, caseWrapper.fieldName) }">
+                                                    <div class="slds-popover slds-popover_tooltip slds-rise-from-ground slds-nubbin_left-top field-tooltip" role="tooltip">
+                                                        <div class="slds-popover__body">
+                                                            <p>{! caseWrapper.helperText }</p>
+                                                        </div>
+                                                    </div>
+                                                </aura:if>
+                                                <c:EIS_LightningIcon iconName="utility:info" iconSize="x-small" />
+                                            </span>
+                                        </aura:if>
+                                    </label>
+                                    <br/>
+                                    <aura:if isTrue="{! equals(caseWrapper.fieldType, 'date') }">
+                                        <ui:inputDate value="{! caseWrapper.fieldValue }" displayDatePicker="true"
+                                                      disabled="{! !caseWrapper.editable }" />
+                                    </aura:if>
+                                    <aura:if isTrue="{! equals(caseWrapper.fieldType, 'datetime') }">
+                                        <ui:inputDateTime value="{! caseWrapper.fieldValue }" displayDatePicker="true" 
+                                                          disabled="{! !caseWrapper.editable }" />
+                                    </aura:if>
+                                    <aura:if isTrue="{! equals(caseWrapper.fieldType, 'picklist') }">
+                                        <ui:inputSelect value="{! caseWrapper.fieldValue }" disabled="{! !caseWrapper.editable }" >
+                                            <ui:inputSelectOption text=""/>
+                                            <aura:iteration var="picklistValue" items="{! caseWrapper.picklistValues }" >
+                                                <ui:inputSelectOption text="{! picklistValue }" value="{! equals(picklistValue, caseWrapper.fieldValue) }" />
+                                            </aura:iteration>
+                                        </ui:inputSelect>
+                                    </aura:if>
+                                    <aura:if isTrue="{! equals(caseWrapper.fieldType, 'currency') }">
+                                        <ui:inputCurrency value="{! caseWrapper.fieldValue }" 
+                                                          disabled="{! !caseWrapper.editable }"/>
+                                    </aura:if>
+                                    <aura:if isTrue="{! equals(caseWrapper.fieldType, 'boolean') }">
+                                        <ui:inputCheckbox value="{! caseWrapper.fieldValue }" 
+                                                          disabled="{! !caseWrapper.editable }"/>
+                                    </aura:if>
+                                    <aura:if isTrue="{! equals(caseWrapper.fieldType, 'string') }">
+                                        <ui:inputText value="{! caseWrapper.fieldValue }" maxlength="{! caseWrapper.maxLength }"
+                                                      disabled="{! !caseWrapper.editable }"/>
+                                    </aura:if>
+                                    <aura:if isTrue="{! equals(caseWrapper.fieldType, 'double') }">
+                                        <ui:inputNumber value="{! caseWrapper.fieldValue }" 
+                                                        disabled="{! !caseWrapper.editable }"/>
+                                    </aura:if>
+                                    <aura:if isTrue="{! equals(caseWrapper.fieldType, 'textarea') }">
+                                        <ui:inputTextArea value="{! caseWrapper.fieldValue }" maxlength="{! caseWrapper.maxLength }"
+                                                          disabled="{! !caseWrapper.editable }"/>
+                                    </aura:if>
+                                    <aura:if isTrue="{! equals(caseWrapper.fieldType, 'reference') }">
+                                        <c:EIS_TypeaheadSearch aura:id="typeahead-search-cmp" internalId="{! index }" disabled="{! !caseWrapper.editable }"
+                                                               selectedItemLabel="{! caseWrapper.referenceValue }" 
+                                                               placeholder="{! 'Search for ' + caseWrapper.fieldLabel + ' ...' }" />
+                                    </aura:if>
+                                    <aura:if isTrue="{! equals(caseWrapper.fieldType, 'url') }">
+                                        <ui:inputURL value="{! caseWrapper.fieldValue }" disabled="{! !caseWrapper.editable }"/>
+                                    </aura:if>
+                                </div>
+                            </aura:if>
+                        </aura:iteration>
+                        
+                        <aura:set attribute="else">
+                            <aura:iteration var="caseWrapper" items="{! v.caseWrappers }" indexVar="index">
+                                <aura:if isTrue="{! caseWrapper.accessible }">
+                                    <div class="{! v.sldsFieldSize + ' slds-p-horizontal_medium slds-p-bottom_medium' }">
+                                        
+                                        <label style="font-weight: bold;">{! caseWrapper.fieldLabel }
+                                            <aura:if isTrue="{! !empty(caseWrapper.helperText) }">
+                                                <span class="slds-m-left_small slds-text-align_left slds-p-top_xxx-small" style="position:relative;"
+                                                      data-field-name="{! caseWrapper.fieldName }" onmouseover="{! c.showToolTip }" onmouseout="{! c.hideToolTip }" >
+                                                    <aura:if isTrue="{! equals(v.displayHelperTextKey, caseWrapper.fieldName) }">
+                                                        <div class="slds-popover slds-popover_tooltip slds-rise-from-ground slds-nubbin_left-top field-tooltip" role="tooltip">
+                                                            <div class="slds-popover__body">
+                                                                <p>{! caseWrapper.helperText }</p>
+                                                            </div>
+                                                        </div>
+                                                    </aura:if>
+                                                    <c:EIS_LightningIcon iconName="utility:info" iconSize="x-small" />
+                                                </span>
+                                            </aura:if>
+                                        </label>
+                                        <br/>
+                                        <aura:if isTrue="{! equals(caseWrapper.fieldType, 'date') }">
+                                            <ui:outputDate value="{! caseWrapper.fieldValue }" />
+                                        </aura:if>
+                                        <aura:if isTrue="{! equals(caseWrapper.fieldType, 'datetime') }">
+                                            <ui:outputDateTime value="{! caseWrapper.fieldValue }" />
+                                        </aura:if>
+                                        <aura:if isTrue="{! or(equals(caseWrapper.fieldType,'string'),equals(caseWrapper.fieldType,'picklist')) }">
+                                            <ui:outputText value="{! caseWrapper.fieldValue }" />
+                                        </aura:if>
+                                        <aura:if isTrue="{! equals(caseWrapper.fieldType, 'double') }">
+                                            <ui:outputText value="{! caseWrapper.fieldValue }" />
+                                        </aura:if>
+                                        <aura:if isTrue="{! equals(caseWrapper.fieldType, 'currency') }">
+                                            <ui:outputCurrency value="{! caseWrapper.fieldValue }" />
+                                        </aura:if>
+                                        <aura:if isTrue="{! equals(caseWrapper.fieldType, 'boolean') }">
+                                            <ui:outputCheckbox value="{! caseWrapper.fieldValue }" />
+                                        </aura:if>
+                                        <aura:if isTrue="{! equals(caseWrapper.fieldType,'textarea') }">
+                                            <div class="case-field-output">
+                                            	<ui:outputTextArea linkify="true" value="{! caseWrapper.fieldValue }" />
+                                            </div>
+                                        </aura:if>
+                                        <aura:if isTrue="{! equals(caseWrapper.fieldType, 'reference') }">
+                                            <aura:if isTrue="{! equals(caseWrapper.fieldName, 'RecordTypeId') }">
+                                            	<ui:outputText value="{! caseWrapper.referenceValue }" />
+                                            	<aura:set attribute="else">
+                                                    <a href="javascript:void(0)" onclick="{! c.navigateToRecordPage }" data-record-id="{! caseWrapper.fieldValue }">
+                                                        {! caseWrapper.referenceValue }
+                                                    </a>
+                                                </aura:set>
+                                            </aura:if>
+                                        </aura:if>
+                                        <aura:if isTrue="{! equals(caseWrapper.fieldType, 'url') }">
+                                            <aura:if isTrue="{! and(equals(caseWrapper.fieldName, 'Documentum_Link__c'), !empty(caseWrapper.fieldValue)) }">
+                                                <a href="{! caseWrapper.fieldValue }" title="{! caseWrapper.fieldValue }">
+                                                    <lightning:icon iconName="doctype:folder" size="small"/>
+                                                </a>
+                                            	<aura:set attribute="else">
+                                                    <ui:outputURL value="{! caseWrapper.fieldValue }" label="{! caseWrapper.fieldValue }" />
+                                                </aura:set>
+                                            </aura:if>
+                                        </aura:if>
+                                    </div>
+                                </aura:if>
+                            </aura:iteration>
+                        </aura:set>
+                    </aura:if>
+                </div>
+            </div>
+        </aura:if>
+        
+    </div>
+</aura:component>

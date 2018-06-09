@@ -1,0 +1,104 @@
+<aura:component >
+    <aura:attribute name="modalTitle" type="String" default="Search Results" access="public" />
+    <aura:attribute name="selectedItemsTitle" type="String" default="Selected Items" access="public" />
+    <aura:attribute name="selectedItemIdSet" type="String" default="" access="public" />
+    <aura:attribute name="searchKey" type="String" access="private" />
+    <aura:attribute name="fieldLabels" type="String[]" access="public"/>
+    <aura:attribute name="resultList" type="SearchTabularItemWrapper[]" access="public" />
+    <aura:attribute name="selectedList" type="SearchTabularItemWrapper[]" access="public" />
+    <aura:attribute name="openResultModal" type="Boolean" default="false" access="private" />
+    <aura:attribute name="openResult" type="Boolean" default="false" access="private" />
+    <aura:attribute name="isMultiSelect" type="Boolean" access="public" default="true" />
+    <aura:attribute name="showInlineResult" type="Boolean" access="public" default="false" />
+    <aura:attribute name="filterList" type="String[]" access="public" />
+    <aura:attribute name="filterMap" type="Map" access="public" />
+    <aura:attribute name="filterKeyList" type="String[]" access="public" />
+    <aura:attribute name="selectedRecordType" type="RecordType" access="public" />
+    
+    <aura:attribute name="label" type="String" access="public" 
+                    description="Mapped to label attribute of ui:inputText"/>
+    <aura:attribute name="labelClass" type="String" access="public" 
+                    description="Mapped to labelClass attribute of ui:inputText"/>
+    <aura:attribute name="class" type="String" access="public" 
+                    description="Mapped to class attribute of ui:inputText"/>
+    <aura:attribute name="disabled" type="Boolean" default="false" access="public" 
+                    description="Mapped to disabled attribute of ui:inputText"/>
+    <aura:attribute name="placeholder" type="String" default="Enter text here ..." access="public" 
+                    description="Mapped to placeholder attribute of ui:inputText"/>
+    <aura:attribute name="errors" type="List" access="public"
+                    description="Mapped to errors attribute of ui:inputText"/>
+    
+    <aura:registerEvent name="performSearch" type="c:RevSys_GeneralPurposeEvt" />
+    
+    <aura:handler name="confirmedItemSelections" event="c:RevSys_GeneralPurposeEvt" action="{! c.handleConfirmedItemSelections }"/>
+    <aura:handler name="sendSelectedItems" event="c:RevSys_GeneralPurposeEvt" action="{! c.handleSelectedItems }"/>
+    
+    <aura:method name="setResultList" action="{! c.handleSetResultList }" access="public">
+        <aura:attribute name="resultList" type="SearchTabularItemWrapper[]" default="" />
+    </aura:method>
+    
+    <div class="slds-grid" style="width:50em;">
+        <div class="slds-grid">
+            <div class="slds-col slds-p-right_x-small">
+                <ui:inputText aura:id="search-box" label="{! v.label }" labelClass="{! v.labelClass }" class="{! v.class }" errors="{! v.errors }" value="{! v.searchKey }" placeholder="{! v.placeholder }" disabled="{! v.disabled }" keyup="{! c.searchEnterKeyUp }"/>
+            </div >
+            <aura:if isTrue="{! v.filterList.length > 0 }">
+                <aura:iteration var="item" items="{! v.filterList }">
+                    <div class="slds-col slds-p-horizontal_x-small filter-box">
+                        <ui:inputText aura:id="{! item }" label="{! item }" 
+                                      blur="{! c.handleFilterBlur }" keyup="{! c.searchEnterKeyUp }" disabled="{! and(equals(item, 'Craft'),  notequals(v.selectedRecordType.Name, $Label.c.RevSys_Observation_RT_Label_Test_1872)) }"
+                                      />
+                    </div>
+                </aura:iteration>
+            </aura:if>
+        </div>
+        <div class="slds-p-left_medium slds-p-top_small slds-col" >
+            <button class="slds-button slds-button_neutral slds-m-top_x-small" style="height:34px;"
+                    onclick="{! c.onclickSearchButton }" >
+                Search
+            </button>
+        </div>
+    </div>
+
+    <aura:if isTrue="{! and(!empty(v.selectedList),!v.showInlineResult) }">
+        <div class="slds-text-title_caps slds-p-bottom_x-small" style="text-align:center;">
+            {! v.selectedItemsTitle }
+        </div>
+        <table class="slds-table slds-table--bordered slds-table--cell-buffer">
+            <thead>
+                <tr class="slds-text-title_caps">
+                    <aura:iteration var="label" items="{! v.fieldLabels }" indexVar="labelIndex">
+                        <th>
+                            <label class="slds-truncate" title="{! label }">
+                                {! label }
+                            </label>
+                        </th>
+                    </aura:iteration>
+                    <th style="width:1em;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <aura:iteration var="selectedItem" items="{! v.selectedList }" indexVar="sIndex">
+                    <tr>
+                        <aura:iteration var="value" items="{! selectedItem.fieldValues }" indexVar="valueIndex">
+                            <td>
+                                <ui:outputText value="{! value }" />
+                            </td>
+                        </aura:iteration>
+                        <td>
+                            <span data-row-index="{! sIndex }" onclick="{! c.removeSelectedItem }">
+                                <c:EIS_LightningIcon iconName="utility:delete" iconSize="x-small"
+                                                     cursor="pointer" hoverColor="icon-trash"/>
+                            </span>
+                        </td>
+                    </tr>
+                </aura:iteration>
+            </tbody>
+        </table>
+    </aura:if>
+    
+    <aura:if isTrue="{! v.openResultModal }">
+        <c:Search_TabularResultModalCmp aura:id="search-result" resultList="{! v.resultList }" modalTitle="{! v.modalTitle }" fieldLabels="{! v.fieldLabels }" openResultModal="{! v.openResultModal }" isMultiSelect="{! v.isMultiSelect }" showInlineResult="{! v.showInlineResult }"/>
+    </aura:if>
+
+</aura:component>

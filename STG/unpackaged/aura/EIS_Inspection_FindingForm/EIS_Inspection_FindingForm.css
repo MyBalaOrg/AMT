@@ -1,0 +1,13 @@
+.THIS .has-error {
+    border-color: #c23934 !important;
+}
+
+.THIS.finding-box {
+    border-bottom-color: rgb(0, 57, 107);
+    border-bottom-style: dashed;
+    border-bottom-width: 1px;
+}
+
+.THIS .finding-desc {
+    height: 11em;
+}

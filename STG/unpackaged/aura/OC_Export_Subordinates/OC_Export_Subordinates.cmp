@@ -1,0 +1,43 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" >
+    <aura:attribute name="selectedEmployee" type="OC_OrgChartTopLevelApexController.Employee"/>
+    <aura:attribute name="positionLevel" type="Integer" default="1" />
+   
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    
+
+    <button style="background-color: #005883; border: 2px solid #005883;color: white;" class="slds-button slds-button--neutral slds-theme--shade" onclick="{!c.openModel}">Export List</button>
+    
+    <aura:if isTrue="{!v.isOpen}">  
+        <!--###### MODAL BOX Start From Here ######--> 
+        <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+            <div class="slds-modal__container">
+                <!-- ###### MODAL BOX HEADER Part Start From Here ######-->
+                <div class="slds-modal__header">
+                    <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closeModel}">X<span class="slds-assistive-text">Close</span></button>
+                    <h2 id="header99" class="slds-text-heading--medium">Export Level</h2>
+                </div>
+                <!--###### MODAL BOX BODY Part Start From Here ######-->
+                <div class="slds-modal__content slds-p-around--medium">
+                    <p><b>How many levels of subordinates would you like to export for this position?</b></p>
+                    <ui:inputSelect aura:id="level_select" multiple="false">
+                        <ui:inputSelectOption text="1" label="1  " value="true"/>
+                        <ui:inputSelectOption text="2" label="2  "/>
+                        <ui:inputSelectOption text="3" label="3  "/>
+                        <ui:inputSelectOption text="4" label="4  "/>
+                        <ui:inputSelectOption text="5" label="5  "/>
+                        <ui:inputSelectOption text="6" label="6  "/>
+                        <ui:inputSelectOption text="7" label="7  "/>
+                        <ui:inputSelectOption text="8" label="8  "/>
+                    </ui:inputSelect>
+                </div>
+                <!--###### MODAL BOX FOOTER Part Start From Here ######-->
+                <div class="slds-modal__footer">
+                    <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}" >Cancel</button>
+                    <button class="slds-button slds-button--brand" onclick="{!c.exportSelectedEntity}">Export</button>
+                </div>
+            </div>
+      </div>
+      <div class="slds-backdrop slds-backdrop--open"></div>
+      <!--###### MODAL BOX Part END Here ######--> 
+</aura:if>
+</aura:component>

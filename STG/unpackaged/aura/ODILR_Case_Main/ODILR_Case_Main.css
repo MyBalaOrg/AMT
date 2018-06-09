@@ -1,0 +1,53 @@
+.THIS.fidget-spinner {
+    position: fixed;
+}
+
+.THIS .field-tooltip {
+    position: absolute;
+    left: 2.5em;
+    width: 20em;
+    max-width: 50em;
+    height: 4em;
+    top: -1em;
+}
+
+.THIS.case-main-body {
+    border-radius: 0.3em;
+    background-color: white !important;
+    padding: 1em !important;
+}
+
+.THIS.new-case-main-body {
+    padding: 2em;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    max-width: 80% !important;
+}
+
+.THIS .case-detail-tab {
+    margin-bottom: 0;
+    margin-left: 0;
+    margin-right: 0;
+    border-top-left-radius: 0.5em;
+    border-top-right-radius: 0.5em;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-color: white;
+    background-color: #d4504c;
+    font-size: 1rem;
+    line-height: 1.875rem;
+}
+
+.THIS .selected-tab {
+    border-color: #04844b;
+    background-color: #04844b;
+}
+
+.THIS .case-field-output {
+    max-height: 10em !important;
+    overflow-y: scroll;
+}
+
+.THIS .uiOutputText, .THIS .uiOutputTextArea, .THIS a {
+    word-wrap: break-word;
+}

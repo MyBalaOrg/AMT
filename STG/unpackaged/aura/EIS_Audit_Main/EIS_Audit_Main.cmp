@@ -1,0 +1,55 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    <aura:attribute name="protocolList" type="EIS_Audit_BodyCtrl.SideTab[]" access="public" />
+    <aura:attribute name="protocolIndex" type="Integer" access="public" default="0" />
+    <aura:attribute name="departmentList" type="EIS_Audit_BodyCtrl.SideTab[]" access="public" />
+    <aura:attribute name="departmentIndex" type="Integer" access="public" default="0" />
+    <aura:attribute name="tabName" type="String" access="public" default="{! $Label.c.EIS_Audit_Form_Tab_Protocol }" />
+    <aura:attribute name="userIsAPM" type="Boolean" access="public" default="false" />
+    <aura:attribute name="audit" type="Audit_Inspections__c" access="public" />
+    <aura:attribute name="positiveFinding" type="Boolean" access="public" default="false" />
+    <aura:attribute name="positiveFindingList" type="String[]" access="public" />
+    <aura:attribute name="missingQuestionList" type="String[]" access="public" />
+    <aura:attribute name="disableFindings" type="Boolean" access="public" default="false" />
+    <aura:attribute name="disableCorrectiveActions" type="Boolean" access="public" default="false" />
+    <aura:attribute name="disableHeaderButtons" type="Boolean" access="public" default="false" />
+   <ltng:require styles="{!$Resource.ExternalCssforAudit}"/>  -->
+    
+    <aura:handler name="toggleLightningSpinner" event="c:EIS_BooleanEvent" action="{! c.handleToggleLightningSpinner }"/>
+    <aura:handler name="headerButtonClicked" event="c:EIS_BooleanEvent" action="{! c.handleHeaderButtonClicked }"/>
+    
+    <lightning:spinner aura:id="audit-loading" variant="brand" size="large" class="fidget-spinner"/>
+	<c:EIS_Audit_MainHeader audit="{! v.audit }" userIsAPM="{! v.userIsAPM }" disableHeaderButtons="{! v.disableHeaderButtons }"
+                            disableFindings="{! v.disableFindings }" disableCorrectiveActions="{! v.disableCorrectiveActions }"/>
+    <c:EIS_FixedHeaderSpacing height="6em"/>
+    
+    <div class="slds-grid slds-wrap slds-grid_pull-padded slds-p-around_x-small slds-m-around_x-small" 
+         style="background-color: white; border-radius: 0.5em;">
+        <div class="slds-size_1-of-1 slds-m-bottom_xxx-small">
+            <button class="{! 'slds-size_1-of-5 slds-button zero-radius' + (equals(v.tabName,$Label.c.EIS_Audit_Form_Tab_Protocol) ? ' tab-selected':'') }" 
+                    value="{! $Label.c.EIS_Audit_Form_Tab_Protocol }" onclick="{! c.onclickTabs }" style="text-transform:uppercase">
+                {! $Label.c.EIS_Audit_Form_Tab_Protocol }
+            </button>
+            <button class="{! 'slds-size_1-of-5 slds-button zero-radius' + (equals(v.tabName,$Label.c.EIS_Audit_Form_Tab_Department) ? ' tab-selected':'') }"  
+                    value="{! $Label.c.EIS_Audit_Form_Tab_Department }" onclick="{! c.onclickTabs }" style="text-transform:uppercase">
+                {! $Label.c.EIS_Audit_Form_Tab_Department }
+            </button>
+        </div>
+        <div class="slds-size_1-of-1 slds-m-bottom_medium">
+            <aura:if isTrue="{! equals(v.tabName,$Label.c.EIS_Audit_Form_Tab_Protocol) }">
+            	<c:EIS_Audit_Body aura:id="protocols-body" audit="{! v.audit }" auditId="{! v.recordId }" 
+                                  tabName="{! v.tabName }" sideTabList="{! v.protocolList }"
+                                  userIsAPM="{! v.userIsAPM }" selectedSideTabIndex="{! v.protocolIndex }" disableHeaderButtons="{! v.disableHeaderButtons }"
+                                  disableFindings="{! v.disableFindings }" disableCorrectiveActions="{! v.disableCorrectiveActions }"
+                                  positiveFinding="{! v.positiveFinding }" positiveFindingList="{! v.positiveFindingList }"
+                                  missingQuestionList="{! v.missingQuestionList }" />
+            </aura:if>
+            <aura:if isTrue="{! equals(v.tabName,$Label.c.EIS_Audit_Form_Tab_Department) }">
+            	<c:EIS_Audit_Body aura:id="departments-body" audit="{! v.audit }" auditId="{! v.recordId }" disableHeaderButtons="{! v.disableHeaderButtons }"
+                                  disableFindings="{! v.disableFindings }" disableCorrectiveActions="{! v.disableCorrectiveActions }"
+                                  tabName="{! v.tabName }" sideTabList="{! v.departmentList }"
+                                  userIsAPM="{! v.userIsAPM }" selectedSideTabIndex="{! v.departmentIndex }"
+                                  missingQuestionList="{! v.missingQuestionList }" />
+            </aura:if>
+        </div>
+    </div>
+</aura:component>

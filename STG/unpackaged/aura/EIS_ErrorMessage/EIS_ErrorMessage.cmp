@@ -1,0 +1,10 @@
+<aura:component >
+    <aura:attribute name="message" type="String" access="public" />
+    <aura:attribute name="rendered" type="Boolean" access="public" default="false" />
+    
+    <aura:if isTrue="{! v.rendered }">
+        <ui:outputText aura:id="missing-finding-error-msg" class="error-msg"
+                       value="{! v.message }"/>
+    </aura:if>
+    
+</aura:component>

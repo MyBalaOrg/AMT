@@ -1,0 +1,32 @@
+<!--
+ - Created by 7Summits on 10/3/17.
+ -->
+<aura:component description="Peak_Uber_Theme_TwoBarSearchFocused">
+    <!-- components -->
+    <aura:attribute name="searchComponent" type="Aura.Component[]" />
+    <aura:attribute name="templateSearchTop" type="Aura.Component[]" />
+
+    <!-- general items  -->
+    <aura:attribute name="showSearchTitleContainer" type="Boolean" />
+
+    <!-- styles -->
+    <aura:attribute name="contentMaxWidth" type="String" />
+    <aura:attribute name="height" type="String" />
+    <aura:attribute name="bkgColor" type="String" />
+    <aura:attribute name="bkgImage" type="String" />
+
+    <div style="{!'height:' + v.height + ';background-color:' + v.bkgColor + ';background-image:url(' + v.bkgImage + ');background-position:center top;'}">
+        <div class="content" style="{!'max-width:' + v.contentMaxWidth}">
+            <lightning:layout class="contentBody" verticalAlign="center" horizontalAlign="spread" multipleRows="true">
+                <aura:if isTrue="{!v.showSearchTitleContainer == true}">
+                    <lightning:layoutItem class="slds-p-top_medium templateSearch" size="12">{!v.templateSearchTop}</lightning:layoutItem>
+                </aura:if>
+                <lightning:layoutItem class="slds-p-vertical_medium search" size="12">
+                    <lightning:icon class="searchIcon" iconName="utility:search" size="small" alternativeText="Search"/>
+                    {!v.searchComponent}
+                </lightning:layoutItem>
+            </lightning:layout>
+        </div>
+    </div>
+
+</aura:component>

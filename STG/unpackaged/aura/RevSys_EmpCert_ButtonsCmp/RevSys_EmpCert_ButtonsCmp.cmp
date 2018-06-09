@@ -1,0 +1,68 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+                access="global" controller="RevSys_EmpCert_RecordDetailController" >
+    
+    <ltng:require scripts="{! $Resource.amtrak_helper_functions }" afterScriptsLoaded="{! c.scriptsLoaded }" />
+    
+    <aura:attribute name="loadComponent" type="boolean" default="true" access="public" />
+    <aura:attribute name="ecRecord" type="EmployeeCertification__c"  description="Holds the record" />
+    <aura:attribute name="expired" type="boolean" default="false" access="public" />
+    <aura:attribute name="certifyBtn" type="boolean" default="true" access="public" />
+    <aura:attribute name="recordId" type="String" />    
+    <aura:attribute name="isOpenWarning" type="Boolean" default="false" />    
+    <aura:attribute name="loadButton" type="Boolean" default="true" access="public" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler event="force:refreshView" action="{!c.doInit}" />
+    
+    
+    <lightning:spinner aura:id="fidget-spinner" variant="brand" size="large" class="fidget-spinner-style"/>
+    <aura:handler name="toggleLightningSpinner" event="c:RevSys_GeneralPurposeEvt" action="{! c.handleToggleLightningSpinner }"/>
+    
+    <!--<aura:if isTrue="{!v.loadButton}">-->
+        <center>
+            <aura:if isTrue="{!v.loadComponent}">
+                <button id="permanentBtn" class="slds-button slds-button_brand"
+                        disabled="{! or(or(or(v.ecRecord.Status__c=='',v.ecRecord.Status__c!='Current'),v.expired==true),v.ecRecord.Archived__c==true)}"  
+                        onclick="{!c.printDetails}">
+                    {! $Label.c.RevSys_Print_Permanent_Card }
+                </button>
+            </aura:if>
+            <button id="temporaryBtn" class="slds-button slds-button_brand"  
+                    disabled="{! or(or(v.ecRecord.Status__c=='',v.ecRecord.Status__c!='Current'),v.ecRecord.Archived__c==true)}"
+                    onclick="{!c.printDetails}">
+                {! $Label.c.RevSys_Print_Temporary_Card } 
+            </button>
+            <aura:if isTrue="{!v.loadComponent}">
+                <button aura:id="Certify" class="slds-button slds-button_brand"  
+                        disabled="{! v.certifyBtn}"
+                        onclick="{!c.openModel}">
+                    {! $Label.c.RevSys_EmpCert_Certify_Label } 
+                </button>
+            </aura:if>
+        </center> 
+    <!--</aura:if>-->
+
+
+    <!--Modal for warning here--> 
+    <aura:if isTrue="{!v.isOpenWarning}">     
+        <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+            <div class="slds-modal__container">
+                <!-- Header -->
+                <div class="slds-modal__header">
+                    <h2 id="header99" class="slds-text-heading--medium">{! $Label.c.RevSys_EmpCert_Certify_Label }</h2>
+                </div>
+                <!-- Body -->
+                <div class="slds-modal__content slds-p-around--medium">
+                    <p>{! $Label.c.RevSys_EmpCert_Certify_Confirmation }</p>
+                </div>
+                <!-- Footer -->
+                <div class="slds-modal__footer">
+                    <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}" >{! $Label.c.RevSys_Cancel_Button_Label }</button>
+                    <button class="slds-button slds-button--brand" onclick="{!c.certifyRecord}">{! $Label.c.RevSys_Confirm_Button_Label }</button>
+                </div>
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop--open"></div>
+    </aura:if>
+    
+</aura:component>

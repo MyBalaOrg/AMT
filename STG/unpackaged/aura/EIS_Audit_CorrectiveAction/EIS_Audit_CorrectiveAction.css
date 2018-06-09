@@ -1,0 +1,53 @@
+.THIS .has-error {
+    border-color: #c23934 !important;
+}
+
+.THIS .completion-btn {
+    color: white;
+    background-color: rgb(0, 57, 107) !important;
+    margin-bottom: 0.5em;
+}
+
+.THIS .completion-btn[disabled] {
+    background-color: #54698d !important;
+    border-color: #54698d !important;
+}
+
+.THIS .completion-btn:hover {
+    background-color: #0070d2;
+}
+
+.THIS .completion-message {
+    color: #009602;
+}
+.THIS .rejection-message {
+    color: #cc0000;
+}
+
+.THIS .approve-completion-btn {
+    color: #009602;
+    background-color: white;
+    border-color: #009602;
+    border-radius: 0.5em;
+    float: right;
+}
+.THIS .approve-completion-btn:hover {
+    color: white;
+    background-color: #009602;
+}
+
+.THIS .reject-completion-btn {
+    color: #cc0000;
+    background-color: white;
+    border-color: #cc0000;
+    border-radius: 0.5em;
+}
+.THIS .reject-completion-btn:hover {
+    color: white;
+    background-color: #cc0000;
+}
+
+.THIS.corrective-action-box {
+    box-shadow: -2px 3px 4px rgba(0,0,0,0.17);
+    border-radius: 1em;
+}

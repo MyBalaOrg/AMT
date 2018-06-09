@@ -1,0 +1,21 @@
+/*toggleCss.css*/
+.THIS.toggle {
+    display: none;
+    padding:5px;
+}
+
+.THIS {
+    font-family: Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.THIS .icn {
+    background-color : #005883;
+}
+
+.THIS .slds-text-body--regular {
+    color : #005883;
+}
+
+.THIS .hide {
+   display: none;
+}

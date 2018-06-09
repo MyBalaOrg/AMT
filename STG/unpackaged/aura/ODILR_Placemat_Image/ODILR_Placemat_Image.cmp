@@ -1,0 +1,3 @@
+<aura:component implements="flexipage:availableForAllPageTypes" access="global" >
+    <iframe src="{!$Resource.ODILR_Placemat_Document}" width="100%" height="800" scrolling="no" style="overflow: hidden" type="application/pdf"/>
+</aura:component>

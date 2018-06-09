@@ -1,0 +1,5 @@
+<aura:event type="APPLICATION"> <!--Modal or Pop up window application event used in state 2/SBI list-->
+	<aura:attribute name="isShown" type="Boolean" /> 
+    <aura:attribute name="desc" type="String" /> 
+    <aura:attribute name="title" type="String" />     
+</aura:event>

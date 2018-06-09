@@ -1,0 +1,69 @@
+.THIS {
+    font-family: OpenSans,Helvetica,Arial,sans-serif;
+}
+
+.THIS .application {
+    margin: 5px;
+    padding: 0;
+    display: inline-table;
+    width: 340px;
+    min-height: 95px;
+}
+
+.THIS .application:hover {
+    border-color: rgb(21, 137, 238);
+    cursor: pointer;
+}
+
+.THIS .logo {
+    display: inline-block;
+    float: left;
+    margin: 16px;
+    min-height: 64px;
+}
+
+.THIS .logo img {
+    max-height: 64px;
+    max-width: 64px;
+}
+
+.THIS .app-content {
+    margin: 16px;
+    display: grid;
+}
+
+.THIS .app-content div a {
+    color: rgb(0, 112, 210) !important;
+}
+
+.THIS .slds-modal__container {
+    width: 90%;
+    margin: auto;
+    max-width: none;
+}
+
+.THIS .slds-modal__content {
+    overflow: auto;
+    
+    
+}
+
+.THIS .description {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-height: 1.5;
+    max-height: 3rem;
+    font-size: 10pt;
+}
+.THIS .title {
+    font-size: 12pt;
+}
+
+@media (max-width: 510px) {
+    .THIS .application {
+        width: 97%;
+    }
+}

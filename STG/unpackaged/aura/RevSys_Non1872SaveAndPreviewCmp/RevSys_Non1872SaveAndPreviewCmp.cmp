@@ -1,0 +1,287 @@
+<aura:component controller="RevSys_ObservationTestInfoController">
+    <aura:attribute name="trWrapperList" type="RevSys_TestResultWrapper[]" access="public" />
+    <aura:attribute name="selectedRecordType" type="RecordType" access="public" />
+    <aura:attribute name="obsFieldLabelMap" type="Map" access="public" />
+    <aura:attribute name="obsRequiredFieldMap" type="Map" access="public" />
+    <aura:attribute name="selectionState" type="Integer" access="public" />
+    <aura:attribute name="cmpState" type="Integer" access="public" />
+
+    <aura:attribute name="picklistMap" type="Map" default="{}" access="public" />
+    
+    <aura:attribute name="testQuestionList" type="Finding__c[]" access="public" />
+    <aura:attribute name="scoreList" type="Integer[]" default="[0,1,2,3,4]" access="public" />
+    <aura:attribute name="needImprovement" type="String" access="public" />
+    <aura:attribute name="needImprovementRequired" type="Boolean" default="false" access="public" />
+    <aura:attribute name="needImprovementMap" type="Map" access="public" />
+    <aura:attribute name="selectedResultIndex" type="Integer" default="0" access="public" />
+    <aura:attribute name="comments" type="String" access="public" />
+    <aura:attribute name="commentsRequired" type="Boolean" default="false" access="public" />
+    <aura:attribute name="currentUser" type="String" access="public" />
+
+    <aura:handler name="fetchSearchItems" event="c:EIS_Audit_UpdateObjectEvent" action="{! c.handleFetchSearchItemsEvent }"/>
+    <aura:handler name="searchItemSelected" event="c:EIS_Audit_UpdateObjectEvent" action="{! c.handleSearchItemSelectedEvent }"/>
+    
+    <aura:registerEvent name="toggleLightningSpinner" type="c:RevSys_GeneralPurposeEvt" />
+
+        <div class="slds-grid slds-size_1-of-1 slds-m-bottom_small">
+       		<div class="slds-section slds-is-open slds-size_1-of-2 slds-p-horizontal_x-small slds-m-bottom_small">
+       			<h3 class="slds-section_title slds-theme_shade slds-p-around_x-small">
+       				<span clss="slds-truncate slds-text-heading_medium">Employee Information</span>
+       			</h3>
+	            <div class="slds-grid slds-wrap slds-p-horizontal_small slds-p-top_small" >
+                    <div class="slds-size_1-of-2">
+                    	<label class="slds-form-element__label">{! v.obsFieldLabelMap.employee__c }</label>
+	            		<div class="slds-form-element__control"><ui:outputText class="slds-form-element__static slds-grow" value="{! v.trWrapperList[0].employeeName }" /></div>
+	                </div>
+                    <div class="slds-size_1-of-2">
+                    	<label class="slds-form-element__label">{! v.obsFieldLabelMap.employeeid__c }</label>
+	            		<div class="slds-form-element__control"><ui:outputText class="slds-form-element__static slds-grow" value="{! v.trWrapperList[0].testResults[0].EmployeeId__c}" /></div>
+	                </div>
+                    <div class="slds-size_1-of-2">
+                    	<label class="slds-form-element__label">{! v.obsFieldLabelMap.crewbase__c }</label>
+		            	<div class="slds-form-element__control"><ui:outputText class="slds-form-element__static slds-grow" value="{! v.trWrapperList[0].testResults[0].CrewBase__c }" /></div>
+	                </div>
+                    <div class="slds-size_1-of-2">
+                    	<label class="slds-form-element__label">{! v.obsFieldLabelMap.division__c }</label>
+	            		<div class="slds-form-element__control"><ui:outputText class="slds-form-element__static slds-grow" value="{! v.trWrapperList[0].testResults[0].Division__c }" /></div>
+	                </div>
+                    <div class="slds-size_1-of-2">
+                    	<label class="slds-form-element__label">{! v.obsFieldLabelMap.department__c }</label>
+		            	<div class="slds-form-element__control"><ui:outputText class="slds-form-element__static slds-grow" value="{! v.trWrapperList[0].testResults[0].Department__c }" /></div>
+	                </div>
+                    <div class="slds-size_1-of-2">
+                    	<label class="slds-form-element__label">{! v.obsFieldLabelMap.craft__c }</label>
+	            		<div class="slds-form-element__control"><ui:outputText class="slds-form-element__static slds-grow" value="{! v.trWrapperList[0].testResults[0].Craft__c }" /></div>
+	                </div>
+                    <div class="slds-size_1-of-2">
+                    	<label class="slds-form-element__label">{! v.obsFieldLabelMap.occupation__c }</label>
+		            	<div class="slds-form-element__control"><ui:outputText class="slds-form-element__static slds-grow" value="{! v.trWrapperList[0].testResults[0].Occupation__c }" /></div>
+	                </div>
+                    <div class="slds-size_1-of-2">
+                    	<label class="slds-form-element__label">{! v.obsFieldLabelMap.region__c }</label>
+	            		<div class="slds-form-element__control"><ui:outputText class="slds-form-element__static slds-grow" value="{! v.trWrapperList[0].testResults[0].Region__c }" /></div>
+	                </div>
+                    <div class="slds-size_1-of-2">
+                    	<label class="slds-form-element__label">{! v.obsFieldLabelMap.supervisor__c }</label>
+	            		<div class="slds-form-element__control"><ui:outputText class="slds-form-element__static slds-grow" value="{! and(v.trWrapperList[0].testResults[0].Supervisor__r.Name != null, v.trWrapperList[0].testResults[0].Supervisor__r.Name != '') ? v.trWrapperList[0].testResults[0].Supervisor__r.Name : v.currentUser }" /></div>
+	                </div>
+	            </div> 
+	        </div>           
+       		<div class="slds-section slds-is-open slds-size_1-of-2 slds-p-horizontal_x-small slds-m-bottom_small">
+       			<h3 class="slds-section_title slds-theme_shade slds-p-around_x-small">
+       				<span clss="slds-truncate slds-text-heading_medium">Test Overview</span>
+       			</h3>
+                <div class="slds-grid slds-wrap slds-p-horizontal_small slds-p-top_small" >
+                    <div class="slds-size_1-of-3 slds-p-bottom_small">
+                        <ui:inputDate aura:id="Date__c" label="{! v.obsFieldLabelMap.date__c }" displayDatePicker="true" required="{! v.obsRequiredFieldMap.Date__c }"
+                                      value="{! v.trWrapperList[0].testResults[0].Date__c }" format="MM/dd/yyyy"/>
+                    </div>
+                    <div class="slds-size_1-of-3 slds-clearfix slds-p-bottom_small">
+                        <lightning:select aura:id="TimeHH__c" class="slds-float_left  slds-p-left_medium" 
+                                          value="{!  v.trWrapperList[0].testResults[0].TimeHH__c }" label="Hour"
+                                          disabled="{! empty(v.picklistMap.TimeHH__c) }"
+                                          required="{! v.obsRequiredFieldMap.TimeHH__c }">
+                            <aura:iteration var="timeHour" items="{! v.picklistMap.TimeHH__c }">
+                                <option value="{! timeHour }">{! timeHour }</option>
+                            </aura:iteration>
+                        </lightning:select>
+                        <lightning:select aura:id="TimeMM__c" class="slds-float_left slds-p-left_medium" 
+                                          value="{! v.trWrapperList[0].testResults[0].TimeMM__c  }" label="Minute"
+                                          disabled="{! empty(v.picklistMap.TimeMM__c ) }"
+                                          required="{! v.obsRequiredFieldMap.TimeMM__c }">
+                            <aura:iteration var="timeMinute" items="{! v.picklistMap.TimeMM__c }">
+                                <option value="{! timeMinute }">{! timeMinute }</option>
+                            </aura:iteration>
+                        </lightning:select>
+                    </div>
+                    <aura:if isTrue="{! or(equals(v.selectedRecordType.Name, $Label.c.RevSys_Observation_RT_Label_Test_1875), equals(v.selectedRecordType.Name, $Label.c.RevSys_Observation_RT_Label_Test_1877)) }">
+                        <div class="slds-size_1-of-2 slds-p-bottom_small">
+                            <label class="slds-form-element__label">{! v.obsFieldLabelMap.operatedfromcode__c }</label>
+                            <div class="slds-p-right_small">
+                                <c:EIS_TypeaheadSearch aura:id="OperatedFromCode__c" isExpanded="true" placeholder="{! v.trWrapperList[0].testResults[0].OperatedFromCode__r.Name }"
+                                                       selectedItemLabel="{! v.trWrapperList[0].testResults[0].OperatedFromCode__r.Name }" />
+                            </div>
+                            
+                        </div>
+                        <div class="slds-size_1-of-2 slds-p-bottom_small">
+                            <ui:inputText aura:id="OperatedFromText__c" class="slds-p-around_small slds-p-right_small"
+                                          value="{! v.trWrapperList[0].testResults[0].OperatedFromText__c }" maxlength="15"
+                                          label="{! v.obsFieldLabelMap.operatedfromtext__c }" />
+                        </div>
+                        <div class="slds-size_1-of-2 slds-p-bottom_small">
+                            <!-- <aura:if isTrue="{! v.obsRequiredFieldMap.OperatedFromCode__c }"><span class="required">*</span></aura:if> -->
+                            <label class="slds-form-element__label">{! v.obsFieldLabelMap.operatedtocode__c }</label>
+                            <div class="slds-p-right_small">
+                                <c:EIS_TypeaheadSearch aura:id="OperatedToCode__c" isExpanded="true" placeholder="{! v.trWrapperList[0].testResults[0].OperatedToCode__r.Name }"
+                                                       selectedItemLabel="{! v.trWrapperList[0].testResults[0].OperatedToCode__r.Name }" />
+                            </div>
+                        </div>
+                        <div class="slds-size_1-of-2 slds-p-bottom_small">
+                            <ui:inputText aura:id="OperatedToText__c" class="slds-p-around_small slds-p-right_small"
+                                          value="{! v.trWrapperList[0].testResults[0].OperatedToText__c }" maxlength="15"
+                                          label="{! v.obsFieldLabelMap.operatedtotext__c }" />
+                        </div>
+                        <div class="slds-size_1-of-2 slds-p-bottom_small">
+                            <aura:if isTrue="{! v.obsRequiredFieldMap.Train__c }"><span class="required">*</span></aura:if>
+                            <label class="slds-form-element__label">{! v.obsFieldLabelMap.train__c }</label>
+                            <div class="slds-p-right_small">
+                                <c:EIS_TypeaheadSearch aura:id="Train__c" isExpanded="true" placeholder="{! v.trWrapperList[0].testResults[0].Train__r.Name }"
+                                                       selectedItemLabel="{! v.trWrapperList[0].testResults[0].Train__r.Name }" />
+                            </div>
+                            
+                        </div>
+                        <div class="slds-size_1-of-2 slds-p-bottom_small"> 
+                            <ui:inputText aura:id="EngineNumber__c" class="slds-p-around_small slds-p-right_small"
+                                          value="{! v.trWrapperList[0].testResults[0].EngineNumber__c }" maxlength="15"
+                                          required="{! v.obsRequiredFieldMap.EngineNumber__c }"
+                                          label="{! v.obsFieldLabelMap.enginenumber__c }" />
+                        </div>
+                        <div class="slds-size_1-of-2 slds-p-bottom_small slds-p-right_small">
+                            <ui:inputText aura:id="NumberOfEngines__c" class="slds-p-around_small"
+                                          value="{! v.trWrapperList[0].testResults[0].NumberOfEngines__c }" maxlength="15"
+                                          required="{! v.obsRequiredFieldMap.NumberOfEngines__c }"
+                                          label="{! v.obsFieldLabelMap.numberofengines__c }" />
+                        </div>
+                        <div class="slds-size_1-of-2 slds-p-bottom_small">
+                            <ui:inputText aura:id="NumberOfCars__c" class="slds-p-around_small slds-p-right_small"
+                                          value="{! v.trWrapperList[0].testResults[0].NumberOfCars__c }" maxlength="15"
+                                          required="{! v.obsRequiredFieldMap.NumberOfCars__c }"
+                                          label="{! v.obsFieldLabelMap.numberofcars__c }" />
+                        </div>
+                        <div class="slds-size_1-of-2 slds-p-bottom_small">
+                            <ui:inputSelect aura:id="InitialQualification__c"
+                                            value="{! v.trWrapperList[0].testResults[0].InitialQualification__c }" label="{! v.obsFieldLabelMap.initialqualification__c }"
+                                            disabled="{! empty(v.picklistMap.InitialQualification__c) }"
+                                            required="{! v.obsRequiredFieldMap.InitialQualification__c }">
+                                <ui:inputSelectOption label="{! $Label.c.Default_Picklist_Value_None }" text="" value="true"/>
+                                <aura:iteration var="initQual" items="{! v.picklistMap.InitialQualification__c }">
+                                    <ui:inputSelectOption label="{! initQual }" text="{! initQual }"/>
+                                </aura:iteration>
+                            </ui:inputSelect>
+                        </div>
+                        
+                    </aura:if>
+                    <aura:if isTrue="{! equals(v.selectedRecordType.Name, $Label.c.RevSys_Observation_RT_Label_Test_1876) }">
+                        <div class="slds-size_1-of-2 slds-p-bottom_small">
+                            <label class="lookup-label">Evaluated From</label>
+                            <c:EIS_TypeaheadSearch aura:id="OperatedFromCode__c" isExpanded="true" 
+                                                   selectedItemLabel="{! v.trWrapperList[0].testResults[0].OperatedFromCode__r.Name }" />
+                        </div>
+                        <div class="slds-size_1-of-2 slds-p-bottom_small">
+                            <ui:inputText aura:id="OperatedFromText__c"
+                                          value="{! v.trWrapperList[0].testResults[0].OperatedFromText__c }" 
+                                          label="Evaluated From Description" 
+                                          blur="{! c.updateObsTemplateFields }"/>
+                        </div>
+                        <div class="slds-size_1-of-2 slds-p-bottom_small">
+                            <label class="lookup-label">Evaluated To</label>
+                            <c:EIS_TypeaheadSearch aura:id="OperatedToCode__c" isExpanded="true" 
+                                                   selectedItemLabel="{! v.trWrapperList[0].testResults[0].OperatedToCode__r.Name }" />
+                        </div>
+                        <div class="slds-size_1-of-2 slds-p-bottom_small">
+                            <ui:inputText aura:id="OperatedToText__c"
+                                          value="{! v.trWrapperList[0].testResults[0].OperatedToText__c }" 
+                                          label="Evaluated To Description" blur="{! c.updateObsTemplateFields }"/>
+                        </div>
+                        <div class="slds-size_1-of-2 slds-p-bottom_small">
+                            <label class="lookup-label">{! v.obsFieldLabelMap.train__c }</label>
+                            <c:EIS_TypeaheadSearch aura:id="Train__c" isExpanded="true" 
+                                                   selectedItemLabel="{! v.trWrapperList[0].testResults[0].Train__r.Name }" />
+                        </div>
+                        <div class="slds-size_1-of-2 slds-p-bottom_small">
+                            <ui:inputText aura:id="EngineNumber__c"
+                                          value="{! v.trWrapperList[0].testResults[0].EngineNumber__c }" maxlength="15"
+                                          required="{! v.obsRequiredFieldMap.EngineNumber__c }"
+                                          label="{! v.obsFieldLabelMap.enginenumber__c }" blur="{! c.updateObsTemplateFields }"/>
+                        </div>
+                        <div class="slds-size_1-of-2 slds-p-bottom_small">
+                            <ui:inputNumber aura:id="NumberOfEngines__c"
+                                            value="{! v.trWrapperList[0].testResults[0].NumberOfEngines__c }" maxlength="7"
+                                            required="{! v.obsRequiredFieldMap.NumberOfEngines__c }"
+                                            label="{! v.obsFieldLabelMap.numberofengines__c }" blur="{! c.updateObsTemplateFields }"/>
+                        </div>
+                        <div class="slds-size_1-of-2 slds-p-bottom_small">
+                            <ui:inputNumber aura:id="NumberOfCars__c"
+                                            value="{! v.trWrapperList[0].testResults[0].NumberOfCars__c }" maxlength="7"
+                                            required="{! v.obsRequiredFieldMap.NumberOfCars__c }"
+                                            label="{! v.obsFieldLabelMap.numberofcars__c }" blur="{! c.updateObsTemplateFields }"/>
+                        </div>
+                    </aura:if>
+                    <aura:if isTrue="{! equals(v.selectedRecordType.Name, $Label.c.RevSys_Observation_RT_Label_Test_1878) }">
+                        <div class="slds-size_1-of-2 slds-p-bottom_small">
+                            <ui:inputSelect aura:id="Position__c"
+                                            value="{! v.trWrapperList[0].testResults[0].Position__c }" label="{! v.obsFieldLabelMap.position__c }"
+                                            disabled="true"
+                                            required="{! v.obsRequiredFieldMap.Position__c }"
+                                            change="{! c.updateObsTemplateFields }">
+                                <ui:inputSelectOption label="{! $Label.c.Default_Picklist_Value_None }"  text="" value="true"/>
+                                <aura:iteration var="position" items="{! v.picklistMap.Position__c }">
+                                    <ui:inputSelectOption label="{! position }" text="{! position }"/>
+                                </aura:iteration>
+                            </ui:inputSelect>
+                        </div>
+                        <div class="slds-size_1-of-2 slds-p-bottom_small">
+                            <ui:inputSelect aura:id="SectionTower__c"
+                                            value="{! v.trWrapperList[0].testResults[0].SectionTower__c }" label="{! v.obsFieldLabelMap.sectiontower__c }"
+                                            disabled="{! empty(v.picklistMap.SectionTower__c) }"
+                                            required="{! v.obsRequiredFieldMap.SectionTower__c }"
+                                            change="{! c.updateObsTemplateFields }">
+                                <ui:inputSelectOption label="{! $Label.c.Default_Picklist_Value_None }" text="" value="true"/>
+                                <aura:iteration var="secpower" items="{! v.picklistMap.SectionTower__c }">
+                                    <ui:inputSelectOption label="{! secpower }" text="{! secpower }"/>
+                                </aura:iteration>
+                            </ui:inputSelect>
+                        </div>
+                        <div class="slds-size_1-of-2 slds-p-bottom_small">
+                            <ui:inputNumber aura:id="NumberOfDaysPosted__c"
+                                            value="{! v.trWrapperList[0].testResults[0].NumberOfDaysPosted__c }" maxlength="7"
+                                            required="{! v.obsRequiredFieldMap.NumberOfDaysPosted__c }"
+                                            label="{! v.obsFieldLabelMap.numberofdaysposted__c }" blur="{! c.updateObsTemplateFields }"/>
+                        </div>
+                    </aura:if>
+                </div> 
+	        </div>           
+        </div>
+   		<div class="slds-section slds-is-open slds-size_1-of-1 slds-p-horizontal_x-small slds-m-bottom_small">
+   			<h3 class="slds-section_title slds-theme_shade slds-p-around_x-small">
+   				<span clss="slds-truncate slds-text-heading_medium">Scores</span>
+   			</h3>
+            <!-- <c:RevSys_ObservationTestScoresCmp aura:id="testScore-cmp" findingList="{! v.testQuestionList }" scoreList="{! v.scoreList }" /> -->
+            <c:RevSys_ObservationTestScoresCmp aura:id="testScore-cmp" findingList="{! v.testQuestionList }" scoreList="{! v.scoreList }"
+                                                       needImprovementRequired="{! v.needImprovementRequired }" needImprovementMap="{! v.needImprovementMap }"
+                                                       obs="{! v.trWrapperList[0].testResults[0] }"/>
+            <div class="slds-size_1-of-2 slds-p-horizontal_large slds-p-bottom_medium">
+                <ui:inputTextArea aura:id="Comments__c"
+                                  value="{! v.trWrapperList[0].testResults[0].Comments__c }" maxlength="1500"
+                                  label="{! v.obsFieldLabelMap.comments__c }"
+                                  required="{! v.commentsRequired }"/>
+                                  <!-- required="{! v.obsRequiredFieldMap.Comments__c }"/> -->
+                
+            </div>
+            <div class="slds-size_1-of-2 slds-p-horizontal_large slds-p-bottom_medium">
+                <ui:inputTextArea aura:id="NeedsImprovement__c" maxlength="1500"
+                                  value="{! v.trWrapperList[0].testResults[0].NeedsImprovement__c }" 
+                                  label="{! v.obsFieldLabelMap.needsimprovement__c }"
+                                  required="{! v.needImprovementRequired }"/>
+                                  <!-- required="{! v.obsRequiredFieldMap.NeedsImprovement__c }"/> -->
+            </div>
+            <div class="slds-size_1-of-2 slds-p-horizontal_large slds-p-bottom_medium">
+                <ui:inputNumber aura:id="OverallScore__c"
+                                value="{! v.trWrapperList[0].testResults[0].OverallScore__c }" maxlength="7"
+                                label="{! v.obsFieldLabelMap.overallscore__c }"
+                                disabled="true"
+                                required="{! v.obsRequiredFieldMap.OverallScore__c }"/>
+            </div>
+            <div class="slds-size_1-of-2 slds-p-horizontal_large slds-p-bottom_medium">
+                <ui:inputSelect aura:id="QualificationStatus__c"
+                                value="{! v.trWrapperList[0].testResults[0].QualificationStatus__c }" label="{! v.obsFieldLabelMap.qualificationstatus__c }"
+                                disabled="true"
+                                required="{! v.obsRequiredFieldMap.QualificationStatus__c }">
+                    <ui:inputSelectOption label="{! $Label.c.Default_Picklist_Value_None }" text="" value="true"/>
+                    <aura:iteration var="qualificationStat" items="{! v.picklistMap.QualificationStatus__c }">
+                        <ui:inputSelectOption label="{! qualificationStat }" text="{! qualificationStat }"/>
+                    </aura:iteration>
+                </ui:inputSelect>
+            </div>
+       </div>
+</aura:component>

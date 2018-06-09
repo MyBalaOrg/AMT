@@ -1,0 +1,126 @@
+<aura:component controller="EPW_CarouselController" implements="forceCommunity:availableForAllPageTypes,flexipage:availableForAllPageTypes" access="global">
+    
+    <ltng:require styles="/resource/bootstrap/css/bootstrap.min.css"	
+                  scripts='/resource/jQuery,/resource/tether/dist/js/tether.min.js,
+                           /resource/bootstrap/js/bootstrap.min.js' afterScriptsLoaded="{!c.doInit}"/>
+    
+    <aura:attribute name="imagesUrl" type="String[]" />
+    <aura:attribute name="Folder" type="String" default="SliderImages"/>
+    
+    <aura:attribute name="application" type="String" />
+    <aura:attribute name="carousel" type="Carousel__c" />
+    <aura:attribute name="shadow" type="String" description="3D shadow" default="0 2px 4px 0 rgba(0,0,0,0.2)" />
+    
+    <aura:attribute name="contents" type="String"/>
+    <aura:attribute name="carouselSliderButtonColorActive" type="String" default="#1ca1d3"/>
+    <aura:attribute name="carouselSliderButtonColor" type="String" default="#167fa6"/>
+    
+    <aura:attribute name="carouselSliderButtonFontColor" type="String" default="white"/>
+    <aura:attribute name="carouselSliderAcvtiveButtonFontColor" type="String" default="white"/>
+    
+    <aura:attribute name="carouselSliderButtonOpacity" type="String" default="1"/>
+    
+    <div id="myCarousel" class="carousel slide slds-grid slds-grid_align-center" style="min-width: 260px; background-repeat: no-repeat; background-size: cover;" >
+        
+        <!-- Wrapper for slides -->
+        <div class="carousel-inner" role="listbox" >
+            <aura:iteration items="{!v.carousel.Slides__r}" var="eachSlide" indexVar="index">   
+                <aura:if isTrue="{!index == 0}">
+                    <div  class="carousel-item active"  >  
+                        <span >
+                        <div class="carousel-slide" style="{! join(' ',
+                                                           not(empty(v.shadow)) ? 'box-shadow: '+v.shadow+';' : '') }"  data-value ="{!eachSlide.Related_Content__c}" onclick="{!c.showFullArticleDivClick}" >
+                            <aura:if isTrue="{!eachSlide.Image__c != null}" >
+                                <div class="slideImage">
+                                    <ui:outputRichText value="{!eachSlide.Image__c}" />
+                                </div>
+                            </aura:if>
+                            <div class="slideInfo" style="{!eachSlide.Image__c == null ? 'width: 600px;' : ''}" >
+                                <p class="slds-text-heading_medium title">
+                                    {!eachSlide.Title__c}
+                                </p>
+                                <p class="slds-text-heading_small author">
+                                    {!eachSlide.Subtitle__c}
+                                </p>
+                                <p class="description" >
+                                    {!eachSlide.Description__c}
+                                </p>
+                                <p class="full-article" >
+                                    <ui:outputURL alt="{!eachSlide.Related_Content__c}" click="{!c.showFullArticle}" label="Full Article" />
+                                </p>
+                            </div>
+                        </div>
+                        </span>
+                        
+                    </div>
+                    <aura:set attribute="else" >
+                        <div class="carousel-item" >
+                            
+                            <div class="carousel-slide" style="{! join(' ',
+                                                           not(empty(v.shadow)) ? 'box-shadow: '+v.shadow+';' : '') }" data-value ="{!eachSlide.Related_Content__c}" onclick="{!c.showFullArticleDivClick}">
+                                <aura:if isTrue="{!eachSlide.Image__c != null}" >
+                                    <div class="slideImage">
+                                        <ui:outputRichText value="{!eachSlide.Image__c}" />
+                                    </div>
+                                </aura:if>
+                                <div class="slideInfo" style="{!eachSlide.Image__c == null ? 'width: 600px;' : ''}" >
+                                    <p class="slds-text-heading_medium title">
+                                        {!eachSlide.Title__c}
+                                    </p>
+                                    <p class="slds-text-heading_small author">
+                                        {!eachSlide.Subtitle__c}
+                                    </p>
+                                    <p class="description">
+                                        {!eachSlide.Description__c}
+                                    </p>
+                                    <p class="full-article" >
+                                        <ui:outputURL alt="{!eachSlide.Related_Content__c}" click="{!c.showFullArticle}" label="Full Article" />
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:set>
+                </aura:if>
+            </aura:iteration>
+        </div>
+        
+        <!-- Indicators -->
+        <div class="carousel-indicators indicators-for-large-devices">
+            <aura:iteration items="{!v.carousel.Slides__r}" var="eachSlide" indexVar="index">                                
+                <aura:if isTrue="{!index == 0}">
+                    <div class="active" >
+                        <button data-target="#myCarousel" data-slide-to="{!index}" 
+                                class="slds-text-heading_label slds-truncate buttonCar" 
+                                style="{! join(' ',
+                                       or(empty(v.carouselSliderButtonColorActive),v.carouselSliderButtonColorActive == 'none') ? 'background-color: #1ca1d3;' : 'background-color: ' + v.carouselSliderButtonColorActive + ';',
+                                       or(empty(v.carouselSliderAcvtiveButtonFontColor),v.carouselSliderAcvtiveButtonFontColor == 'none') ? 'color: white;' : 'color: ' + v.carouselSliderAcvtiveButtonFontColor + ';',
+                                       or(empty(v.carouselSliderButtonOpacity),v.carouselSliderButtonOpacity == 'none') ? 'opacity: 1;' : 'opacity: ' + v.carouselSliderButtonOpacity + ';') }">
+                            {!eachSlide.Title_For_Button__c}</button>
+                    </div>
+                    <aura:set attribute="else">
+                        <div >
+                            <button data-target="#myCarousel" data-slide-to="{!index}" 
+                                    class="slds-text-heading_label slds-truncate buttonCar" 
+                                    style="{! join(' ',
+                                           or(empty(v.carouselSliderButtonColor),v.carouselSliderButtonColor == 'none') ? 'background-color: #167fa6;' : 'background-color: ' + v.carouselSliderButtonColor + ';',
+                                           or(empty(v.carouselSliderButtonFontColor),v.carouselSliderButtonFontColor == 'none') ? 'color: white;' : 'color: ' + v.carouselSliderButtonFontColor + ';',
+                                           or(empty(v.carouselSliderButtonOpacity),v.carouselSliderButtonOpacity == 'none') ? 'opacity: 1;' : 'opacity: ' + v.carouselSliderButtonOpacity + ';') }" >
+                                {!eachSlide.Title_For_Button__c}</button>
+                        </div>
+                    </aura:set>
+                </aura:if>
+            </aura:iteration>  
+        </div>
+        
+        <ol class="carousel-indicators indicators-for-small-devices">
+            <aura:iteration items="{!v.carousel.Slides__r}" var="eachSlide" indexVar="index">                                
+                <aura:if isTrue="{!index == 0}">
+                    <li data-target="#myCarousel" data-slide-to="{!index}" class="active"></li>
+                    <aura:set attribute="else">
+                        <li data-target="#myCarousel" data-slide-to="{!index}" ></li>
+                    </aura:set>
+                </aura:if>   
+            </aura:iteration>  
+        </ol>
+    </div>
+</aura:component>

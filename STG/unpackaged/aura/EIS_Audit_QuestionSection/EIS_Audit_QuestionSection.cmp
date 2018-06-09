@@ -1,0 +1,53 @@
+<aura:component controller="EIS_Audit_QuestionSectionCtrl">
+    <aura:attribute name="audit" type="Audit_Inspections__c" access="public" />
+    <aura:attribute name="userIsAPM" type="Boolean" access="public" default="false" />
+	<aura:attribute name="disableFindings" type="Boolean" access="public" default="false" />
+    <aura:attribute name="disableCorrectiveActions" type="Boolean" access="public" default="false" />
+    <aura:attribute name="sectionIndex" type="Integer" access="public" default="0" />
+    <aura:attribute name="customSection" type="EIS_Audit_BodyCtrl.QuestionSection" access="public" />
+    
+    <aura:registerEvent name="toggleLightningSpinner" type="c:EIS_BooleanEvent" />
+    
+	<div class="slds-grid slds-wrap slds-m-bottom_medium">
+        <div class="slds-size_1-of-1" >
+            <div class="slds-section__title">
+                <div class="slds-button slds-section__title-action"
+                     onclick="{! c.toggleDisplaySection }" >
+                    <aura:if isTrue="{! v.customSection.display }">
+                        <lightning:icon class="slds-p-right_x-small" iconName="utility:chevrondown" size="xx-small"/>
+                        <aura:set attribute="else">
+                            <lightning:icon class="slds-p-right_x-small" iconName="utility:chevronup" size="xx-small"/>
+                        </aura:set>
+                    </aura:if>
+                    <span class="slds-truncate" title="{! v.customSection.sectionHeader }">{! v.customSection.sectionHeader }</span>
+                </div>
+            </div>
+        </div>
+        
+        <aura:if isTrue="{! v.customSection.display }">
+            <div class="slds-p-horizontal_medium slds-size_1-of-1">
+                <div class="slds-grid slds-wrap">
+                    <div class="slds-size_10-of-12  slds-p-left_medium">
+                        <label>{! $Label.c.EIS_Inspection_Form_Question_Header_Items }</label>
+                    </div>
+                    <div class="slds-size_2-of-12 slds-text-align_center">
+                        <label>{! $Label.c.EIS_Inspection_Form_Question_Header_Issue }</label>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-size_1-of-1">
+                <aura:iteration var="customQuestion" items="{! v.customSection.customQuestionList }" indexVar="qIndex">
+                    <div class="slds-m-bottom_xxx-small slds-size_1-of-1">
+                        <c:EIS_Audit_Question aura:id="audit-question"
+                                              audit="{! v.audit }"
+                                              customQuestion="{! customQuestion }"
+                                              userIsAPM="{! v.userIsAPM }"
+                                              disableFindings="{! v.disableFindings }"
+                                              disableCorrectiveActions="{! v.disableCorrectiveActions }"/>
+                    </div>
+                </aura:iteration>
+            </div>
+        </aura:if>
+        
+    </div>
+</aura:component>

@@ -1,0 +1,24 @@
+<!--
+// ****************************************************************************************************************
+// Component: Navigate to SObject Component
+// Author:  Nathan Shinn, Deloitte Digital
+// Date:    Feb 14, 2017
+// Description: Used to to link to a record for example, from a list
+//
+// Modifications: 
+// 1.00: Created     
+// ****************************************************************************************************************  
+-->
+<aura:component >
+    <!-- ATTRIBUTES -->
+	<aura:attribute name="objSobject" type="Sobject" required="true" />
+    <aura:attribute name="styleOverride" type="String" required="false" default="width:100%;"/>
+    
+    <!-- REGISTER THE NAVIGATION EVENT -->
+    <aura:registerEvent name="selectEvent" type="c:OC_OrgChartSelectionEvent"/>
+    
+    <!-- LINK -->
+	<a onclick="{!c.navigateToRecord}" style="{!v.styleOverride}">	
+        Select Details
+    </a>
+</aura:component>

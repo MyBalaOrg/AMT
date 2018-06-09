@@ -1,0 +1,33 @@
+<aura:component controller="FileUploadCtrl" implements="force:appHostable,flexipage:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    <aura:attribute name="parentId" type="Id"/> 
+    <aura:attribute name="message" type="String" default=""/>
+    <aura:attribute name="fileContents" type="String" />
+    <aura:attribute name="fileName" type="String" />
+    <aura:attribute name="contentType" type="String" />
+    <aura:attribute name="messageSuccess" type="String" default=""/>
+    <aura:attribute name="fileChosen" type="String" default="No file chosen"/>
+   
+    <div class="slds">
+        <div class="uploadContainer">
+            <div class="slds-form-element">
+                <div class="slds-form-element__control">
+                    <div class="slds-file-selector slds-file-selector--files">
+                                  <input class="slds-file-selector__input slds-assistive-text" onchange="{!c.save}" aura:id="file" type="file" value="" id="file-upload-input-01" aria-describedby="file-selector-id" />
+
+                                  <label class="slds-file-selector__body" for="file-upload-input-01">
+                                <span class="slds-file-selector__button slds-button slds-button--neutral">
+                                    <lightning:buttonIcon iconName="utility:upload" variant="bare" alternativeText="Upload" class="slds-button__icon slds-button__icon_large slds-button__icon--left"/>
+                                    Attach</span>
+                            </label>
+                    </div>
+                </div>
+            </div>
+                <div class="slds-m-top--small" >
+                    <span class="slds-form-element__label" style="color:red !important;">{!v.message}</span>
+                    <span class="slds-form-element__label" style="color:green !important;">{!v.messageSuccess}</span>
+                </div>            
+            <lightning:spinner aura:id="mySpinner" class="slds-hide"/>
+        </div>
+    </div> 
+    
+</aura:component>

@@ -1,0 +1,44 @@
+<aura:component implements="force:hasRecordId,force:lightningQuickActionWithoutHeader" access="global" 
+                controller="EIS_GHG_DeepCloneCtrl">
+    <aura:attribute name="ligList" type="EIS_GHG_DeepCloneCtrl.LineItemGroup[]" access="private" />
+    <aura:attribute name="selectedLig" type="EIS_GHG_DeepCloneCtrl.LineItemGroup" access="private" />
+    <aura:attribute name="selectedKey" type="String" access="private" />
+    <aura:attribute name="errorMessage" type="String" access="private" />
+    
+	<aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
+    
+    <lightning:select class="slds-p-top_large" value="{! v.selectedKey }" onchange="{! c.onchangeSelectLineItemGroup }"
+                      label="{! $Label.c.EIS_GHG_Modal_Label_Select_Item_Group }" required="true">
+        <option value="" text="{! $Label.c.EIS_GHG_Modal_Label_Picklist_None }"></option>
+        <aura:iteration items="{! v.ligList }" var="lig">
+            <option value="{! lig.identifier }" text="{! lig.identifier }"></option>
+        </aura:iteration>
+    </lightning:select>
+    
+    <c:EIS_ErrorMessage message="{! v.errorMessage }" rendered="{! !empty(v.errorMessage) }" />
+    
+    <div class="slds-grid slds-wrap slds-p-top_medium">
+    	<aura:if isTrue="{! !empty(v.selectedLig) }">
+            <div class="slds-size_1-of-1 slds-p-horizontal_small">
+                <b>{! v.selectedLig.identifier }</b>
+            </div>
+            <div class="slds-size_1-of-3 slds-p-horizontal_small slds-p-bottom_small">
+                <ui:inputNumber label="{! $Label.c.EIS_GHG_Modal_Label_Annual_Consumption }" disabled="{! v.selectedLig.disableConsumptionValue }"
+                                maxlength="15" value="{! v.selectedLig.consumptionValue }" updateOn="keyup" />
+            </div>
+            <div class="slds-size_1-of-3 slds-p-horizontal_small slds-p-bottom_small">
+                <ui:inputNumber label="{! $Label.c.EIS_GHG_Modal_Label_Conversion_Factor }" 
+                                maxlength="15" value="{! v.selectedLig.conversionFactor }" updateOn="keyup" />
+            </div>
+            <div class="slds-size_1-of-3 slds-p-horizontal_small slds-p-bottom_small">
+                <ui:inputText label="{! $Label.c.EIS_GHG_Modal_Label_Calculated_UMO }" 
+                                maxlength="100" value="{! v.selectedLig.calculatedUMO }" updateOn="keyup" />
+            </div>
+            
+            <div class="slds-size_1-of-1 slds-p-horizontal_small slds-align_absolute-center">
+                <lightning:button class="slds-m-top_small" variant="brand" label="Submit" onclick="{! c.onclickSubmitConsumption }" />
+            </div>
+        </aura:if>
+    </div>
+    
+</aura:component>

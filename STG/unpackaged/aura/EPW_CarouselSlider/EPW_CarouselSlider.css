@@ -1,0 +1,250 @@
+.THIS .post-container {
+    margin: 20px 20px 0 0;  
+    border: 5px solid #333;
+    overflow: auto
+}
+
+.THIS.carousel {
+    height: 300px;
+}
+
+.THIS .post-thumb {
+    float: left
+}
+.THIS .post-thumb img {
+    display: block;
+}
+.THIS .post-content {
+    margin-left: 210px
+}
+.THIS .post-title {
+    font-weight: bold;
+    font-size: 200%;
+    padding: 9px;
+    background: #ccc
+}
+
+.THIS .carousel-control {
+    position: absolute;
+    top: 50%; /* pushes the icon in the middle of the height */
+    z-index: 5;
+    display: inline-block;
+}
+
+.THIS .carousel-slide, .THIS .slideImage, .THIS .slideImage img, .THIS .slideInfo {
+    height: 230px !important;
+}
+
+.THIS .carousel-slide {
+    width: 600px;
+    background: transparent;
+    margin: 15px;
+    cursor: pointer;
+}
+
+.THIS .slideImage {
+    float: left;
+    width: 200px;
+    background-color: white;
+}
+
+.THIS .slideImage img {
+    width: 200px;
+}
+
+.THIS .slideInfo {
+    float: right;
+    width: 400px;
+    padding: 20px;
+    background-color: white;
+    opacity: 0.8;
+}
+
+.THIS .buttonCar {
+    width: 300px;
+    text-align: left;
+    margin: 1px;
+    padding: 13px;
+   /* background-color: #167fa6;*/
+    color: #fff;
+    border: none;
+    font-family: OpenSans,Helvetica,Arial,sans-serif;
+}
+
+.THIS .indicators-for-large-devices {
+    display: block;
+    margin-top: 30px;
+    margin-bottom: 0;
+    margin-left: 0;
+    margin-right: 0;
+    position: relative;
+    /*z-index: 9;*/
+    z-index: 0; /* Added to hide carousel buttons in mobile view*/
+}
+
+.THIS .indicators-for-small-devices {
+    display: none;
+    bottom: 10px;
+    z-index: 0; 
+}
+
+.THIS .active button {
+    /*background-color: #1ca1d3 !important;*/
+}
+
+.THIS .active {
+    background-color: transparent;
+}
+
+.THIS .indicators-for-small-devices li {
+    height: 15px;
+    width: 15px;
+    max-width: 15px;
+    border-radius: 50%;
+    background-color: #167fa6;
+}
+
+.THIS .carousel-inner {
+    width: auto;
+    margin: 20px;
+    background: transparent;
+}
+
+.THIS .carousel-item {
+    background: transparent;
+}
+
+.THIS .title {
+    color: #00344d;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: OpenSans,Helvetica,Arial,sans-serif;
+    max-height: 2.6em;
+    margin-bottom: 0.4rem;
+}
+
+.THIS .author {
+    font-family: OpenSans,Helvetica,Arial,sans-serif;
+    color: #00344d;
+    font-size: 14px;
+    max-height: 1.3em;
+}
+
+.THIS .description {
+    color: #00344d;
+    font-family: OpenSans,Helvetica,Arial,sans-serif;
+    font-size: 13px;
+    max-height: 5.9em;
+    line-height: 1.25em;
+}
+
+.THIS .full-article {
+    font-family: OpenSans,Helvetica,Arial,sans-serif;
+    color: #167fa6;
+    font-size: 13px;
+    font-weight: bold;
+    position: absolute;
+    bottom: 10px;
+}
+
+.THIS .title, .THIS .author, .THIS .description {
+    display: block; /* or inline-block */
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+    overflow: hidden;
+}
+
+@media (max-width: 1100px){
+    .THIS .indicators-for-large-devices {
+        display: none;
+    }
+    
+    .THIS .indicators-for-small-devices {
+        display: flex;
+        bottom: -10px;
+    }
+    
+    .THIS .slideImage {
+        width: 100%;
+        display: none;
+    }
+    
+    .THIS .slideImage img {
+        width: 100% !important;
+    }
+    
+    .THIS .slideInfo {
+        position: absolute;
+        width: 90% !important;
+        padding: 20px;
+        background-color: white;
+        opacity: 0.8;
+        margin: 5%;
+        border-radius: 4px;
+    }
+    
+    .THIS .carousel-inner {
+        margin: 0;
+    }
+    
+    .THIS .slideImage, .THIS .slideImage img, .THIS .slideInfo {
+        height: 235px !important;
+    }
+    
+    .THIS .carousel-slide {
+        height: 285px !important;
+    }
+    
+    .THIS .carousel-slide {
+        margin: 0;
+        background-color: transparent;
+    }
+    
+    .THIS .indicators-for-small-devices li.active {
+        background-color: #00344d;
+    }
+}
+
+@media (max-width: 500px) {
+    .THIS .title {
+        font-size: 4vw;
+    }
+    
+    .THIS .author {
+        font-size: 3.1vw;
+    }
+    
+    .THIS .description {
+        font-size: 2.6vw;
+    }
+    
+    .THIS .full-article {
+        position: absolute;
+        bottom: 0px;
+    }
+}
+
+@media (min-width: 500px) and (max-width: 1100px) {
+    .THIS .slideImage {
+        float: none;
+    }
+    
+    .THIS .slideInfo {
+        float: none;
+        width: 400px !important;
+        position: inherit;
+        margin: 5% auto;
+    }
+    
+    .THIS .full-article {
+        position: absolute;
+        bottom: 20px;
+    }
+}
+
+.THIS .nonlink{
+      color:#00344d;
+      text-decoration: none;
+      pointer-events:none;
+
+}

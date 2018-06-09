@@ -1,0 +1,104 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="RevSys_ObservationController">
+
+    <ltng:require scripts="{! $Resource.amtrak_helper_functions }" afterScriptsLoaded="{! c.scriptsLoaded }" />
+
+    <aura:attribute name="observation" type="Observation__c" access="public" default="{'sobjectType':'Observation__c'}"/>
+    <aura:attribute name="recordType" type="RecordType" access="public" />
+    <aura:attribute name="findingList" type="Finding__c[]" access="public" />
+    <aura:attribute name="scoreList" type="Integer[]" access="public" default="[0,1,3,4]" />
+    <aura:attribute name="numOfColList" type="List" access="private" />
+    <aura:attribute name="numOfCol" type="Integer" access="public" default="4" />
+
+    <aura:attribute name="obsFieldLabelMap" type="Map" access="public" />
+    <aura:attribute name="obsRequiredFieldMap" type="Map" access="public" />
+    <aura:attribute name="picklistMap" type="Map" default="{}" access="public" />
+    
+    <aura:attribute name="needImprovementRequired" type="Boolean" default="false" access="public" />
+    <aura:attribute name="needImprovementMap" type="Map" access="public" />
+    <aura:attribute name="currentUser" type="String" access="public" />
+
+    <aura:attribute name="fieldLabelMap" type="Map" access="public" />
+    <aura:attribute name="requiredFieldMap" type="Map" access="public" />
+    <aura:attribute name="readOnlyFields" type="Object[]" access="global"/>
+    <aura:attribute name="editableFields" type="Object[]" access="global"/>
+    <aura:attribute name="loadDetail" type="Boolean" access="public" default="false"/>
+    <aura:attribute name="oneIsRequiredMap" type="Map" access="public" />
+    <aura:attribute name="allFormScoreDefinitionArray" type="String[]" access="public" />
+    <aura:attribute name="picklistMapMovementPosting" type="Map" default="{}" access="public" />
+    <aura:attribute name="isTargetAdmin" type="Boolean" access="public" default="false"/>
+
+    <aura:handler event="force:refreshView" action="{!c.scriptsLoaded}" />   
+    <aura:handler name="fetchSearchItems" event="c:EIS_Audit_UpdateObjectEvent" action="{! c.handleFetchSearchItemsEvent }"/>
+    <aura:handler name="searchItemSelected" event="c:EIS_Audit_UpdateObjectEvent" action="{! c.handleSearchItemSelectedEvent }"/>
+    <aura:handler name="toggleLightningSpinner" event="c:RevSys_GeneralPurposeEvt" action="{! c.handleToggleLightningSpinner }"/>
+
+    <lightning:spinner aura:id="fidget-spinner" variant="brand" size="large" class="fidget-spinner-style"/>
+    
+    <aura:registerEvent name="toggleLightningSpinner" type="c:RevSys_GeneralPurposeEvt" />
+
+    <aura:if isTrue="{! v.loadDetail }">
+        <!-- <div class="slds-grid slds-size_1-of-1 slds-m-bottom_small"> -->
+        <div class="slds-grid slds-wrap slds-m-bottom_small">
+            <div class="slds-col slds-size_1-of-1">
+                <br/><c:RevSys_Obs_ButtonCmp non1872="{! true }" recordId="{! v.recordId }" />
+            </div>
+            <div class="slds-col slds-size_1-of-2">
+                <c:RevSys_ObservationEmployeeInfoCmp aura:id="obsEmployeeInfo" observation="{! v.observation }" readOnlyFields="{! v.readOnlyFields }" showSectionHeader="true"/>
+            </div>
+            <div class="slds-col slds-size_1-of-2">
+                <c:RevSys_ObservationTestInfoCmp aura:id="obsEditCmp" observation="{! v.observation }" recordType="{! v.recordType }" 
+                                                     fieldLabelMap="{! v.fieldLabelMap }" picklistMap="{! v.picklistMap }" 
+                                                     requiredFieldMap="{! v.requiredFieldMap }" oneIsRequiredMap="{! v.oneIsRequiredMap }"
+                                                     editableFields="{! v.editableFields }" showSectionHeader="true" 
+                                                     needImprovementRequired="{! v.needImprovementRequired }"
+                                                 picklistMapMovementPosting="{! v.picklistMapMovementPosting }" isTargetAdmin="{! v.isTargetAdmin }"/>
+            </div>
+            
+        </div>
+    </aura:if>
+    <div class="slds-section slds-is-open slds-size_1-of-1 slds-p-horizontal_x-small slds-p-top_small slds-m-bottom_small">
+        <h3 class="slds-section__title slds-theme_shade slds-p-horizontal_small">
+            <span clss="slds-truncate">Test Details</span>
+        </h3>
+        <c:RevSys_ObservationTestScoresCmp aura:id="testScore-cmp" findingList="{! v.findingList }" scoreList="{! v.scoreList }"
+                                                   needImprovementRequired="{! v.needImprovementRequired }" needImprovementMap="{! v.needImprovementMap }"
+                                                   obs="{! v.observation }" isTargetAdmin="{! v.isTargetAdmin }"/>
+        <div class="slds-size_1-of-2 slds-p-horizontal_large slds-p-bottom_small">
+            <ui:inputTextArea aura:id="Comments__c"
+                              value="{! v.observation.Comments__c }" maxlength="1500"
+                              label="{! empty(v.fieldLabelMap.Comments__c) ? 'Comments' : v.fieldLabelMap.Comments__c }"
+                              required="{! v.requiredFieldMap.Comments__c }" 
+                              disabled="{! and(v.observation.SPARTN_ReadOnly__c, not(v.isTargetAdmin)) }" />
+            
+        </div>
+        <div class="slds-size_1-of-2 slds-p-horizontal_large slds-p-bottom_small">
+            <ui:inputTextArea aura:id="NeedsImprovement__c" maxlength="1500"
+                              value="{! v.observation.NeedsImprovement__c }" 
+                              label="{! empty(v.fieldLabelMap.NeedsImprovement__c) ? 'Needs Improvement' : v.fieldLabelMap.NeedsImprovement__c }"
+                              required="{! v.needImprovementRequired }"
+                              disabled="{! and(v.observation.SPARTN_ReadOnly__c, not(v.isTargetAdmin)) }" />
+        </div>
+    </div>
+    <div class="slds-section slds-is-open slds-size_1-of-1 slds-p-horizontal_x-small slds-p-top_small slds-m-bottom_small">
+        <h3 class="slds-section__title slds-theme_shade slds-p-horizontal_small">
+            <span clss="slds-truncate">Score Definitions</span>
+        </h3>
+        <table class="slds-table slds-table_bordered slds-table--header-fixed">
+            <tbody>                       
+                <aura:iteration items="{!v.allFormScoreDefinitionArray}" var="acc" indexVar="idx">                       
+                    <tr>                    
+                        <td data-label="Score">
+                            <div class="slds-truncate" title="Zero">{!idx}</div>
+                        </td>
+                        <td data-label="Description">
+                            <div class="slds-truncate slds-cell-wrap slds-grow" title="0-definition">{!acc}</div>
+                        </td>
+                    </tr>                   
+                </aura:iteration>
+            </tbody>
+        </table>
+    </div>  
+    <div class="slds-docked-form-footer slds-align_absolute-center">
+        <ui:button label="Update Test" class="slds-button_brand" press="{! c.validateForm }" disabled="{! and(v.observation.SPARTN_ReadOnly__c, not(v.isTargetAdmin)) }" />
+    </div>
+</aura:component>

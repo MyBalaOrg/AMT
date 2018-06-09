@@ -1,0 +1,50 @@
+.THIS.comp {
+    overflow: hidden;
+}
+
+.THIS.compBody {
+    overflow: hidden;
+}
+
+.THIS .tweetDisplay{
+    position : relative;
+}
+
+.THIS.tile {
+	width: 300px;
+	border-style:solid;
+	border-color:black;
+	border-width: 1px;	
+}
+
+ .THIS .header {
+	height:50px; 
+	/*position:relative; */
+	/*font-size: 14px;
+	background-color: #004D6E;
+	color:white;*/
+	line-height:50px;
+	padding-left: 10px;
+    font-family :Sans-Serif;
+	
+}
+
+.THIS .icn svg{
+ /*fill: #e6e6e6; */
+   
+}
+
+.THIS .iframe{
+    width: 20px !important;
+    min-width: 100%;
+    *width: 100%;
+}
+
+.THIS .wrapper{
+    -webkit-overflow-scrolling: touch;
+  	overflow-y: auto;
+}
+
+.THIS #twitter-widget-0 {
+    max-width: none !important;
+}

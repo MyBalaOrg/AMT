@@ -1,0 +1,147 @@
+<aura:component >
+    <aura:attribute name="selectedEmpList" type="SearchTabularItemWrapper[]" access="public" />
+    <aura:attribute name="selectionState" type="Integer" access="public" />
+    <aura:attribute name="testWithObs" type="RevSys_TestWithObservationsWrapper[]" access="public" />
+    <aura:attribute name="testEntry" type="RevSys_TestEntryWrapper[]" access="public" />
+    <aura:attribute name="testNumber" type="String" access="public" />
+    <aura:attribute name="testIndex" type="Integer" access="public" />
+    <aura:attribute name="selectAll" type="Boolean" default="false" access="public"/>
+    <aura:attribute name="fieldLabelMap" type="Map" access="public" />
+    <aura:attribute name="picklistMap" type="Map" access="public" default="{}"/>
+    <aura:attribute name="picklistMapRegionState" type="Map" default="{}" access="public" />
+    <aura:attribute name="picklistMapStateSubDivision" type="Map" default="{}" access="public" />
+    <aura:attribute name="requiredFieldMap" type="Map" access="public" />
+    <aura:attribute name="recordType" type="RecordType" access="public" />
+    <aura:attribute name="editableFields" type="Object[]" access="global"/>
+    <aura:attribute name="showResultEntry" type="Boolean" default="false" access="private" />
+	
+    <aura:registerEvent name="calculateTestPercent" type="c:RevSys_GeneralPurposeEvt" />
+    <!-- <aura:registerEvent name="populateResultInformation" type="c:RevSys_GeneralPurposeEvt" /> -->
+    <aura:handler name="updateEmployeeStatus" event="c:RevSys_GeneralPurposeEvt" action="{! c.handleupdateEmployeeStatus }"/>
+    
+	<div class="slds-size_1-of-1" aura:id="{! v.testNumber }">
+	    <div class="slds-size_4-of-5 slds-align_absolute-center">
+            <aura:if isTrue="{! notequals(v.selectionState, 3) }">
+                
+                <table class="slds-table slds-table--bordered slds-table--cell-buffer slds-table_fixed-layout">
+                    <thead>
+                        <tr class="slds-text-title_caps">
+                            <th style="min-width:2rem;"><!--placeholder for toggle button --></th>
+                            <th style="min-width:2rem;"><ui:inputCheckbox value="{! v.selectAll }" name="" click="{!c.selectAllEmployeeToggle}"/></th>
+                            <th>
+                                <label class="slds-truncate" title="Name">Name</label>
+                            </th>
+                            <th>
+                                <label class="slds-truncate" title="Name">Employee Id</label>
+                            </th>
+                            <th>
+                                <label class="slds-truncate" title="Name">Department</label>
+                            </th>
+                            <th>
+                                <label class="slds-truncate" title="Name">Craft</label>
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration var="emp" items="{! v.testEntry }" indexVar="idx">
+                            <tr>
+                                <td style="min-width:2rem;"></td>
+                                <td>
+                                    <ui:inputCheckbox value="{! emp.selected }" name="{! emp.employeeName }" click="{!c.employeeSelectChange}" />
+                                </td>
+                                <td class="slds-cell-wrap">
+                                    <ui:outputText value="{! emp.employeeName}" />
+                                </td>
+                                <td class="slds-cell-wrap">
+                                    <ui:outputText value="{! emp.employeeId }" />
+                                </td>						                    		
+                                <td class="slds-cell-wrap">
+                                    <ui:outputText value="{! emp.department }" />
+                                </td>
+                                <td class="slds-cell-wrap">
+                                    <ui:outputText value="{! emp.craft }" />
+                                </td>
+                                <td></td>
+                                
+                            </tr>
+                            <!-- Don't need this part in SELECT TEST NUMBER
+                            <tr aura:id="resultRow" data-row-index="{! idx }" class="slds-hide">
+                                <td colspan="6">
+                                    <c:RevSys_ObservationEmployeeTestResultEntryCmp aura:id="testResult" testEntryResult="{! emp }" selectionState="{! v.selectionState }" fieldLabelMap="{! v.fieldLabelMap }" picklistMap="{! v.picklistMap }" requiredFieldMap="{! v.requiredFieldMap }" picklistMapRegionState="{! v.picklistMapRegionState }" recordType="{! v.recordType }" editableFields="{! v.editableFields }" rowIndex="{! idx }"/>
+                                </td>
+                            </tr>
+                        -->
+                        </aura:iteration>
+                    </tbody>
+                </table>
+                
+                <aura:set attribute="else">
+                    
+                    <table class="slds-table slds-table--bordered slds-table--cell-buffer slds-table_fixed-layout">
+                        <thead>
+                            <tr class="slds-text-title_caps">
+                                <th style="min-width:2rem;"></th>
+                                <th>
+                                    <label class="slds-truncate" title="Name">Name</label>
+                                </th>
+                                <th>
+                                    <label class="slds-truncate" title="Name">Result</label>
+                                </th>
+                                <th>
+                                    <label class="slds-truncate" title="Name">Train</label>
+                                </th>
+                                <th>
+                                    <label class="slds-truncate" title="Name">Region</label>
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration var="emp" items="{! v.testEntry }" indexVar="idx">
+                                <tr>
+                                    <td style="min-width:2rem;">
+                                        <a href="javascript:void(0)" onclick="{! c.editEmployeeDetails }" data-record-index="{! idx }" aura:id="editButton" data-record-name="{! emp.employeeName }">
+                                            Edit</a>
+                                    </td>
+                                    <td class="slds-cell-wrap">
+                                        <ui:outputText value="{! emp.employeeName}" />
+                                    </td>
+                                    <td class="slds-cell-wrap">
+                                        <ui:outputText value="{! emp.obs.Result__c }" />
+                                    </td>						                    		
+                                    <td class="slds-cell-wrap">
+                                        <ui:outputText value="{! emp.obs.TrainDescription__c }" />
+                                    </td>
+                                    <td class="slds-cell-wrap">
+                                        <ui:outputText value="{! emp.obs.RegionProperty__c }" />
+                                    </td>
+                                    <td>
+                                        <!-- checkmark when form completed -->
+                                        <!--lightning:icon iconName="{! 'action:' + (emp.completed ? 'approval' : 'close') }" size="xx-small"
+                                                        class="slds-float_right"/-->
+                                        <lightning:icon iconName="{! 'utility:' + (emp.completed ? 'check' : 'close') }" size="x-small"
+                                                        class="{! 'slds-float_right ' + (emp.completed ? 'icnChk' : 'icnClose') }"/>
+                                    </td>
+                                </tr>
+                                <tr aura:id="resultRow" data-row-index="{! idx }" class="slds-hide">
+                                    <td colspan="6">
+                                        <aura:if isTrue="{! v.showResultEntry }">
+                                            <c:RevSys_ObservationEmployeeTestResultEntryCmp aura:id="testResult" testEntryResult="{! emp }" selectionState="{! v.selectionState }" fieldLabelMap="{! v.fieldLabelMap }" picklistMap="{! v.picklistMap }" requiredFieldMap="{! v.requiredFieldMap }" picklistMapRegionState="{! v.picklistMapRegionState }" recordType="{! v.recordType }" editableFields="{! v.editableFields }" rowIndex="{! idx }" testIndex="{! v.testIndex }"
+                                                                                            picklistMapStateSubDivision="{! v.picklistMapStateSubDivision }" />
+                                            <a href="javascript:void(0)" onclick="{! c.editEmployeeDetails }" data-record-index="{! idx }" aura:id="editButton" data-record-name="{! emp.employeeName }">
+                                                Hide Entry
+                                            </a>
+                                        </aura:if>
+                                    </td>
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                    
+                </aura:set>
+            </aura:if>
+            <!-- </aura:if> -->
+	    </div>
+	</div>
+</aura:component>

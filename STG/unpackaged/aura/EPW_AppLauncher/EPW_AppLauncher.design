@@ -1,0 +1,4 @@
+<design:component >
+	<design:attribute name="domainUrl" label="Domain URL" description="Domain URL e.g. https://amtrakepw--coe.cs13.my.salesforce.com" />
+    <design:attribute name="applicationType" label="Application Type" description="Give required application types" />
+</design:component>

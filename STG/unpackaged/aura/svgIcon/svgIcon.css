@@ -1,0 +1,25 @@
+.THIS img.ie-png-icon {
+	visibility:hidden;
+	width:0px;
+    height:0px;
+}
+
+.THIS.IE_11 svg,
+.THIS.IE_10 svg,
+.THIS.IE_9 svg,
+.THIS.IE_8 svg,
+.THIS.IE_7 svg
+{
+    display:none!important;
+}
+
+.THIS.IE_11 img.ie-png-icon,
+.THIS.IE_10 img.ie-png-icon,
+.THIS.IE_9 img.ie-png-icon,
+.THIS.IE_8 img.ie-png-icon,
+.THIS.IE_7 img.ie-png-icon
+{
+   	visibility:visible!important;
+    height:30px!important;
+    width:30px!important;
+}

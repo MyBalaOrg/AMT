@@ -1,0 +1,18 @@
+<aura:component >
+  <aura:attribute name="inspection" type="Audit_Inspections__c" access="public" />
+  
+<div class="slds-grid">
+  <div class="slds-col slds-size--1-of-4 slds-align_absolute-center"><h2 class="slds-text-heading_small">OBS Points Missed</h2></div>
+  <div class="slds-col slds-size--1-of-4 slds-align_absolute-center"><h2 class="slds-text-heading_small">OBS Critical Violations</h2></div>
+  <div class="slds-col slds-size--1-of-4 slds-align_absolute-center"><h2 class="slds-text-heading_small">Mech Points Missed</h2></div>
+  <div class="slds-col slds-size--1-of-4 slds-align_absolute-center"><h2 class="slds-text-heading_small">Mech Critical Violations</h2></div>
+</div>
+<div class="slds-grid" style="padding-bottom:5px;">
+  <div class="slds-col slds-size--1-of-4 slds-align_absolute-center" style="align:center;">{!v.inspection.OBS_Points_Missed__c}</div>
+  <div class="slds-col slds-size--1-of-4 slds-align_absolute-center" style="align:center;">{!v.inspection.OBS_Critical_Violations__c}</div>
+  <div class="slds-col slds-size--1-of-4 slds-align_absolute-center" style="align:center;">{!v.inspection.Mech_Points_Missed__c}</div>
+  <div class="slds-col slds-size--1-of-4 slds-align_absolute-center" style="align:center;">{!v.inspection.Mech_Critical_Violations__c}</div>
+</div>
+
+
+</aura:component>

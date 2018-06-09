@@ -1,0 +1,56 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    
+    <aura:attribute name="findingList" type="Finding__c[]" access="public" />
+    <aura:attribute name="obs" type="Observation__c" access="public" />
+    <aura:attribute name="scoreList" type="Integer[]" access="public" default="[0,1]" />
+    <aura:attribute name="numOfColList" type="List" access="private" />
+    <aura:attribute name="numOfCol" type="Integer" access="public" default="4" />
+    <aura:attribute name="disableScore" type="Boolean" access="public" default="false"/>
+    <aura:attribute name="selectedRecordType" type="RecordType" access="public" />
+    <aura:attribute name="needImprovementRequired" type="Boolean" default="false" access="public" />
+    <aura:attribute name="needImprovementMap" type="Map" access="public" />
+    <aura:attribute name="popoverOpen" type="Boolean" access="public" />
+    <aura:attribute name="isTargetAdmin" type="Boolean" access="public" default="false"/>
+
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
+    <aura:method name="validateScores" action="{! c.handleValidation }" />
+        
+    <div class="slds-grid slds-wrap slds-m-around_xx-small slds-p-around_small">        
+        <div class="slds-size_1-of-1 slds-p-bottom_small">
+        	<aura:if isTrue="{!v.obs != null}">
+            	<div class="slds-float_left slds-p-left_small"><span style="font-size:large;">Status: {! v.obs.Status__c }</span></div>
+        	</aura:if>
+            <div class="slds-float_right slds-m-left_medium">
+                <span style="font-size:medium;">{! $Label.c.RevSys_Obs_Number_Of_Column }</span>
+                <aura:iteration var="colNumber" items="{! v.numOfColList }">
+                    <button class="{! 'slds-button slds-float_right slds-m-left_xx-small slds-button_' + (colNumber.selected ? 'brand' : 'neutral') }" 
+                            value="{! colNumber.value }" onclick="{! c.changeNumberOfColumn }">
+                        {! colNumber.value }
+                    </button>
+                </aura:iteration>
+            </div>
+        </div>
+        <div class="slds-size_1-of-1 slds-m-bottom_small">
+            <div class="slds-grid slds-wrap">
+                <aura:iteration var="finding" items="{! v.findingList }" indexVar="fIndex">
+                    <div class="{! 'finding-box slds-p-around_xx-small slds-size_1-of-' + v.numOfCol }" >
+                        <div class="slds-grid slds-wrap question-container">
+                            <div class="slds-size_3-of-5 slds-p-around_x-small" >
+                                <label class="slds-text-title">{! finding.Sub_category__c }</label>
+                            </div>
+                            <div class="slds-size_2-of-5 finding-score-select slds-p-right_x-small" onmouseover="{!c.showScoreDefination}" >
+                                <lightning:select value="{! finding.Score__c }" disabled="{! and(v.obs.SPARTN_ReadOnly__c, not(v.isTargetAdmin)) }" label=""
+                                                  onchange="{! c.setNeedImprovement }">
+                                    <aura:iteration var="score" items="{! v.scoreList }">
+                                        <option value="{! score }">{! score }</option>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </div>
+                        </div>
+                    </div>
+                </aura:iteration>
+            </div>
+        </div>
+                
+    </div>
+</aura:component>

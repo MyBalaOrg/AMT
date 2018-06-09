@@ -1,0 +1,70 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes,flexipage:availableForRecordHome" access="public" controller="RevSys_ObservationController">
+    
+    <aura:attribute name="observation" type="Observation__c" access="public"/>
+    <aura:attribute name="recordType" type="RecordType" access="public" />
+    <aura:attribute name="form" type="Aura.Component[]" access="public"/>
+    <aura:attribute name="fieldLabelMap" type="Map" access="public" />
+    <aura:attribute name="picklistMap" type="Map" access="public" default="{}"/>
+    <aura:attribute name="requiredFieldMap" type="Map" access="public" />
+    <aura:attribute name="editableFields" type="Object[]" access="global"/>
+    <aura:attribute name="showSectionHeader" type="Boolean" default="fault" access="public"/>
+    <aura:attribute name="oneIsRequiredMap" type="Map" access="public" />
+    <aura:attribute name="needImprovementRequired" type="Boolean" default="fault" access="public"/>
+    <aura:attribute name="commentRequired" type="Boolean" default="false" access="public" />
+    <aura:attribute name="referenceFields" type="String[]" default="[]" access="public" />
+    <aura:attribute name="picklistMapMovementPosting" type="Map" default="{}" access="public" />
+    <aura:attribute name="isTargetAdmin" type="Boolean" access="public" default="false"/>
+
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    <aura:handler name="fetchSearchItems" event="c:EIS_Audit_UpdateObjectEvent" action="{! c.handleFetchSearchItemsEvent }"/>
+    <aura:handler name="searchItemSelected" event="c:EIS_Audit_UpdateObjectEvent" action="{! c.handleSearchItemSelectedEvent }"/>
+    
+    <aura:method name="validateInfo" action="{! c.handleValidation }" />
+    <aura:method name="validateInfoTest" action="{! c.handleValidationTest }" />
+    
+
+	<div class="slds-section slds-is-open slds-size_1-of-1 slds-p-horizontal_x-small slds-m-bottom_small">
+		<div class="{!if(v.showSectionHeader,'slds-show','slds-hide')}">
+			<h3 class="slds-section__title slds-theme_shade slds-p-horizontal_small">
+				<span clss="slds-truncate">{! v.recordType.Name } Overview</span>
+			</h3>
+		</div>
+   		<div class="slds-grid slds-wrap slds-p-horizontal_small slds-p-top_small" >
+	        <div class="slds-size_1-of-3 slds-p-bottom_small">
+	            <ui:inputDate aura:id="Date__c" class="box-height" label="{! empty(v.fieldLabelMap.date__c) ? 'Date' : v.fieldLabelMap.date__c }" displayDatePicker="true" required="{! v.requiredFieldMap.Date__c }" value="{! v.observation.Date__c }" format="MM/dd/yyyy" />
+	        </div>
+	        <div class="slds-size_1-of-3 slds-clearfix slds-p-bottom_small">
+	        	<div class="slds-grid slds-p-horizontal_small">
+	        		<div class="slds-p-horizontal_xx-small time-box">
+	                    <ui:inputSelect aura:id="TimeHH__c" class="box-height"
+	                                    value="{! v.observation.TimeHH__c }" label="Hour"
+	                                    disabled="{! empty(v.picklistMap.TimeHH__c) }"
+	                                    required="{! v.requiredFieldMap.TimeHH__c }">
+                            <ui:inputSelectOption label="--" text="" value="true"/>
+	                        <aura:iteration var="timeHour" items="{! v.picklistMap.TimeHH__c }">
+	                        	<ui:inputSelectOption text="{! timeHour }" label="{! timeHour }" value="{! timeHour == v.observation.TimeHH__c }" />
+	                        </aura:iteration>
+	                    </ui:inputSelect>
+	                </div>
+	        		<div class="slds-p-horizontal_xx-small time-box">
+	                    <ui:inputSelect aura:id="TimeMM__c" class="box-height"
+	                                    value="{! v.observation.TimeMM__c }" label="Minute"
+	                                    disabled="{! empty(v.picklistMap.TimeMM__c) }"
+	                                    required="{! v.requiredFieldMap.TimeMM__c }">
+                            <ui:inputSelectOption label="--" text="" value="true"/>
+	                        <aura:iteration var="timeMinute" items="{! v.picklistMap.TimeMM__c }">
+	                        	<ui:inputSelectOption text="{! timeMinute }" label="{! timeMinute }" value="{! timeMinute == v.observation.TimeMM__c }" />
+	                        </aura:iteration>
+	                    </ui:inputSelect>
+	                </div>
+	            </div>
+	        </div>
+	        <aura:iteration var="theField" items="{! v.form }">
+	            <div class="slds-size_1-of-2 slds-p-right_small slds-p-bottom_x-small">
+	            	{! theField }
+	            </div>
+	       	</aura:iteration>
+    	</div> 
+    </div>
+	
+</aura:component>

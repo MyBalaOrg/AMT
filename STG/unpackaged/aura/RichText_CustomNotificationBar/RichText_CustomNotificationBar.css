@@ -1,0 +1,11 @@
+.THIS.comp{
+    width: 100%;
+    z-index: 4;
+    /* background-color:white;  */
+    padding: 16px;
+    line-height: 1.5;
+    font-weight: 700;
+    min-height: 70px;
+    max-height: 70px;
+    overflow: auto;
+}

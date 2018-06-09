@@ -1,0 +1,44 @@
+<!--
+ - Created by 7Summits on 9/27/17.
+ -->
+<design:component label="Peak Uber Theme">
+
+    <design:attribute name="headerType" label="Header Configuration" datasource="Single Bar Header,Two Bar (Search Focused)" />
+    <design:attribute name="searchType" label="Search UI Configuration" datasource="Icon w/Dropdown (Single Bar Only)" />
+    <!--<design:attribute name="iconsOrder" label="Order of Icons" datasource="Search/Notification/Profile,Search/Profile/Notification,Notification/Profile/Search,Notification/Search/Profile,Profile/Notification/Search,Profile/Search/Notification" />-->
+    <design:attribute name="iconsOrder" label="Order of Icons" datasource="Search/Notification/Profile" />
+    <design:attribute name="logoUrl" label="Logo URL" />
+
+    <design:attribute name="hideNotifications" label="Hide Notifications Icon" />
+    <design:attribute name="hideProfile" label="Hide Profile" />
+    <design:attribute name="hideMenu" label="Hide Menu" />
+    <design:attribute name="hideSearch" label="Hide Search" />
+    <design:attribute name="showSearchTitleContainer" label="Enable Cust Search Container (Two Bar Search Only)" />
+
+    <!-- Bar One -->
+    <design:attribute name="bar1Height" label="Height - 1 Bar (Single Bar Header)" />
+    <design:attribute name="bar1BkgColor" label="Background Color - 1 Bar (Single Bar Header)" />
+    <design:attribute name="bar1BkgImage" label="Background Image - 1 Bar (Single Bar Header)" />
+
+    <!-- Bar 2 (Focused Area under Single Bar) -->
+    <design:attribute name="bar2Height" label="Height - 2 Bar (Focused Area under Single Bar)" />
+    <design:attribute name="bar2BkgColor" label="Background Color - 2 Bar (Focused Area under Single Bar)" />
+    <design:attribute name="bar2BkgImage" label="Background Image - 2 Bar (Focused Area under Single Bar)" />
+
+    <!-- whole header -->
+    <design:attribute name="headerBkgColor" label="Background Color (Behind 1 Bar and 2 Bar)" />
+    <design:attribute name="headerBkgImage" label="Background Image (Behind 1 Bar and 2 Bar)" />
+    <design:attribute name="headerContentMaxWidth" label="Content Width (px or %)" />
+    <design:attribute name="headerShadow" label="Header Shadow" datasource="none,single,small,medium,large,xl"/>
+    <design:attribute name="headerTextColor" label="Header Text Color (Nav Links, Icons ...)" />
+    <design:attribute name="headerTextColorHover" label="Header Text Hover Color (Nav Links, Icons ...)" />
+
+    <design:attribute name="enableFixedHeader" label="Enable Fixed Header" />
+    <design:attribute name="enableFullWidthBody" label="Enable Full Width Body" />
+
+    <design:attribute name="showHeaderTopContainer" label="Show Top Header Container" />
+    <design:attribute name="showHeaderBottomContainer" label="Show Bottom Header Container" />
+    <design:attribute name="hideHeader" label="Hide Header" />
+    <design:attribute name="hideFooter" label="Hide Footer" />
+
+</design:component>

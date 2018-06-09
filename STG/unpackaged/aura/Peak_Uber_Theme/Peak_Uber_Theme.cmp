@@ -1,0 +1,111 @@
+<aura:component implements="forceCommunity:themeLayout" access="global" description="Peak Uber Theme">
+    <!-- Theme Attributes -->
+    <aura:attribute name="logoUrl" type="String" default="/resource/peak_theme_logo" />
+
+    <aura:attribute name="headerType" type="String" default="Single Bar Header" />
+    <aura:attribute name="searchType" type="String" default="Icon w/Dropdown (Single Bar Only)" />
+    <aura:attribute name="iconsOrder" type="String" default="Search/Notification/Profile" />
+
+    <aura:attribute name="hideNotifications" type="Boolean" default="false" />
+    <aura:attribute name="hideProfile" type="Boolean" default="false" />
+    <aura:attribute name="hideMenu" type="Boolean" default="false" />
+    <aura:attribute name="hideSearch" type="Boolean" default="false" />
+    <aura:attribute name="showSearchTitleContainer" type="Boolean" default="false" />
+
+    <!-- Bar 1 (Single Bar Header) -->
+    <aura:attribute name="bar1Height" type="String" default="100px" />
+    <aura:attribute name="bar1BkgColor" type="String" default="transparent" />
+    <aura:attribute name="bar1BkgImage" type="String" default="" />
+
+    <!-- Bar 2 (Focused Area under Single Bar) -->
+    <aura:attribute name="bar2Height" type="String" default="100px" />
+    <aura:attribute name="bar2BkgColor" type="String" default="transparent" />
+    <aura:attribute name="bar2BkgImage" type="String" default="" />
+
+    <aura:attribute name="headerBkgColor" type="String" default="#FFF" />
+    <aura:attribute name="headerBkgImage" type="String" default="" />
+    <aura:attribute name="headerContentMaxWidth" type="String" default="1100px" />
+    <aura:attribute name="headerShadow" type="String" default="single" />
+    <aura:attribute name="headerShadowColor" type="String" default="#000000" />
+    <aura:attribute name="headerTextColor" type="String" default="#000000" />
+    <aura:attribute name="headerTextColorHover" type="String" default="#000000" />
+
+    <aura:attribute name="enableFixedHeader" type="Boolean" default="false" />
+    <aura:attribute name="enableFullWidthBody" type="Boolean" default="false" />
+    <aura:attribute name="showHeaderTopContainer" type="Boolean" default="false" />
+    <aura:attribute name="showHeaderBottomContainer" type="Boolean" default="false" />
+    <aura:attribute name="hideHeader" type="Boolean" default="false" />
+    <aura:attribute name="hideFooter" type="Boolean" default="false" />
+
+    <!-- Default Salesforce Components -->
+    <aura:attribute name="search" type="Aura.Component[]" required="false"/>
+    <aura:attribute name="profileMenu" type="Aura.Component[]" required="false"/>
+    <aura:attribute name="navBar" type="Aura.Component[]" required="false"/>
+
+    <!-- Theme Regions -->
+    <aura:attribute name="templateHeaderTop" type="Aura.Component[]" required="false"/>
+    <aura:attribute name="templateHeaderBottom" type="Aura.Component[]" required="false"/>
+    <aura:attribute name="templateFooter" type="Aura.Component[]" required="false"/>
+    <aura:attribute name="templateHeaderSearchTop" type="Aura.Component[]" required="false"/>
+
+    <div class="peak-theme">
+
+        <aura:if isTrue="{!v.hideHeader != true}">
+            <header class="{!'peak-header' + ((v.enableFixedHeader == true) ? ' peak-header-fixed' : '')}">
+
+                <!-- Optional header top component area -->
+                <aura:if isTrue="{!v.showHeaderTopContainer == true}"><div class="peak-header__contentTop">{!v.templateHeaderTop}</div></aura:if>
+
+                <!-- Main header content area -->
+                <div class="{!'peak-header__contentCenter headerShadow-' + v.headerShadow}" style="{!'background-color:' + v.headerBkgColor + ';background-image:url(' + v.headerBkgImage + ');background-position:center top;'}">
+
+                    <c:Peak_Uber_Theme_SingleBarHeader searchDropdown="{!(v.searchType == 'Icon w/Dropdown (Single Bar Only)') ? true : false}"
+                        iconsOrder="{!v.iconsOrder}"
+                        hideNotifications="{!v.hideNotifications}"
+                        hideProfile="{!v.hideProfile}"
+                        hideMenu="{!v.hideMenu}"
+                        hideSearch="{!or(v.hideSearch == true || v.headerType == 'Two Bar (Search Focused)')}"
+                        logoUrl="{!v.logoUrl}"
+                        contentMaxWidth="{!v.headerContentMaxWidth}"
+                        height="{!v.bar1Height}"
+                        bkgColor="{!v.bar1BkgColor}"
+                        bkgImage="{!v.bar1BkgImage}"
+                        textColor="{!v.headerTextColor}"
+                        textColorHover="{!v.headerTextColorHover}"
+                        navBarComponent="{!v.navBar}"
+                        searchComponent="{!v.search}"
+                        profileMenuComponent="{!v.profileMenu}"
+                    />
+
+                    <aura:if isTrue="{!v.headerType == 'Two Bar (Search Focused)'}">
+                        <c:Peak_Uber_Theme_TwoBarSearchFocused searchComponent="{!v.search}"
+                            templateSearchTop="{!v.templateHeaderSearchTop}"
+                            contentMaxWidth="{!v.headerContentMaxWidth}"
+                            height="{!v.bar2Height}"
+                            bkgColor="{!v.bar2BkgColor}"
+                            bkgImage="{!v.bar2BkgImage}"
+                            showSearchTitleContainer="{!v.showSearchTitleContainer}"
+                        />
+                    </aura:if>
+
+                </div>
+
+                <!-- Optional header bottom component area -->
+                <aura:if isTrue="{!v.showHeaderBottomContainer == true}"><div class="peak-header__contentBottom">{!v.templateHeaderBottom}</div></aura:if>
+
+            </header>
+        </aura:if>
+
+        <section class="peak-body" style="{!((v.enableFullWidthBody == false) ? ('margin-left:auto;margin-right:auto;max-width:' + v.headerContentMaxWidth + ';') : '') + ((v.enableFixedHeader == true) ? ('margin-top:' + v.bar1Height + ';') : '')}">
+            {!v.body}
+        </section>
+
+        <aura:if isTrue="{!v.hideFooter != true}">
+            <footer class="peak-footer">
+                {!v.templateFooter}
+            </footer>
+        </aura:if>
+
+    </div>
+
+</aura:component>

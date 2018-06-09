@@ -1,0 +1,362 @@
+<!-- 
+********************************************************************************************************************************************************************************************************************************************
+*	@Name			OC_SmallContactTile
+*	@Author			Luke Kan, Deloitte Digital
+*	@Created Date	2nd Feb 2017
+*	@Used By		OrganizationChart.app	
+********************************************************************************************************************************************************************************************************************************************
+*	@Description	This is a lightning component which displays a tile of employee information.
+********************************************************************************************************************************************************************************************************************************************
+*	@Attribute		selectedContact		OC_OrgChartTopLevelApexController.Employee
+*	@Attribute		level				String
+*	@Attribute		hasManager			Boolean
+*	@Atrribute		hasSubs				Boolean
+
+********************************************************************************************************************************************************************************************************************************************
+*	@Changes
+ 10th June 2017 -Modified to hold contact information sitting on an position as part of ENHC 12
+********************************************************************************************************************************************************************************************************************************************	
+-->
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" >
+    
+    <!--###### ATTRIBUTES ###### -->
+    <!-- Though this attribute is named 'selectedContact' it is a custom Employee class. All comments will use the word 'contact' -->
+    <aura:attribute name="selectedContact" type="OC_OrgChartTopLevelApexController.Employee"/>
+    <aura:attribute name="level" type="String" />
+    <aura:attribute name="hasManager" type="Boolean" />
+    <aura:attribute name="hasSubs" type="Boolean" />
+    <!--###### REGISTERED EVENTS ###### -->
+    <aura:registerEvent name="selectEvent" type="c:OC_OrgChartSelectionEvent"/>
+    <!--###### HANDLERS ###### -->
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:handler name="change" value="{!v.selectedContact}" action="{!c.handleContactChange}"/>
+    
+    <!--###### MARKUP FOR TILE ###### -->
+    <div class="slds-grid--vertical" style="width:220px">
+        <!--TILE FOR EMPLOYEES-->
+        <div class="slds-m-horizontal--x-small">
+            <ul class="slds-has-dividers--around-space">
+                
+                <aura:if isTrue="{!v.selectedContact.position.Employee_Subgroup_Text__c == 'Full Time Executive' || v.selectedContact.position.Employee_Subgroup_Text__c == 'Hourly - FT' || v.selectedContact.position.Employee_Subgroup_Text__c == 'Hourly - PT' || v.selectedContact.position.Employee_Subgroup_Text__c == 'Monthly - FT' || v.selectedContact.position.Employee_Subgroup_Text__c == 'Salary - FT' || v.selectedContact.position.Employee_Subgroup_Text__c == 'Salary - PT' || v.selectedContact.isDummy == true}">
+                    
+                    <!--###### MARKUP FOR SELECTED TILE ###### -->
+                    <aura:if isTrue="{!v.level == 'selected'}">
+                        <li class="slds-item slds-theme--shade" style="border-width:2px; border-color:#005883; box-shadow: 6px 6px 6px #005883;" >
+                            <div class="slds-tile slds-tile--board" style="min-height:120px;position:relative;">
+                                <aura:if isTrue="{!v.level == 'manager' &amp;&amp; (v.hasManager == true)}">
+                                    <button class="slds-button slds-button--icon slds-align--absolute-center" onclick="{!c.fireSelection}" aria-hidden="true">
+                                        <lightning:icon iconName="utility:jump_to_top" class="slds-align--absolute-center" size="x-small" alternativeText=""/>
+                                    </button>
+                                </aura:if>  
+                                
+                                <!-- ###### CHECK FOR ROOT NODE #### -->
+                                <aura:if isTrue="{!v.selectedContact.isRootNode == false}">
+                                    <div class="slds-tile__detail slds-text-body--medium">
+                                        <!-- ###### CHECK FOR DUMMY POSITION #### -->
+                                        <aura:if isTrue="{!v.selectedContact.isDummy == false}">
+                                            <p  style="font-weight: bold; color:#005883;" title="{!v.selectedContact.position.Position_ID__c}" class="slds-truncate slds-text-heading_small">{!v.selectedContact.position.Position_ID__c}</p>
+                                            <p  style="color:#005883;" title="{!v.selectedContact.position.Position_Title__c}" class="slds-truncate">{!v.selectedContact.position.Position_Title__c}</p>
+                                            <p  style="color:#005883;" title="{!v.selectedContact.position.Organization_Unit_Name__c}" class="slds-truncate">{!v.selectedContact.position.Organization_Unit_Name__c}</p>
+                                            <aura:set attribute="else">
+                                                <p  style="font-weight: bold; color:#005883;" title="{!v.selectedContact.position.Org_Unit_Number__c}" class="slds-truncate slds-text-heading_small">{!v.selectedContact.position.Org_Unit_Number__c}</p>
+                                                <p  style="color:#005883;" title="{!v.selectedContact.position.Org_Unit_Number__c}" class="slds-truncate">{!v.selectedContact.position.Organization_Unit_Name__c}</p>
+                                                <hr style ="display:block;margin-top:0.0em;margin-bottom:0.0em;margin-left:auto;margin-right: auto;border-style: inset;border-width: 1px;"></hr>
+                                                <p  style="color:#005883;" title="{!v.selectedContact.position.c}" class="slds-truncate slds-text-heading_small"><a style="font-weight: bold;color:#005883;" onclick="{!c.fireSelection}">{!v.selectedContact.position.Organization_Unit_Name__c}</a></p>	
+                                            </aura:set>
+                                        </aura:if>
+                                        
+                                        <!--###### MARKUP TO DISPLAY DIVIDER ###### -->
+                                        <aura:if isTrue="{!v.selectedContact.isDummy == false}">
+                                            <hr style ="display:block;margin-top:0.0em;margin-bottom:0.0em;margin-left:auto;margin-right: auto;border-style: inset;border-width: 1px;"></hr>
+                                        </aura:if>
+                                        
+                                        
+                                        <!--###### DISPLAY TEXT Vacant Position IF THE POSITION IS VACANT ###### -->
+                                        <aura:if isTrue="{!v.selectedContact.isVacant == false}">
+                                            <aura:iteration items="{!v.selectedContact.contacts}" var="contact" indexVar="idx">
+                                                <div data-record="{!idx}" onclick="{!c.fireSelection}">
+                                                    <p style="color:#005883;" class="slds-truncate"><a style="font-weight: bold;color:#005883;">{!contact.FirstName + ' '+contact.MiddleName+' ' +contact.LastName}</a></p>
+                                                </div>    
+                                            </aura:iteration>
+                                            <aura:set attribute="else">
+                                                <p style="color:#005883;" class="slds-truncate"><a style="font-weight: bold;color:#005883;" onclick="{!c.fireSelection}">Vacant Position</a></p>
+                                            </aura:set>
+                                        </aura:if>
+                                        
+                                    </div>
+                                    <!--###### ROOT NODE ###### -->
+                                    <aura:set attribute="else">
+                                        <div class="slds-tile__detail slds-text-body--medium">
+                                            <p  style="font-weight: bold; color:#005883;" title="{!v.selectedContact.position.Organization_Unit_Name__c}" class="slds-truncate slds-text-heading_small">{!v.selectedContact.position.Organization_Unit_Name__c}</p>        
+                                            
+                                            <hr style ="display:block;margin-top:0.0em;margin-bottom:0.0em;margin-left:auto;margin-right: auto;border-style: inset;border-width: 1px;"></hr>
+                                            
+                                            <aura:if isTrue="{!v.selectedContact.isVacant == false}">
+                                                <aura:iteration items="{!v.selectedContact.contacts}" var="contact" indexVar="idx">
+                                                    <div data-record="{!idx}" onclick="{!c.fireSelection}">
+                                                        <p style="color:#005883;" class="slds-truncate"><a style="color:#005883;">{!contact.FirstName + ' '+contact.MiddleName+' ' +contact.LastName}</a></p>
+                                                    </div>    
+                                                </aura:iteration>
+                                                <aura:set attribute="else">
+                                                    <p style="color:#005883;" class="slds-truncate"><a style="color:#005883;" onclick="{!c.fireSelection}">Vacant Position</a></p>
+                                                </aura:set>
+                                            </aura:if>
+                                        </div>
+                                    </aura:set>
+                                </aura:if>
+                                
+                                <!--###### MARKUP FOR THE CHEVRON ###### -->
+                                <br/>
+                                <div style="bottom:1px;position:absolute;left:45%">
+                                    <aura:if isTrue="{!v.level == 'subordinate' &amp;&amp; (v.hasSubs == true)}">
+                                        <button class="slds-button slds-button--icon slds-align--absolute-center" onclick="{!c.fireSelection}" aria-hidden="true">
+                                            <lightning:icon iconName="utility:jump_to_bottom" class="slds-align--absolute-center" size="x-small" alternativeText=""/>
+                                        </button>
+                                    </aura:if>
+                                </div>
+                                
+                            </div>    
+                        </li>
+                    </aura:if>
+                    
+                    <!--###### MARKUP FOR UNSELECTED TILE ###### -->
+                    <aura:if isTrue="{!v.level != 'selected'}">
+                        <li aura:id = "list" class="slds-item slds-theme--shade" style="border-width:2px; border-color:#005883;" >
+                            <div class="slds-tile slds-tile--board" style="min-height:120px;position:relative;">
+                                <aura:if isTrue="{!v.level == 'manager' &amp;&amp; (v.hasManager == true)}">
+                                    <button class="slds-button slds-button--icon slds-align--absolute-center " onclick="{!c.fireSelection}" aria-hidden="true">
+                                        <lightning:icon iconName="utility:jump_to_top" class="slds-align--absolute-center" size="x-small" alternativeText=""/>
+                                    </button>
+                                </aura:if>  
+                                
+                                
+                                
+                                <aura:if isTrue="{!v.selectedContact.isRootNode == false}">
+                                    <div class="slds-tile__detail slds-text-body--medium">
+                                        
+                                        <aura:if isTrue="{!v.selectedContact.isDummy == false}">
+                                            <p  style="font-weight: bold; color:#005883;" title="{!v.selectedContact.position.Position_ID__c}" class="slds-truncate slds-text-heading_small">{!v.selectedContact.position.Position_ID__c}</p>
+                                            <p  style="color:#005883;" title="{!v.selectedContact.position.Position_Title__c}" class="slds-truncate">{!v.selectedContact.position.Position_Title__c}</p>
+                                            <p  style="color:#005883;" title="{!v.selectedContact.position.Organization_Unit_Name__c}" class="slds-truncate">{!v.selectedContact.position.Organization_Unit_Name__c}</p>
+                                            
+                                            <aura:set attribute="else">
+                                                <p  style="font-weight: bold; color:#005883;" title="{!v.selectedContact.position.Org_Unit_Number__c}" class="slds-truncate slds-text-heading_small">{!v.selectedContact.position.Org_Unit_Number__c}</p>
+                                                <p  style="color:#005883;" title="{!v.selectedContact.position.Org_Unit_Number__c}" class="slds-truncate">{!v.selectedContact.position.Organization_Unit_Name__c}</p>
+                                                <hr style ="display:block;margin-top:0.0em;margin-bottom:0.0em;margin-left:auto;margin-right: auto;border-style: inset;border-width: 1px;"></hr>
+                                                <p  style="color:#005883;" title="{!v.selectedContact.position.c}" class="slds-truncate slds-text-heading_small"><a style="font-weight: bold;color:#005883;" onclick="{!c.fireSelection}">{!v.selectedContact.position.Organization_Unit_Name__c}</a></p>	
+                                            </aura:set>
+                                        </aura:if>
+                                        
+                                        <aura:if isTrue="{!v.selectedContact.isDummy == false}">
+                                            <hr style ="display:block;margin-top:0.0em;margin-bottom:0.0em;margin-left:auto;margin-right: auto;border-style: inset;border-width: 1px;"></hr>
+                                        </aura:if>
+                                        
+                                        <aura:if isTrue="{!v.selectedContact.isVacant == false}">
+                                            <aura:iteration items="{!v.selectedContact.contacts}" var="contact" indexVar="idx">
+                                                <div data-record="{!idx}" onclick="{!c.fireSelection}">
+                                                    <p style="color:#005883;" class="slds-truncate"><a style="font-weight: bold;color:#005883;">{!contact.FirstName + ' '+contact.MiddleName+' ' +contact.LastName}</a></p>
+                                                </div>    
+                                            </aura:iteration>
+                                            <aura:set attribute="else">
+                                                <p style="color:#005883;" class="slds-truncate"><a style="font-weight: bold;color:#005883;" onclick="{!c.fireSelection}">Vacant Position</a></p>
+                                            </aura:set>
+                                        </aura:if>
+                                        
+                                    </div>
+                                    <aura:set attribute="else">
+                                        <div class="slds-tile__detail slds-text-body--medium">
+                                            <p  style="font-weight: bold; color:#005883;" title="{!v.selectedContact.position.Organization_Unit_Name__c}" class="slds-truncate slds-text-heading_small">{!v.selectedContact.position.Organization_Unit_Name__c}</p>        
+                                            
+                                            <hr style ="display:block;margin-top:0.0em;margin-bottom:0.0em;margin-left:auto;margin-right: auto;border-style: inset;border-width: 1px;"></hr>
+                                            
+                                            <aura:if isTrue="{!v.selectedContact.isVacant == false}">
+                                                <aura:iteration items="{!v.selectedContact.contacts}" var="contact" indexVar="idx">
+                                                    <div data-record="{!idx}" onclick="{!c.fireSelection}">
+                                                        <p style="color:#005883;" class="slds-truncate"><a style="font-weight: bold;color:#005883;">{!contact.FirstName + ' '+contact.MiddleName+' ' +contact.LastName}</a></p>
+                                                    </div>    
+                                                </aura:iteration>
+                                                <aura:set attribute="else">
+                                                    <p style="color:#005883;" class="slds-truncate"><a style="font-weight: bold;color:#005883;" onclick="{!c.fireSelection}">Vacant Position</a></p>
+                                                </aura:set>
+                                            </aura:if>
+                                        </div>
+                                    </aura:set>
+                                    <br/>
+                                    <div style="bottom:1px;position:absolute;left:45%">
+                                        <aura:if isTrue="{!v.level == 'subordinate' &amp;&amp; (v.hasSubs == true)}">
+                                            <button class="slds-button slds-button--icon slds-align--absolute-center" onclick="{!c.fireSelection}" aria-hidden="true">
+                                                <lightning:icon iconName="utility:jump_to_bottom" class="slds-align--absolute-center" size="x-small" alternativeText=""/>
+                                            </button>
+                                        </aura:if>
+                                    </div>
+                                </aura:if>   
+                                
+                            </div>
+                            
+                        </li>
+                    </aura:if>
+                </aura:if>
+                
+                <!--###### MARKUP FOR CONTRACTORS ###### -->
+                <aura:if isTrue="{!v.selectedContact.position.Employee_Subgroup_Text__c != 'Full Time Executive' &amp;&amp; v.selectedContact.position.Employee_Subgroup_Text__c != 'Hourly - FT' &amp;&amp; v.selectedContact.position.Employee_Subgroup_Text__c != 'Hourly - PT' &amp;&amp; v.selectedContact.position.Employee_Subgroup_Text__c != 'Monthly - FT' &amp;&amp; v.selectedContact.position.Employee_Subgroup_Text__c != 'Salary - FT' &amp;&amp; v.selectedContact.position.Employee_Subgroup_Text__c != 'Salary - PT' &amp;&amp; v.selectedContact.isDummy != true}">
+                    <!--SELECTED TILE WITH SHADING-->
+                    <aura:if isTrue="{!v.level == 'selected'}">
+                        <li aura:id = "list" class="slds-item slds-theme--shade" style="border-width:2px; border-color:#c23934; box-shadow: 6px 6px 6px #c23934;" >
+                            <div class="slds-tile slds-tile--board"  style="min-height:120px;position:relative;">
+                                <aura:if isTrue="{!v.level == 'manager' &amp;&amp; (v.hasManager == true)}">
+                                    <button class="slds-button slds-button--icon slds-align--absolute-center " onclick="{!c.fireSelection}" aria-hidden="true">
+                                        <lightning:icon iconName="utility:jump_to_top" class="slds-align--absolute-center" size="x-small" alternativeText=""/>
+                                    </button>
+                                </aura:if>
+                                
+                                <aura:if isTrue="{!v.selectedContact.isRootNode == false}">
+                                    <div class="slds-tile__detail slds-text-body--medium">
+                                        
+                                        <aura:if isTrue="{!v.selectedContact.isDummy == false}">
+                                            <p  style="font-weight: bold; color:#005883;" title="{!v.selectedContact.position.Position_ID__c}" class="slds-truncate slds-text-heading_small">{!v.selectedContact.position.Position_ID__c}</p>
+                                            <p  style="color:#005883;" title="{!v.selectedContact.position.Position_Title__c}" class="slds-truncate">{!v.selectedContact.position.Position_Title__c}</p>
+                                            <p  style="color:#005883;" title="{!v.selectedContact.position.Organization_Unit_Name__c}" class="slds-truncate">{!v.selectedContact.position.Organization_Unit_Name__c}</p>
+                                            <aura:set attribute="else">
+                                                <p  style="font-weight: bold; color:#005883;" title="{!v.selectedContact.position.Org_Unit_Number__c}" class="slds-truncate slds-text-heading_small">{!v.selectedContact.position.Org_Unit_Number__c}</p>
+                                                <p  style="color:#005883;" title="{!v.selectedContact.position.Org_Unit_Number__c}" class="slds-truncate">{!v.selectedContact.position.Organization_Unit_Name__c}</p>
+                                                <hr style ="display:block;margin-top:0.0em;margin-bottom:0.0em;margin-left:auto;margin-right: auto;border-style: inset;border-width: 1px;"></hr>
+                                                <p  style="color:#005883;" title="{!v.selectedContact.position.c}" class="slds-truncate slds-text-heading_small"><a style="font-weight: bold;color:#005883;" onclick="{!c.fireSelection}">{!v.selectedContact.position.Organization_Unit_Name__c}</a></p>	
+                                            </aura:set>
+                                        </aura:if>
+                                        
+                                        <!--###### MARKUP TO DISPLAY DIVIDER ###### -->
+                                        <aura:if isTrue="{!v.selectedContact.isDummy == false}">
+                                            <hr style ="display:block;margin-top:0.0em;margin-bottom:0.0em;margin-left:auto;margin-right: auto;border-style: inset;border-width: 1px;"></hr>
+                                        </aura:if>
+                                        
+                                        <aura:if isTrue="{!v.selectedContact.isVacant == false}">
+                                            <aura:iteration items="{!v.selectedContact.contacts}" var="contact" indexVar="idx">
+                                                <div data-record="{!idx}" onclick="{!c.fireSelection}">
+                                                    <p style="color:#005883;" class="slds-truncate"><a style="font-weight: bold;color:#005883;">{!contact.FirstName + ' '+contact.MiddleName+' ' +contact.LastName}</a></p>
+                                                </div>    
+                                            </aura:iteration>
+                                            <aura:set attribute="else">
+                                                <p style="color:#005883;" class="slds-truncate"><a style="font-weight: bold;color:#005883;" onclick="{!c.fireSelection}">Vacant Position</a></p>
+                                            </aura:set>
+                                        </aura:if>
+                                        
+                                    </div>
+                                    <aura:set attribute="else">
+                                        <div class="slds-tile__detail slds-text-body--medium">
+                                            <p  style="font-weight: bold; color:#005883;" title="{!v.selectedContact.position.Organization_Unit_Name__c}" class="slds-truncate slds-text-heading_small">{!v.selectedContact.position.Organization_Unit_Name__c}</p>        
+                                            
+                                            <hr style ="display:block;margin-top:0.0em;margin-bottom:0.0em;margin-left:auto;margin-right: auto;border-style: inset;border-width: 1px;"></hr>
+                                            
+                                            <aura:if isTrue="{!v.selectedContact.isVacant == false}">
+                                                <aura:iteration items="{!v.selectedContact.contacts}" var="contact" indexVar="idx">
+                                                    <div data-record="{!idx}" onclick="{!c.fireSelection}">
+                                                        <p style="color:#005883;" class="slds-truncate"><a style="font-weight: bold;color:#005883;">{!contact.FirstName + ' '+contact.MiddleName+' ' +contact.LastName}</a></p>
+                                                    </div>    
+                                                </aura:iteration>
+                                                <aura:set attribute="else">
+                                                    <p style="color:#005883;" class="slds-truncate"><a style="font-weight: bold;color:#005883;" onclick="{!c.fireSelection}">Vacant Position</a></p>
+                                                </aura:set>
+                                            </aura:if>
+                                        </div>
+                                    </aura:set>
+                                </aura:if>
+                                
+                                <br/>
+                                <div style="bottom:1px;position:absolute;left:45%">
+                                    <aura:if isTrue="{!v.level == 'subordinate' &amp;&amp; (v.hasSubs == true)}">
+                                        <button class="slds-button slds-button--icon slds-align--absolute-center" onclick="{!c.fireSelection}" aria-hidden="true">
+                                            <lightning:icon iconName="utility:jump_to_bottom" class="slds-align--absolute-center" size="x-small" alternativeText=""/>
+                                        </button>
+                                    </aura:if>
+                                </div>
+                            </div>    
+                        </li>
+                    </aura:if>
+                    <!--###### MARKUP FOR UNSELECTED TILE ###### -->
+                    <aura:if isTrue="{!v.level != 'selected'}">
+                        <li aura:id = "list" class="slds-item slds-theme--shade" style="border-width:2px; border-color:#c23934;" >
+                            <div class="slds-tile slds-tile--board" style="min-height:120px;position:relative;">
+                                <aura:if isTrue="{!v.level == 'manager' &amp;&amp; (v.hasManager == true)}">
+                                    <button class="slds-button slds-button--icon slds-align--absolute-center " onclick="{!c.fireSelection}" aria-hidden="true">
+                                        <lightning:icon iconName="utility:jump_to_top" class="slds-align--absolute-center" size="x-small" alternativeText=""/>
+                                    </button>
+                                </aura:if>
+                                
+                                <!-- CHANGE -->
+                                
+                                
+                                <aura:if isTrue="{!v.selectedContact.isRootNode == false}">
+                                    <div class="slds-tile__detail slds-text-body--medium">
+                                        
+                                        <aura:if isTrue="{!v.selectedContact.isDummy == false}">
+                                            <p  style="font-weight: bold; color:#005883;" title="{!v.selectedContact.position.Position_ID__c}" class="slds-truncate slds-text-heading_small">{!v.selectedContact.position.Position_ID__c}</p>
+                                            <p  style="color:#005883;" title="{!v.selectedContact.position.Position_Title__c}" class="slds-truncate">{!v.selectedContact.position.Position_Title__c}</p>
+                                            <p  style="color:#005883;" title="{!v.selectedContact.position.Organization_Unit_Name__c}" class="slds-truncate">{!v.selectedContact.position.Organization_Unit_Name__c}</p>
+                                            <aura:set attribute="else">
+                                                <p  style="font-weight: bold; color:#005883;" title="{!v.selectedContact.position.Org_Unit_Number__c}" class="slds-truncate slds-text-heading_small">{!v.selectedContact.position.Org_Unit_Number__c}</p>
+                                                <p  style="color:#005883;" title="{!v.selectedContact.position.Org_Unit_Number__c}" class="slds-truncate">{!v.selectedContact.position.Organization_Unit_Name__c}</p>
+                                                <hr style ="display:block;margin-top:0.0em;margin-bottom:0.0em;margin-left:auto;margin-right: auto;border-style: inset;border-width: 1px;"></hr>
+                                                <p  style="color:#005883;" title="{!v.selectedContact.position.c}" class="slds-truncate slds-text-heading_small"><a style="font-weight: bold;color:#005883;" onclick="{!c.fireSelection}">{!v.selectedContact.position.Organization_Unit_Name__c}</a></p>	
+                                            </aura:set>
+                                        </aura:if>
+                                        
+                                        <!--###### MARKUP TO DISPLAY DIVIDER ###### -->
+                                        <aura:if isTrue="{!v.selectedContact.isDummy == false}">
+                                            <hr style ="display:block;margin-top:0.0em;margin-bottom:0.0em;margin-left:auto;margin-right: auto;border-style: inset;border-width: 1px;"></hr>
+                                        </aura:if>
+                                        
+                                        <aura:if isTrue="{!v.selectedContact.isVacant == false}">
+                                            <aura:iteration items="{!v.selectedContact.contacts}" var="contact" indexVar="idx">
+                                                <div data-record="{!idx}" onclick="{!c.fireSelection}">
+                                                    <p style="color:#005883;" class="slds-truncate"><a style="font-weight: bold;color:#005883;">{!contact.FirstName + ' '+contact.MiddleName+' ' +contact.LastName}</a></p>
+                                                </div>    
+                                            </aura:iteration>
+                                            <aura:set attribute="else">
+                                                <p style="color:#005883;" class="slds-truncate"><a style="font-weight: bold;color:#005883;" onclick="{!c.fireSelection}">Vacant Position</a></p>
+                                            </aura:set>
+                                        </aura:if>
+                                        
+                                    </div>
+                                    <aura:set attribute="else">
+                                        <div class="slds-tile__detail slds-text-body--medium">
+                                            <p  style="font-weight: bold; color:#005883;" title="{!v.selectedContact.position.Organization_Unit_Name__c}" class="slds-truncate slds-text-heading_small">{!v.selectedContact.position.Organization_Unit_Name__c}</p>        
+                                            
+                                            <hr style ="display:block;margin-top:0.0em;margin-bottom:0.0em;margin-left:auto;margin-right: auto;border-style: inset;border-width: 1px;"></hr>
+                                            
+                                            <aura:if isTrue="{!v.selectedContact.isVacant == false}">
+                                                <aura:iteration items="{!v.selectedContact.contacts}" var="contact" indexVar="idx">
+                                                    <div data-record="{!idx}" onclick="{!c.fireSelection}">
+                                                        <p style="color:#005883;" class="slds-truncate"><a style="font-weight: bold;color:#005883;">{!contact.FirstName + ' '+contact.MiddleName+' ' +contact.LastName}</a></p>
+                                                    </div>    
+                                                </aura:iteration>
+                                                <aura:set attribute="else">
+                                                    <p style="color:#005883;" class="slds-truncate"><a style="font-weight: bold;color:#005883;" onclick="{!c.fireSelection}">Vacant Position</a></p>
+                                                </aura:set>
+                                            </aura:if>
+                                        </div>
+                                    </aura:set>
+                                </aura:if>
+                                
+                                
+                                <br/>
+                                <div style="bottom:1px;position:absolute;left:45%">
+                                    <aura:if isTrue="{!v.level == 'subordinate' &amp;&amp; (v.hasSubs == true)}">
+                                        <button class="slds-button slds-button--icon slds-align--absolute-center" onclick="{!c.fireSelection}" aria-hidden="true">
+                                            <lightning:icon iconName="utility:jump_to_bottom" class="slds-align--absolute-center" size="x-small" alternativeText=""/>
+                                        </button>
+                                    </aura:if>
+                                </div>
+                                
+                            </div>    
+                            
+                        </li>
+                    </aura:if>
+                </aura:if>
+                
+            </ul>
+            
+        </div>
+        
+    </div>
+    <!--###### END ###### -->
+</aura:component>

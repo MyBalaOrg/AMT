@@ -1,0 +1,23 @@
+.THIS .icon-endeavour > span > svg {
+    fill: #005fb2;
+}
+
+.THIS .icon-endeavour:hover > span > svg, .THIS.icon-endeavour:focus > span > svg{
+    fill: #00396b;
+}
+
+.THIS.icon-trash:hover > span > span > svg, .THIS.icon-trash:focus > span > span > svg {
+    fill: #c23934 !important;
+}
+
+.THIS.icon-complete:hover > span > span > svg, .THIS.icon-complete:focus > span > span > svg {
+    fill: #009602 !important;
+}
+
+.THIS.icon-cerulean:hover > span > span > svg, .THIS.icon-cerulean:focus > span > span > svg {
+    fill: #00a1df !important;
+}
+
+.THIS.icon-brand:hover > span > span > svg, .THIS.icon-brand:focus > span > span > svg {
+    fill: #0070d2 !important;
+}

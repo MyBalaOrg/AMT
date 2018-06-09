@@ -1,0 +1,241 @@
+<apex:page standardController="Case" showHeader="false" applyHtmlTag="false" applyBodyTag="false" renderAs="pdf">
+<html>
+<head>
+            <style>
+                @page {size:portrait;}
+                
+                style{border:0.8px solid black;}
+                th{border:0.8px solid black; padding: 5px;}
+                
+                #detail{padding: 5px;}
+                
+                @media print  
+                {
+                div{
+                //page-break-inside: avoid; 
+                }
+                }
+                h1,h2,h3,h5,h6{
+                text-align: center;
+                }
+                h3{
+                text-align: left;
+                }
+            
+                   
+                .logo{
+                 float: centre;
+                 padding: 5px;
+                 font-size: x-small;
+                }
+                
+              
+                tr.datacell1 {
+                                    background-color: #C1FF33; 
+                                }
+                tr.datacell2 {
+                                    background-color: #FCE3A5; 
+                                }
+                tr.datacell3 {
+                                    background-color: #a83f43; 
+                                }
+                tr.datacell4 {
+                                    background-color: #80ffbf; 
+                                }
+                tr.datacell5 {
+                                    background-color: #ffff80; 
+                                }
+                .odd {
+                        background-color: #FCF7F7;
+                }
+
+                .even {
+                    background-color: #E3DCDB;
+                }
+
+           </style> 
+        </head>
+        <apex:form >
+        <div class="logo">  
+        <h3>  <u>Information:</u>  </h3>                                                    
+                <table class="logo" id="Color" width="100%" border="0.1px" style="border-collapse:collapse" cellpadding="5px" >                  
+                        <tr class="odd">
+                            <td width="33%"> <b>Union:</b> {!Case.Union__r.Name} </td>
+                            <td width="33%"> <b>LR Office:</b> {!Case.ODILR_LR_Office__c} </td>
+                            <td width="33%"> <b>Job Title:</b> {!Case.Job_Title__c} </td>
+                        </tr>                                              
+                        <tr class="even">
+                            <td width="33%"> <b>First Name:</b> {!Case.First_Name__c} </td>
+                            <td width="33%"> <b>Last Name:</b> {!Case.Last_Name__c} </td>
+                            <td width="33%"> <b>Job Code:</b> {!Case.Job_Code__c} </td>
+                        </tr> 
+                        <tr class="odd">
+                            <td width="33%"> <b>Personnel Area:</b> {!Case.Personnel_Area__c} </td>
+                            <td width="33%"> <b>Department:</b> {!Case.Department__c} </td>
+                            <td width="33%"> <b>Location:</b> {!Case.Location__c} </td>
+                        </tr>       
+                        <tr class="even">
+                            <td width="33%"> <b>Incident Date:</b> <apex:outputText value="{0, date, MM-dd-yyyy}"><apex:Param value="{!Case.Incident_Date__c}" /></apex:OutputText></td>
+                            <td width="33%"> <b>Charge Date:</b> <apex:outputText value="{0, date, MM-dd-yyyy}"><apex:Param value="{!Case.Charge_Date__c}" /></apex:OutputText> </td>
+                            <td width="33%"> <b>ODI Number:</b> {!Case.ODILR_ODI_Number__c} </td>
+                        </tr>  
+                </table>
+            </div>
+           
+            <apex:variable var="count" value="{!0}"/>
+            <apex:repeat value="{!Case.Case_Violations__r}">
+            <apex:variable var="count" value="{!count+1}"/>
+            </apex:repeat>
+            <apex:outputpanel rendered="{!IF(count > 0,TRUE,FALSE)}">
+            <div class="logo">  
+                                                           
+                <table class="logo" id="Color" width="100%" border="0.1px" style="border-collapse:collapse" cellpadding="5px" > 
+                        <tr class="even">
+                        <th>Violation</th>
+                        <th>Additional Information</th>
+                        <th>Agreement Issue</th>
+                        </tr>                 
+                        <apex:repeat value="{!Case.Case_Violations__r}" var="violation">
+                        <tr >
+                        <td width="33%"> {!violation.ODILR_Violation__c} </td>
+                        <td width="33%"> {!violation.ODILR_Additional_Information__c} </td>
+                        <td width="33%"> {!violation.ODILR_Agreement_Issue__c} </td>
+                        </tr>
+                   </apex:repeat>     
+                </table>
+            </div>
+            </apex:outputpanel>
+            <apex:variable var="sizeOf" value="{!0}"/>
+            <apex:repeat value="{!Case.Case_Discipline__r}">
+            <apex:variable var="sizeOf" value="{!sizeOf+1}"/>
+            </apex:repeat>
+            <apex:outputpanel rendered="{!IF(sizeOf > 0,TRUE,FALSE )}">
+            <div class="logo">  
+                                                       
+                <table class="logo" id="Color" width="100%" border="0.1px" style="border-collapse:collapse" cellpadding="5px" > 
+                        <tr class="even">
+                        <th>Discipline Assessed</th>
+                        <th># of Days</th>
+                        <th>Appellate Modification</th>
+                        <th>LR # Of Days</th>
+                        </tr>                 
+                        <apex:repeat value="{!Case.Case_Discipline__r}" var="discipline">
+                        <tr >
+                        <td width="25%"> {!discipline.ODILR_Discipline_Assessed__c} </td>
+                        <td width="25%"> {!discipline.ODILR_No_Of_Days__c} </td>
+                        <td width="25%"> {!discipline.ODILR_Appellate_Modification__c} </td>
+                        <td width="25%"> {!discipline.ODILR_LR_Of_Days__c} </td>
+                        </tr>
+                   </apex:repeat>     
+                </table>
+            </div>
+            </apex:outputpanel>
+            <div class="logo">                                                     
+                <table class="logo" id="Color" width="100%" border="0.1px" style="border-collapse:collapse" cellpadding="5px" >                  
+                        <tr class="odd">
+                            <td width="100%"> <b>Describe Offense:</b> {!Case.Describe_Offense__c} </td>
+                        </tr> 
+                </table>
+            </div>
+            <div class="logo">  
+        <h3>  <u>2nd Level Information:</u>  </h3>                                                    
+                <table class="logo" id="Color" width="100%" border="0.1px" style="border-collapse:collapse" cellpadding="5px" >                  
+                        <tr class="odd">
+                            <td width="33%"> <b>2nd Level File Number:</b> {!Case.ODILR_File_Number_Second_Level__c} </td>
+                            <td width="33%"> <b>Appeal Received Date L2:</b> <apex:outputText value="{0, date, MM-dd-yyyy}"><apex:Param value="{!Case.Appeal_Received_Date_Second_Level__c}" /></apex:OutputText>  </td>
+                            <td width="33%"> <b>Response Due Date L2:</b> <apex:outputText value="{0, date, MM-dd-yyyy}"><apex:Param value="{!Case.Response_Due_Date_Second_Level__c}" /></apex:OutputText></td>
+                        </tr>                                              
+                        <tr class="even">
+                            <td width="33%"> <b>Handler L2:</b> {!Case.ODILR_Handler_Second_Level__r.Name} </td>
+                            <td width="33%"> <b>Conference Schedule Date:</b> <apex:outputText value="{0, date, MM-dd-yyyy}"><apex:Param value="{!Case.Conference_Scheduled_Date__c}" /></apex:OutputText> </td>
+                            <td width="33%"> <b>Decision Date L2:</b> <apex:outputText value="{0, date, MM-dd-yyyy}"><apex:Param value="{!Case.Decision_Date_Second_Level__c}" /></apex:OutputText> </td>
+                        </tr> 
+                        <tr class="odd">
+                            <td width="33%"> <b>$Paid L2:</b> {!Case.ODILR_Paid_Second_Level__c} </td>
+                            <td width="33%"> <b>$Claimed:</b> {!Case.Claimed__c} </td>
+                            <td width="33%"> <b>Documentum Upload 2nd Level:</b> {!Case.ODILR_Documentum_Upload_Second_Level__c} </td>
+                        </tr>       
+                        <tr class="even">
+                            <td width="33%"> <b>Comments L2:</b> {!Case.Comments_Second_Level__c} </td>
+                            <td width="33%"> <b>Created Date:</b> {!Case.CreatedDate} </td>
+                        </tr>  
+                </table>
+            </div>
+            <div class="logo">  
+        <h3>  <u>3rd Level Information:</u>  </h3>                                                    
+                <table class="logo" id="Color" width="100%" border="0.1px" style="border-collapse:collapse" cellpadding="5px" >                  
+                        <tr class="odd">
+                            <td width="33%"> <b>3rd Level File Number:</b> {!Case.ODILR_File_Number_Third_Level__c} </td>
+                            <td width="33%"> <b>Appeal Received L3:</b> <apex:outputText value="{0, date, MM-dd-yyyy}"><apex:Param value="{!Case.Appeal_Received_Date_Third_Level__c}" /></apex:OutputText></td>
+                            <td width="33%"> <b>Conference Date :</b> <apex:outputText value="{0, date, MM-dd-yyyy}"><apex:Param value="{!Case.Date_Of_Conference__c}" /></apex:OutputText> </td>
+                        </tr>                                              
+                        <tr class="even">
+                            <td width="33%"> <b>Decision L3:</b> {!Case.Decision_Third_Level__c} </td>
+                            <td width="33%"> <b>Decision Date L3:</b> <apex:outputText value="{0, date, MM-dd-yyyy}"><apex:Param value="{!Case.Decision_Date_Third_Level__c}" /></apex:OutputText> </td>
+                            <td width="33%"> <b>Handler L3:</b> {!Case.ODILR_Handler_Third_Level__r.Name} </td>
+                        </tr> 
+                        <tr class="odd">
+                            <td width="33%"> <b>Date Sent to LRO:</b> <apex:outputText value="{0, date, MM-dd-yyyy}"><apex:Param value="{!Case.Date_Sent_to_LRO__c}" /></apex:OutputText> </td>
+                            <td width="33%"> <b>$Paid L3:</b> {!Case.ODILR_Paid_Third_Level__c} </td>
+                            <td width="33%"> <b>$Not Paid L3:</b> {!Case.ODILR_Not_Paid_Third_Level__c} </td>
+                        </tr>       
+                        <tr class="even">
+                            <td width="33%"> <b>Comments L3:</b> {!Case.Comments_Third_Level__c} </td>
+                            <td width="33%"> <b>Documentum Upload Third Level:</b> {!Case.ODILR_Documentum_Upload_Third_Level__c} </td>
+                        </tr>  
+                </table>
+            </div>
+             <div class="logo">  
+        <h3>  <u>Board Level Information:</u>  </h3>                                                    
+                <table class="logo" id="Color" width="100%" border="0.1px" style="border-collapse:collapse" cellpadding="5px" >                  
+                        <tr class="odd">
+                            <td width="33%"> <b>Date Appealed:</b> <apex:outputText value="{0, date, MM-dd-yyyy}"><apex:Param value="{!Case.Date_Appealed_Board__c}" /></apex:OutputText> </td>
+                            <td width="33%"> <b>Date Listed:</b> <apex:outputText value="{0, date, MM-dd-yyyy}"><apex:Param value="{!Case.Date_Listed__c}" /></apex:OutputText> </td>
+                            <td width="33%"> <b>Date Referee Assigned:</b> <apex:outputText value="{0, date, MM-dd-yyyy}"><apex:Param value="{!Case.Date_Referee_Assigned__c}" /></apex:OutputText> </td>
+                        </tr>                                              
+                        <tr class="even">
+                            <td width="33%"> <b>Board Number:</b> {!Case.Board_Number__c} </td>
+                            <td width="33%"> <b>Case Number:</b> {!Case.Board_Level_Case_Number__c} </td>
+                            <td width="33%"> <b>Docket Number:</b> {!Case.Docket_Number__c} </td>
+                        </tr> 
+                        <tr class="odd">
+                            <td width="33%"> <b>Award number:</b>{!Case.Award_Number__c} </td>
+                            <td width="33%"> <b>Award Date:</b> <apex:outputText value="{0, date, MM-dd-yyyy}"><apex:Param value="{!Case.Award_Date__c}" /></apex:OutputText> </td>
+                            <td width="33%"> <b>Referee:</b> {!Case.Referee__c} </td>
+                        </tr>       
+                        <tr class="even">
+                            <td width="33%"> <b>Prep Writer:</b> {!Case.Prep_Writer__r.Name} </td>
+                            <td width="33%"> <b>Prep Written Date:</b> <apex:outputText value="{0, date, MM-dd-yyyy}"><apex:Param value="{!Case.Prep_Written_Date__c}" /></apex:OutputText> </td>
+                            <td width="33%"> <b>Prep Type:</b> {!Case.Prep_Type__c} </td>
+                        </tr>  
+                        <tr class="odd">
+                            <td width="33%"> <b>Advocate:</b> {!Case.ODILR_Advocate__r.Name} </td>
+                            <td width="33%"> <b>Hearing Date L4:</b> <apex:outputText value="{0, date, MM-dd-yyyy}"><apex:Param value="{!Case.Hearing_Date_Board_Level__c}" /></apex:OutputText></td>
+                            <td width="33%"> <b>Amtrak Board Member:</b> {!Case.Amtrak_Board_Member__r.Name} </td>
+                        </tr>  
+                        <tr class="even">
+                            <td width="33%"> <b>Decision Board:</b> {!Case.Decision_Board_Level__c} </td>
+                            <td width="33%"> <b>Entered Date:</b> <apex:outputText value="{0, date, MM-dd-yyyy}"><apex:Param value="{!Case.Entered_Date__c}" /></apex:OutputText> </td>
+                            <td width="33%"> <b>Estimated Liability:</b> {!Case.Estimated_Liability__c} </td>
+                        </tr>  
+                        <tr class="odd">
+                            <td width="33%"> <b>$Paid L4:</b> {!Case.ODILR_Paid_Board_Level__c} </td>
+                            <td width="33%"> <b>$Not Paid L4:</b> {!Case.ODILR_Not_Paid_Board_Level__c} </td>
+                            <td width="33%"> <b>Documentum Upload Board Level:</b> {!Case.ODILR_Documentum_Upload_Board_Level__c} </td>
+                        </tr>  
+                </table>
+            </div>
+            <div class="logo">                                                        
+                <table class="logo" id="Color" width="100%" border="0.1px" style="border-collapse:collapse" cellpadding="5px" >                  
+                        <tr class="odd">
+                            <td width="20%"> <b>Case Number:</b> {!Case.CaseNumber} </td>
+                            <td width="20%"> <b>SAP Number:</b> {!Case.SAP_Number__c} </td>
+                            <td width="20%"> <b>Union File Number:</b> {!Case.Union_File_Number__c} </td>
+                            <td width="20%"> <b>Continuing Liability Date:</b> <apex:outputText value="{0, date, MM-dd-yyyy}"><apex:Param value="{!Case.Continuing_Liability_Date__c}" /></apex:OutputText> </td>
+                            <td width="20%"> <b>Seniority Date:</b> <apex:outputText value="{0, date, MM-dd-yyyy}"><apex:Param value="{!Case.Seniority_Date__c}" /></apex:OutputText></td>
+                        </tr>  
+                </table>
+            </div>
+        </apex:form>
+</html>
+</apex:page>

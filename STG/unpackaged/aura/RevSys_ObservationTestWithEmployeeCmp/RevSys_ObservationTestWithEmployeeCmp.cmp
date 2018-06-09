@@ -1,0 +1,131 @@
+<aura:component >
+    
+    <!-- revsys_gauge_resource -->
+    <ltng:require scripts="{!$Resource.revsys_gauge_resource + '/jquery-min.js'}" afterScriptsLoaded="" />
+    <ltng:require scripts="{!$Resource.revsys_gauge_resource + '/jquery.transit.min.js'}" afterScriptsLoaded="" />
+    <ltng:require scripts="{!$Resource.revsys_gauge_resource + '/js.js'}" afterScriptsLoaded="" />
+    
+    <aura:attribute name="selectedEmpList" type="SearchTabularItemWrapper[]" access="public" />
+    <aura:attribute name="selectionState" type="Integer" access="public" />
+    <aura:attribute name="cmpState" type="Integer" access="public" />
+    <aura:attribute name="testWithObservationsList" type="RevSys_TestWithObservationsWrapper[]" access="public" />
+    <aura:attribute name="filteredList" type="RevSys_TestWithObservationsWrapper[]" access="public" />
+    <aura:attribute name="selectedList" type="RevSys_TestWithObservationsWrapper[]" access="public" />
+    <aura:attribute name="treeColumns" type="List" access="public" />
+    <aura:attribute name="fieldLabelMap" type="Map" access="public" />
+    <aura:attribute name="picklistMap" type="Map" access="public" default="{}"/>
+    <aura:attribute name="picklistMapRegionState" type="Map" default="{}" access="public" />
+    <aura:attribute name="picklistMapStateSubDivision" type="Map" default="{}" access="public" />
+    <aura:attribute name="observation" type="Observation__c" access="public"/>
+    <aura:attribute name="requiredFieldMap" type="Map" access="public" />
+    <aura:attribute name="recordType" type="RecordType" access="public" />
+    <aura:attribute name="editableFields" type="Object[]" access="global"/>
+    <aura:attribute name="runOnce" type="boolean" default="false" access="global"/>
+    <aura:attribute name="filterKeyList" type="String[]" access="public" />
+
+    <aura:registerEvent name="enableNextButton" type="c:RevSys_GeneralPurposeEvt" />
+    
+    <aura:handler name="calculateTestPercent" event="c:RevSys_GeneralPurposeEvt" 
+                  action="{! c.handlecalculateTestPercent }" phase="capture" />
+    
+    <aura:handler name="populateTestResult" event="c:RevSys_GeneralPurposeEvt" 
+                  action="{! c.handlepopulateTestResult }" />
+    
+    
+    <div class="slds-size_1-of-1 slds-p-around_medium">
+        
+        <aura:if isTrue="{! notequals(v.selectionState, 3) }">
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                        <th scope="col">Test Number</th>
+                        <th scope="col">Test Name</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td></td>
+                        <td>FILTERS:</td>
+                        <aura:iteration var="filterKey" items="{! v.filterKeyList }" indexVar="keyIndex">
+                            <td>
+                                <input type="text" value="{! filterKey }" data-col-index="{! keyIndex }" 
+                                       onkeyup="{! c.onkeyupFilterResults }" onblur="{! c.onblurFilterResults }"
+                                       style="padding-left:0.5em; padding-right:0.5em; width:95%;"/>
+                            </td>
+                        </aura:iteration>
+                        <td></td>
+                    </tr>
+                    <!-- <aura:iteration var="test" items="{! v.testWithObservationsList }" indexVar="idx">  -->
+                    <aura:iteration var="test" items="{! v.filteredList }" indexVar="idx">
+                        <tr>
+                            <td>
+                                <lightning:buttonIcon aura:id="toggleButton" iconName="utility:chevronright" size="x-small" onclick="{! c.handleToggle }" name="{!idx}"/>
+                            </td>
+                            <td><ui:inputCheckbox value="{! test.selected }" name="{! test.testNumber }" click="{!c.testSelectChange}" /></td>
+                            <td>{! test.testNumber }</td>
+                            <td>{! test.testName }</td>
+                            <td></td>
+                        </tr>
+                        
+                        <tr aura:id="employeesRow" data-row-index="{ !idx }" class="slds-hide">
+                            <td colspan="5">
+                                <c:RevSys_ObservationEmployeeTestTableCmp aura:id="testEmployees" testWithObs="{!v.filteredList}" testEntry="{! test.entryList }" testNumber="{! test.testNumber }" testIndex="{! idx }" selectionState="{! v.selectionState }" 
+                                                                          fieldLabelMap="{! v.fieldLabelMap }" picklistMap="{! v.picklistMap }" requiredFieldMap="{! v.requiredFieldMap }" picklistMapRegionState="{! v.picklistMapRegionState }" recordType="{! v.recordType }"
+                                                                          editableFields="{! v.editableFields }" selectedEmpList="{! v.selectedEmpList }"
+                                                                          picklistMapStateSubDivision="{! v.picklistMapStateSubDivision }" />
+                            </td>
+                        </tr>
+                    
+                    </aura:iteration>
+                    
+                </tbody>
+            </table>
+            <aura:set attribute="else">
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                    <thead>
+                        <tr class="slds-text-title_caps">
+                            <th scope="col"></th>
+                            <th scope="col">Test Number</th>
+                            <th scope="col">Test Name</th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration var="test" items="{! v.selectedList }" indexVar="idx">
+                            <tr>
+                                <td>
+                                    <lightning:buttonIcon aura:id="toggleButton" iconName="utility:chevronright" size="x-small" onclick="{! c.handleToggle }" name="{! idx }"/>
+                                </td>
+                                <td>{! test.testNumber }</td>
+                                <td>{! test.testName }</td>
+                                <td>
+                                    <!-- Gauge Meter goes here.! -->
+                                    <div class="container">
+                                        <div class="gauge-a"></div>
+                                        <div class="gauge-b"></div>
+                                        <div class="gauge-c" aura:id="gauge" ></div>
+                                        <div class="gauge-data">
+                                            <p id="percent">{! test.percent}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr aura:id="employeesRow" data-row-index="{ !idx }" class="slds-hide">
+                                <td colspan="5">
+                                    <c:RevSys_ObservationEmployeeTestTableCmp aura:id="testEmployees" testWithObs="{!v.filteredList}" testEntry="{! test.entryList }" testNumber="{! test.testNumber }" testIndex="{! idx }" selectionState="{! v.selectionState }" 
+                                                                              fieldLabelMap="{! v.fieldLabelMap }" picklistMap="{! v.picklistMap }" requiredFieldMap="{! v.requiredFieldMap }" picklistMapRegionState="{! v.picklistMapRegionState }" recordType="{! v.recordType }"
+                                                                              editableFields="{! v.editableFields }" selectedEmpList="{! v.selectedEmpList }"
+                                                                              picklistMapStateSubDivision="{! v.picklistMapStateSubDivision }" />
+                                </td>
+                            </tr>
+                        </aura:iteration>
+                        
+                    </tbody>
+                </table>
+            </aura:set>
+        </aura:if>
+    </div>
+</aura:component>

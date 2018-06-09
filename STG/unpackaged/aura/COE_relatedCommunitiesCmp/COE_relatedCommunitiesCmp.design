@@ -1,0 +1,12 @@
+<design:component label="Related Communities Tile 1" >
+    <design:attribute name="showTileHeader" label="Show Tile Header" description="Show tile header?" />
+    <design:attribute name="header" label="Tile Header" description="Header of tile" />
+    <design:attribute name="headerBackgroundcolor" label="Header Background Color" description="Background color of the header e.g. #FF00FD" />
+    <design:attribute name="titleFontColor" label="Title Font Color" description="Title Font Color e.g. #FF00FD" />
+    <design:attribute name="titleFontSize" label="Title Font Size" description="Title Font Size" />
+    <design:attribute name="tileContentBackgroundColor" label="Tile Content Background color" description="Tile Content Background color" />
+    <design:attribute name="showBorder" label="Show border" description="Control the border's visibility"/>
+    <design:attribute name="showDivider" label="Show divider" description="Control the divider's visibility"/>
+    <design:attribute name="borderCornerRadius" label="Border Corder Radius in px" description="Control the radius of the tile border"/>
+    <design:attribute name="shadow" label="3D shadow" description="Control the shadow of the tile"/>
+</design:component>

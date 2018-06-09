@@ -1,0 +1,79 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="RevSys_Obs_RecordDetailCtrl">
+    <ltng:require scripts="{! $Resource.amtrak_helper_functions }" afterScriptsLoaded="{! c.scriptsLoaded }" />
+    
+    <aura:attribute name="findingList" type="Finding__c[]" access="public" />
+    <aura:attribute name="obs" type="Observation__c" access="public" />
+    <aura:attribute name="scoreList" type="Integer[]" access="public" default="[0,1]" />
+    <aura:attribute name="numOfColList" type="List" access="private" />
+    <aura:attribute name="numOfCol" type="Integer" access="public" default="4" />
+    <aura:attribute name="showObsCloneDialog" type="Boolean" access="public" default="false" />
+    
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
+    <aura:handler name="toggleLightningSpinner" event="c:RevSys_GeneralPurposeEvt" action="{! c.handleToggleLightningSpinner }"/>
+    
+    <lightning:spinner aura:id="fidget-spinner" variant="brand" size="large" class="fidget-spinner-style"/>
+    
+    <div class="slds-grid slds-wrap slds-m-around_xx-small slds-p-around_small">
+        <div class="slds-size_1-of-1 slds-p-bottom_small">
+            <div class="slds-float_left slds-p-left_small"><span style="font-size:large;">Status: {! v.obs.Status__c }</span></div>
+            <div class="slds-float_right slds-m-left_medium">
+                <span style="font-size:medium;">{! $Label.c.RevSys_Obs_Number_Of_Column }</span>
+                <aura:iteration var="colNumber" items="{! v.numOfColList }">
+                    <button class="{! 'slds-button slds-float_right slds-m-left_xx-small slds-button_' + (colNumber.selected ? 'brand' : 'neutral') }" 
+                            value="{! colNumber.value }" onclick="{! c.changeNumberOfColumn }">
+                        {! colNumber.value }
+                    </button>
+                </aura:iteration>
+            </div>
+        </div>
+        
+        <div class="slds-size_1-of-1 slds-m-bottom_small">
+            <div class="slds-grid slds-wrap">
+                <aura:iteration var="finding" items="{! v.findingList }" indexVar="fIndex">
+                    <div class="{! 'slds-p-around_xx-small slds-size_1-of-' + v.numOfCol }">
+                        <div class="slds-size_1-of-1 slds-p-around_x-small question-container">
+                            <label class="slds-text-title">{! finding.Sub_category__c }</label>
+                            <div class="slds-size_1-of-1 finding-score-select">
+                                <lightning:select value="{! finding.Score__c }" disabled="{!v.obs.RevSys_ReadOnly__c}">
+                                    <aura:iteration var="score" items="{! v.scoreList }">
+                                        <option value="{! score }">{! score }</option>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </div>
+                        </div>
+                    </div>
+                </aura:iteration>
+            </div>
+        </div>
+        
+        <div class="slds-size_1-of-1 slds-m-bottom_small slds-align_absolute-center ">
+            
+            <button class="slds-button slds-button_neutral slds-p-horizontal_large" 
+                    onclick="{! c.SaveForm }">
+                <span style="font-size:medium;">{! $Label.c.RevSys_Observation_SaveAsDraft }</span>
+            </button>
+            <button class="slds-button slds-button_brand slds-p-horizontal_large slds-m-right_medium" 
+                    onclick="{! c.SaveForm }" value="{! $Label.c.RevSys_Observation_Status_Complete }">
+                <span style="font-size:medium;">{! $Label.c.Form_Button_Save_Submit }</span>
+            </button>
+        </div>
+        
+        <aura:if isTrue="{!v.showObsCloneDialog}" >
+            <div aura:id="theModal" class="demo-only" style="height: 640px;">
+                <section role="dialog" tabindex="-1" aria-label="Meaningful description of the modal content" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container">
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            <p>{!$Label.c.RevSys_Error_Message_Obs_Form_Save_Success}&nbsp;{!$Label.c.RevSys_Add_Emp_To_Obs} </p>
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <button class="slds-button slds-button_neutral" onclick="{!c.closeModal}">No</button>
+                            <button class="slds-button slds-button_brand" onclick="{!c.cloneObservation}">Yes</button>
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </div>
+        </aura:if>
+        
+    </div>
+</aura:component>

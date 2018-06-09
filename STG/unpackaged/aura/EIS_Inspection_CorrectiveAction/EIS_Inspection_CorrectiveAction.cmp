@@ -1,0 +1,100 @@
+<aura:component controller="EIS_Inspection_CorrectiveActionCtrl">
+    <aura:attribute name="disableCorrectiveActions" type="Boolean" access="public" default="false" />
+    <aura:attribute name="inspection" type="Audit_Inspections__c" access="public" />
+	<aura:attribute name="question" type="Questions__c" access="public" />
+    <aura:attribute name="finding" type="Finding__c" access="public" />
+    <aura:attribute name="findingNum" type="Integer" access="public" />
+    <aura:attribute name="caNum" type="Integer" default="1" access="public" />
+    <aura:attribute name="ca" type="Corrective_Action__c" access="public" />
+    
+    <aura:registerEvent name="toggleLightningSpinner" type="c:EIS_BooleanEvent" />
+    <aura:registerEvent name="updateInspection" type="c:EIS_Inspection_BubbleChangesEvent"/>
+    <aura:registerEvent name="updateQuestion" type="c:EIS_Inspection_BubbleChangesEvent"/>
+    <aura:registerEvent name="updateCorrectiveAction" type="c:EIS_Inspection_BubbleChangesEvent"/>
+    <aura:registerEvent name="missingFinding" type="c:EIS_BooleanEvent"/>
+    
+    <aura:handler name="fetchSearchItems" event="c:EIS_Audit_UpdateObjectEvent" action="{! c.handleFetchSearchItemsEvent }"/>
+    <aura:handler name="searchItemSelected" event="c:EIS_Audit_UpdateObjectEvent" action="{! c.handleSearchItemSelectedEvent }"/>
+    
+    <div class="slds-grid slds-wrap slds-p-around_x-small slds-m-bottom_small corrective-action-box">
+        <div class="slds-p-horizontal_xx-small slds-size_1-of-1">
+            <label><span class="required-field-style">* </span>{! $Label.c.EIS_Form_Label_Corrective_Action + ' ' + v.caNum}</label>
+            <aura:if isTrue="{! and(!empty(v.ca.Id), !v.disableCorrectiveActions) }">
+                <span class="slds-m-left_large" onclick="{! c.onclickDeleteCorrectiveAction }">
+                	<c:EIS_LightningIcon iconName="utility:delete" iconSize="x-small"
+                                         cursor="pointer" hoverColor="icon-trash"/>
+                </span>
+            </aura:if>
+        </div>
+        <div class="slds-p-horizontal_xx-small slds-size_1-of-1">
+            <textarea aura:id="corrective-description" class="slds-textarea" 
+                      placeholder="{! $Label.c.EIS_Form_Placeholder_Enter_Text }" 
+                      value="{! v.ca.EIS_Description__c }"
+                      disabled="{! v.disableCorrectiveActions }"
+                      onblur="{! c.descriptionOnBlur }">
+            </textarea>
+            <c:EIS_ErrorMessage aura:id="corrective-description-error"
+                                message="{! $Label.c.EIS_Form_Error_Msg_Missing_CA }"/>
+        </div>
+        
+        <div class="slds-p-horizontal_xx-small" style="text-align: center">
+            <button class="{! 'slds-button slds-button_' + (equals(v.ca.EIS_Status__c,$Label.c.EIS_Corrective_Action_Status_Not_Started) ? 'brand' : 'neutral') }" 
+                    disabled="{! or(equals(v.ca.EIS_Status__c,$Label.c.EIS_Corrective_Action_Status_Not_Started), v.disableCorrectiveActions) }" 
+                    value="c.clickNotStarted"
+                    onclick="{! c.onclickStatusButton }">
+                {! $Label.c.EIS_Corrective_Action_Status_Not_Started }
+            </button>
+            <br/>
+            <ui:outputDate value="{! v.ca.EIS_Date_of_Not_Started_Status__c }"/>
+        </div>
+        <div class="slds-p-horizontal_xx-small" style="text-align: center">
+            <button class="{! 'slds-button slds-button_' + (equals(v.ca.EIS_Status__c,$Label.c.EIS_Corrective_Action_Status_In_Progress) ? 'brand' : 'neutral') }" 
+                    disabled="{! or(equals(v.ca.EIS_Status__c,$Label.c.EIS_Corrective_Action_Status_In_Progress), v.disableCorrectiveActions) }" 
+                    value="c.clickInProgress"
+                    onclick="{! c.onclickStatusButton }">
+                {! $Label.c.EIS_Corrective_Action_Status_In_Progress }
+            </button>
+            <br/>
+            <ui:outputDate value="{! v.ca.EIS_Date_of_In_Progress_Status__c }"/>
+        </div>
+        <div class="slds-p-horizontal_xx-small" style="text-align: center">
+            <button class="{! 'slds-button slds-button_' + (equals(v.ca.EIS_Status__c,$Label.c.EIS_Corrective_Action_Status_Correct) ? 'brand' : 'neutral') }"
+                    disabled="{! or(equals(v.ca.EIS_Status__c,$Label.c.EIS_Corrective_Action_Status_Correct), v.disableCorrectiveActions) }" 
+                    value="c.clickCorrected"
+                    onclick="{! c.onclickStatusButton }">
+                {! $Label.c.EIS_Corrective_Action_Status_Correct }
+            </button>
+            <br/>
+            <!--ARSS-212:- PK 3/6/18: Change output to input type:- <ui:outputDate value="{! v.ca.EIS_Date_of_Corrected_Status__c }"/> -->
+           <span id="corrDate"><ui:inputDate aura:id="correctedDate" 
+                          value="{! v.ca.EIS_Date_of_Corrected_Status__c }" 
+                          displayDatePicker="true" 
+                          class="inputDate" 
+                          disabled="{! or(equals(v.ca.EIS_Status__c,$Label.c.EIS_Corrective_Action_Status_Correct), v.disableCorrectiveActions) }"/>
+       </span> 
+            </div>
+        <div class="slds-p-horizontal_xx-small" style="text-align: center">
+            <button class="{! 'slds-button slds-button_' + (equals(v.ca.EIS_Status__c,$Label.c.EIS_Corrective_Action_Status_Fail_Correction) ? 'brand' : 'neutral') }" 
+                    disabled="{! or(equals(v.ca.EIS_Status__c,$Label.c.EIS_Corrective_Action_Status_Fail_Correction), v.disableCorrectiveActions) }" 
+                    value="c.clickFailedCorrection"
+                    onclick="{! c.onclickStatusButton }">
+                {! $Label.c.EIS_Corrective_Action_Status_Fail_Correction }
+            </button>
+            <br/>
+            <ui:outputDate value="{! v.ca.EIS_Date_of_Correction_Failed_Status__c }"/>
+        </div>
+        <div class="slds-size_1-of-1">
+            <div class="slds-m-top_x-small slds-p-horizontal_xx-small slds-size_1-of-2 slds-float_right">
+                <label><span class="required-field-style">* </span>{! $Label.c.EIS_Form_Label_Assigned_To }</label>
+                <c:EIS_TypeaheadSearch aura:id="contact-typeahead" disabled="{! v.disableCorrectiveActions }"
+                                       selectedItemLabel="{! v.ca.EIS_Assigned_to__r.Name }" placeholder="{! $Label.c.EIS_Form_Placeholder_Enter_Text }"/>
+                <c:EIS_ErrorMessage aura:id="contact-typeahead-error" message="{! $Label.c.EIS_Form_Error_Msg_Missing_Assigned_To }"/>
+            </div>
+        </div>
+        <div class="slds-m-top_small slds-size_1-of-1">
+            <aura:if isTrue="{! !empty(v.ca.Id) }">
+            	<c:EIS_FileAttchment_Wrapper parentId="{! v.ca.Id }" label="{! $Label.c.EIS_Form_Button_Corrective_Report }" disable="{! v.disableCorrectiveActions }" />
+            </aura:if>
+        </div>
+    </div>
+</aura:component>

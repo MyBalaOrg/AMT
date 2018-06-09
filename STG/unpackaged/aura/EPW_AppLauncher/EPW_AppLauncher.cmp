@@ -1,0 +1,51 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes,flexipage:availableForAllPageTypes" controller="EPW_AppLauncherController" >
+    <!--attributes-->
+    <aura:attribute name="applications" type="AppMenuItem[]" />
+    <aura:attribute name="domainUrl" type="String" />
+    <aura:attribute name="applicationType" type="String" />
+    <!--/attributes-->
+    
+    <!--handlers-->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <!--/handlers-->
+    
+    <!--component-->
+    <div class="demo-only" style="height: 640px;">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick="{!c.closeDialog}" >
+                        <lightning:icon iconName="utility:close" variant="inverse" size="small"/>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">App Launcher</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <aura:iteration items="{!v.applications}" var="application" >
+                        <lightning:layout class="application" multipleRows="true">
+                            <lightning:layoutItem >
+                                <div data-url="{!application.StartUrl}" data-type="{!application.Type}" data-applicationid="{!application.ApplicationId}" class="slds-box application" onclick="{!c.navigateToApplication}">
+                                    <div class="logo">
+                                        <img src="{!application.LogoUrl}" />
+                                    </div>
+                                    <div class="app-content">
+                                        <div class="slds-truncate title">
+                                            <a onclick="{!c.navigateToApplication}">
+                                                {!application.Label}
+                                            </a>
+                                        </div>
+                                        <div class="description">
+                                            {!application.Description}
+                                        </div>
+                                    </div>
+                                </div>
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                    </aura:iteration>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+    <!--/component-->
+</aura:component>

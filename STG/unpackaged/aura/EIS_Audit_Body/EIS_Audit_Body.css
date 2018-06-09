@@ -1,0 +1,62 @@
+.THIS .side-tab.slds-button_brand {
+    color: white !important;
+    background-color: rgb(0, 57, 107) ;
+    border: 1px solid rgb(0, 57, 107) ;
+}
+
+.THIS .side-tab {
+    color: #00396b;
+    border-radius: 0px !important;
+    margin: 0px !important;
+    line-height: 1rem !important;
+    min-height: 5em;
+}
+
+.THIS .side-tab[disabled] {
+    color: #7e8c99 !important;
+    border-color: #d8dde6 !important;
+    background-color: #f7f9fb !important;
+}
+
+.THIS .positive-finding-wrapper {
+    background-color: #d8edff;
+    border-radius: 0.5em;
+}
+
+.THIS .positive-finding-wrapper > div {
+    background-color: white;
+    border-radius: 1em;
+    min-height: 56px;
+}
+
+.THIS .positive-finding-wrapper > div:last-child {
+ 	margin: 0 !important;   
+}
+
+.THIS .pf-dept-btn.slds-button_brand {
+    background-color: #00a1df !important;
+    border: 1px solid #00a1df !important;
+}
+
+.THIS .pf-dept-btn.slds-button_brand[disabled] {
+    background-color: #9faab5 !important;
+    border: 1px solid #9faab5 !important;
+}
+
+.THIS .pf-dept-btn.slds-button_neutral {
+    color: #00a1df ;
+    border: 1px solid #00a1df ;
+}
+
+.THIS .pf-dept-btn.slds-button_neutral[disabled] {
+    color: #54698d !important;
+    border: 1px solid #54698d !important;
+}
+
+.THIS .pf-btn-save, .THIS .pf-btn-clear {
+    border-radius: 0px;
+}
+
+.THIS .pf-dept-counters {
+    border-top: 1px solid white;
+}

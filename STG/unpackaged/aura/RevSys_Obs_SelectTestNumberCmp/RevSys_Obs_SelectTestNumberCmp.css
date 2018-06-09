@@ -1,0 +1,24 @@
+.THIS .test-number-box {
+    min-height: 6rem;
+    word-wrap: break-word;
+}
+
+.THIS .test-number-box:hover {
+    border-color: #f9f9fa;
+    background-color: #f9f9fa;
+    box-shadow: -2px 3px 4px rgba(0,0,0,0.17);
+    color: black;
+    cursor: pointer;
+}
+
+.THIS .test-number-selected {
+    color: white;
+    border-color: #1589ee;
+    background-color: #1589ee;
+}
+
+.THIS .test-number-selected:hover {
+    color: white !important;
+    border-color: #5eb4ff !important;
+    background-color: #5eb4ff !important;
+}

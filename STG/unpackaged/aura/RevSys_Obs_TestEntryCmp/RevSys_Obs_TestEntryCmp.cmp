@@ -1,0 +1,226 @@
+<aura:component >
+    <aura:attribute name="testEntryWrapperList" type="RevSys_TestEntryWrapper[]" access="public" />
+    <aura:attribute name="picklistMap" type="Map" default="{}" access="public" />
+    <aura:attribute name="obsFieldLabelMap" type="Map" access="public" />
+    <aura:attribute name="obsRequiredFieldMap" type="Map" access="public" />
+	<aura:attribute name="selectionState" type="Integer" access="public" />
+    <aura:attribute name="cmpState" type="Integer" access="public" />
+    <aura:attribute name="currentEntryIndex" type="Integer" default="0" access="public" />
+    <aura:attribute name="selectedRecordType" type="RecordType" access="public" />
+    <aura:attribute name="testQuestionList" type="Finding__c[]" access="public" />
+    <aura:attribute name="scoreList" type="Integer[]" default="[0,1,2,3,4]" access="public" />
+    <aura:attribute name="needImprovement" type="String" access="public" />
+    <aura:attribute name="needImprovementRequired" type="Boolean" default="false" access="public" />
+    <aura:attribute name="needImprovementMap" type="Map" access="public" />
+    <aura:attribute name="comments" type="String" access="public" />
+    <aura:attribute name="commentsRequired" type="Boolean" default="false" access="public" />
+
+    <aura:registerEvent name="toggleLightningSpinner" type="c:RevSys_GeneralPurposeEvt" />
+    
+    <aura:if isTrue="{! equals(v.selectionState, v.cmpState) }">
+        <div class="slds-size_1-of-1 slds-p-around_medium">
+            <!--Test-1872 Test entry form -->
+            <aura:if isTrue="{! equals(v.selectedRecordType.Name, $Label.c.RevSys_Observation_RT_Label_Test_1872) }">
+                <div class="slds-grid slds-p-around_medium">
+                    <div class="slds-vertical-tabs slds-size_1-of-1">
+                        <ul class="slds-vertical-tabs__nav" role="tablist" aria-orientation="vertical">
+                            <aura:iteration var="teWrapper" items="{! v.testEntryWrapperList }" indexVar="entryIndex">
+    							<li class="{! 'slds-vertical-tabs__nav-item' + (teWrapper.display ? ' slds-is-active' : '') }" 
+                                    title="{! teWrapper.obs.TestNumber__c }" role="presentation"
+                                    onclick="{! c.onclickTestEntryButton }" data-entry-index="{! entryIndex }">
+                                     <a class="slds-vertical-tabs__link"  href="javascript:void(0)" role="tab" tabindex="entryIndex" 
+                                        aria-selected="{! teWrapper.display }" aria-controls="{! 'slds-vertical-tabs-' + entryIndex }" 
+                                        id="{! 'slds-vertical-tabs-' + entryIndex + '__nav' }">
+                                         {! teWrapper.obs.TestNumber__c }
+                                         <aura:if isTrue="{! !teWrapper.display }">
+                                         	<lightning:icon iconName="{! 'utility:' + (teWrapper.completed ? 'check' : 'clear') }" size="small"
+                                                            class="slds-float_right"/>
+                                         </aura:if>
+                                     </a>
+                                </li>
+                            </aura:iteration>
+                        </ul>
+                        <aura:iteration var="teWrapper" items="{! v.testEntryWrapperList }" indexVar="entryIndex">
+                            <aura:if isTrue="{! teWrapper.display }">
+                                <div class="slds-vertical-tabs__content slds-show" role="tabpanel" 
+                                     aria-labelledby="{! 'slds-vertical-tabs' + entryIndex + '__nav' }" id="{! 'slds-vertical-tabs-' + entryIndex}">
+                                    <div class="slds-text-longform">
+                                        <lightning:icon iconName="{! 'action:' + (teWrapper.completed ? 'approval' : 'close') }" size="small"
+                                                        class="slds-float_right"/>
+                                        <h3 class="slds-text-heading_medium">{! teWrapper.obs.TestNumber__c + ' - ' + teWrapper.obs.TestName__c }</h3>
+                                        <div class="slds-grid slds-wrap">
+                                            <div class="slds-size_1-of-1 slds-p-horizontal_large slds-p-bottom_medium">
+                                                <label class="slds-text-heading_x-small">Select Employees</label>
+                                                <br/>
+                                                <aura:iteration var="emp" items="{! teWrapper.empList }" indexVar="empIndex">
+                                                    <div class="slds-float_left slds-p-right_large slds-p-top_x-small">
+                                                        <ui:inputCheckbox value="{! emp.selected }" label="{! emp.name }" 
+                                                                          class="slds-float_left slds-m-right_x-small"/>
+                                                    </div>
+                                                </aura:iteration>
+                                            </div>
+                                            
+                                            <div class="slds-size_1-of-2 slds-p-horizontal_large slds-p-bottom_medium">
+                                                <!-- Evaluation Date -->
+                                                <ui:inputDate aura:id="Date__c" label="{! v.obsFieldLabelMap.date__c }" displayDatePicker="true" required="{! teWrapper.requiredFields.Date__c }"
+                                                              value="{! teWrapper.Date__c }" change="{! c.checkForTestCompletion }" format="MM/dd/yyyy"/>
+                                            </div>
+                                            <div class="slds-size_1-of-2 slds-p-horizontal_large slds-p-bottom_medium slds-clearfix">
+                                                <lightning:select aura:id="TimeHH__c" class="slds-float_left" 
+                                                                  value="{! teWrapper.TimeHH__c }" label="Hour"
+                                                                  disabled="{! empty(v.picklistMap.TimeHH__c) }"
+                                                                  required="{! teWrapper.requiredFields.TimeHH__c }"
+                                                                  onblur="{! c.checkForTestCompletion }">
+                                                    <aura:iteration var="timeHour" items="{! v.picklistMap.TimeHH__c }">
+                                                        <option value="{! timeHour }">{! timeHour }</option>
+                                                    </aura:iteration>
+                                                </lightning:select>
+                                                <lightning:select aura:id="TimeMM__c" class="slds-float_left" 
+                                                                  value="{! teWrapper.TimeMM__c }" label="Minute"
+                                                                  disabled="{! empty(v.picklistMap.TimeMM__c) }"
+                                                                  required="{! teWrapper.requiredFields.TimeMM__c }"
+                                                                  onblur="{! c.checkForTestCompletion }">
+                                                    <aura:iteration var="timeMinute" items="{! v.picklistMap.TimeMM__c }">
+                                                        <option value="{! timeMinute }">{! timeMinute }</option>
+                                                    </aura:iteration>
+                                                </lightning:select>
+                                            </div>
+                                            <div class="slds-size_1-of-2 slds-p-horizontal_large slds-p-bottom_medium">
+                                                <ui:inputSelect aura:id="Result__c"
+                                                                value="{! teWrapper.Result__c }" 
+                                                                label="{! v.obsFieldLabelMap.result__c }"
+                                                                disabled="{! empty(v.picklistMap.Result__c) }"
+                                                                required="{! teWrapper.requiredFields.Result__c }"
+                                                                change="{! c.onchangeResult }">
+                                                    <ui:inputSelectOption label="{! $Label.c.Default_Picklist_Value_None }" text="" value="true"/>
+                                                    <aura:iteration var="result" items="{! v.picklistMap.Result__c }">
+                                                        <ui:inputSelectOption label="{! result }" text="{! result }"/>
+                                                    </aura:iteration>
+                                                </ui:inputSelect>
+                                            </div>
+                                            <div class="slds-size_1-of-2 slds-p-horizontal_large slds-p-bottom_medium">
+                                                <ui:inputSelect aura:id="PersonallyObserved__c"
+                                                                value="{! teWrapper.PersonallyObserved__c }" 
+                                                                label="{! v.obsFieldLabelMap.personallyobserved__c }"
+                                                                disabled="{! empty(v.picklistMap.PersonallyObserved__c) }"
+                                                                required="{! teWrapper.requiredFields.PersonallyObserved__c }"
+                                                                change="{! c.checkForTestCompletion }">
+                                                    <ui:inputSelectOption label="{! $Label.c.Default_Picklist_Value_None }" text="" value="true"/>
+                                                    <aura:iteration var="personallyObserved" items="{! v.picklistMap.PersonallyObserved__c }">
+                                                        <ui:inputSelectOption label="{! personallyObserved }" text="{! personallyObserved }"/>
+                                                    </aura:iteration>
+                                                </ui:inputSelect>
+                                            </div>
+                                            <div class="slds-size_1-of-2 slds-p-horizontal_large slds-p-bottom_medium">
+                                                <ui:inputText aura:id="NonComplianceRuleNumber__c" maxlength="50"
+                                                              value="{! teWrapper.NonComplianceRuleNumber__c }" 
+                                                              label="{! v.obsFieldLabelMap.noncompliancerulenumber__c }"
+                                                              required="{! teWrapper.requiredFields.NonComplianceRuleNumber__c }"
+                                                              blur="{! c.checkForTestCompletion }"/>
+                                            </div>
+                                            <div class="slds-size_1-of-2 slds-p-horizontal_large slds-p-bottom_medium">
+                                                <ui:inputSelect aura:id="Discussed_with_Employee__c"
+                                                                value="{! teWrapper.Discussed_with_Employee__c }" 
+                                                                label="{! v.obsFieldLabelMap.discussed_with_employee__c }"
+                                                                disabled="{! empty(v.picklistMap.Discussed_with_Employee__c) }"
+                                                                required="{! teWrapper.requiredFields.Discussed_with_Employee__c }"
+                                                                change="{! c.checkForTestCompletion }">
+                                                    <ui:inputSelectOption label="{! $Label.c.Default_Picklist_Value_None }" text="" value="true"/>
+                                                    <aura:iteration var="discussed" items="{! v.picklistMap.Discussed_with_Employee__c }">
+                                                        <ui:inputSelectOption label="{! discussed }" text="{! discussed }"/>
+                                                    </aura:iteration>
+                                                </ui:inputSelect>
+                                            </div>
+                                            <div class="slds-size_1-of-2 slds-p-horizontal_large slds-p-bottom_medium">
+                                                <ui:inputSelect aura:id="SupervisorsCommentSelection__c"
+                                                                value="{! teWrapper.SupervisorsCommentSelection__c }" 
+                                                                label="{! v.obsFieldLabelMap.supervisorscommentselection__c }"
+                                                                disabled="{! empty(v.picklistMap.SupervisorsCommentSelection__c) }"
+                                                                required="{! teWrapper.requiredFields.SupervisorsCommentSelection__c }"
+                                                                change="{! c.checkForTestCompletion }">
+                                                    <ui:inputSelectOption label="{! $Label.c.Default_Picklist_Value_None }" text="" value="true"/>
+                                                    <aura:iteration var="supCommentSelection" items="{! v.picklistMap.SupervisorsCommentSelection__c }">
+                                                        <ui:inputSelectOption label="{! supCommentSelection }" text="{! supCommentSelection }"/>
+                                                    </aura:iteration>
+                                                </ui:inputSelect>
+                                            </div>
+                                            <div class="slds-size_1-of-2 slds-p-horizontal_large slds-p-bottom_medium">
+                                                <ui:inputTextArea aura:id="Comments__c" maxlength="1500"
+                                                                  value="{! teWrapper.Comments__c }" 
+                                                                  label="{! v.obsFieldLabelMap.comments__c }"
+                                                                  required="{! teWrapper.requiredFields.Comments__c }"
+                                                                  blur="{! c.checkForTestCompletion }"/>
+                                            </div>
+                                            <div class="slds-size_1-of-2 slds-p-horizontal_large slds-p-bottom_medium">
+                                                <!-- MP/SG -->
+                                                <ui:inputSelect aura:id="MpSg__c"
+                                                                value="{! teWrapper.MpSg__c }" label="{! v.obsFieldLabelMap.mpsg__c }"
+                                                                disabled="{! empty(v.picklistMap.MpSg__c) }"
+                                                                required="{! teWrapper.requiredFields.MpSg__c }"
+                                                                change="{! c.checkForTestCompletion }">
+                                                    <ui:inputSelectOption label="{! $Label.c.Default_Picklist_Value_None }" text="" value="true"/>
+                                                    <aura:iteration var="mpsg" items="{! v.picklistMap.MpSg__c }">
+                                                        <ui:inputSelectOption label="{! mpsg }" text="{! mpsg }"/>
+                                                    </aura:iteration>
+                                                </ui:inputSelect>
+                                            </div>
+                                            <div class="slds-size_1-of-2 slds-p-horizontal_large slds-p-bottom_medium">
+                                                <!-- MP/SG number -->
+                                                <ui:inputText aura:id="MpSgNumber__c"
+                                                              value="{! teWrapper.MpSgNumber__c }" label="{! v.obsFieldLabelMap.mpsgnumber__c }" 
+                                                              required="{! or( teWrapper.MpSg__c == 'MP', teWrapper.MpSg__c == 'SG') }"
+                                                              blur="{! c.checkForTestCompletion }"/>
+                                            </div>
+                                            <div class="slds-size_1-of-2 slds-p-horizontal_large slds-p-bottom_medium">
+                                                <!-- speed -->
+                                                <ui:inputNumber aura:id="Speed__c"
+                                                                value="{! teWrapper.Speed__c }" label="{! v.obsFieldLabelMap.speed__c }" 
+                                                                required="{! teWrapper.requiredFields.Speed__c }"
+                                                                blur="{! c.checkForTestCompletion }"/>
+                                            </div>
+                                            <div class="slds-size_1-of-2 slds-p-horizontal_large slds-p-bottom_medium">
+                                                <aura:if isTrue="{! (teWrapper.speedCheckMethodList.length > 0) }">
+                                                    <!-- speed check method -->
+                                                    <ui:inputSelect aura:id="Speed_Check_Method__c"
+                                                                    value="{! teWrapper.Speed_Check_Method__c }" label="{! v.obsFieldLabelMap.speed_check_method__c }"
+                                                                    disabled="{! empty(v.picklistMap.Speed_Check_Method__c) }"
+                                                                    required="{! (teWrapper.Speed__c != null) }"	
+                                                                    change="{! c.checkForTestCompletion }">
+                                                        <ui:inputSelectOption label="{! $Label.c.Default_Picklist_Value_None }" text="" value="true"/>
+                                                        <aura:iteration var="scmethod" items="{! teWrapper.speedCheckMethodList }">
+                                                            <!-- <aura:iteration var="scmethod" items="{! v.picklistMap.Speed_Check_Method__c }"> -->
+                                                            <ui:inputSelectOption label="{! scmethod }" text="{! scmethod }"/>
+                                                        </aura:iteration>
+                                                    </ui:inputSelect>
+                                                </aura:if>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </aura:if>
+                        </aura:iteration>
+                    </div>
+                </div>
+                <!--
+                <aura:set attribute="else">
+                    < Non Test-1872 test entry form >
+                    <c:RevSys_ObservationTestScoresCmp aura:id="testScore-cmp" findingList="{! v.testQuestionList }" scoreList="{! v.scoreList }"
+                                                       needImprovementRequired="{! v.needImprovementRequired }" needImprovementMap="{! v.needImprovementMap }"/>
+                    <div class="slds-size_1-of-2 slds-p-horizontal_large slds-p-bottom_medium">
+                        <ui:inputTextArea aura:id="Comments__c"
+                                          value="{! v.comments }" maxlength="1500"
+                                          label="{! v.obsFieldLabelMap.comments__c }"
+                                          required="{! v.commentsRequired }"/>
+                    </div>
+                    <div class="slds-size_1-of-2 slds-p-horizontal_large slds-p-bottom_medium">
+                        <ui:inputTextArea aura:id="NeedsImprovement__c" maxlength="1500"
+                                          value="{! v.needImprovement }" 
+                                          label="{! v.obsFieldLabelMap.needsimprovement__c }"
+                                          required="{! v.needImprovementRequired }"/>
+                    </div>
+                </aura:set>
+            -->
+            </aura:if>            
+        </div>
+    </aura:if>
+</aura:component>

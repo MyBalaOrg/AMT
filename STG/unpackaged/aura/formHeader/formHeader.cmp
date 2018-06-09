@@ -1,0 +1,22 @@
+<aura:component ><!--Static header component-->
+    <aura:attribute name="title" type="String" access="GLOBAL" description="Header Title" default=""/>
+    <!--Added header as per ticket SAF-277 - Rambabu Vadlamudi-->
+        <aura:attribute name="label" default="Amtrak | Safe Trends" type="String" access="GLOBAL" description="Header Title"/>
+
+    <header>
+        
+        <div class="slds-grid slds-grid--align-spread">
+        	<div class="heading">
+                <!--Added header as per ticket SAF-277 - Rambabu Vadlamudi-->
+                <h1 class="slds-text-heading--large slds-m-around--medium"><strong>{!v.label} </strong></h1> 
+            </div>
+        	<!--
+        	<div class="online_status">
+                <c:svgIcon svgPath="/resource/SLDS/v212/assets/icons/standard-sprite/svg/symbols.svg#user" iePngPath="/resource/SLDS/v212/assets/icons/standard/user_60.png" size="large" name="event" />
+            </div>
+			-->
+        </div>
+    
+    </header>
+    
+</aura:component>

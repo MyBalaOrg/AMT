@@ -1,0 +1,85 @@
+<aura:component controller="EIS_Inspection_TemperatureTrackingCtrl">
+    <aura:attribute name="trackingWrapper" type="EIS_Inspection_TemperatureTrackingCtrl.TemperatureTracking" access="public" />
+    <aura:attribute name="errorMsg" type="String" access="public" default="" />
+    <aura:attribute name="inspectionId" type="String" access="public" />
+    
+	<aura:registerEvent name="toggleLightningSpinner" type="c:EIS_BooleanEvent" />
+    
+    <h3 class="slds-section__title">{! v.trackingWrapper.temperatureType }</h3>
+    <table class="slds-table slds-table--bordered slds-table--cell-buffer">
+        <thead>
+            <tr class="slds-text-title_caps">
+                <th class="location-type-header">
+                    <label class="slds-truncate" title="{! $Label.c.EIS_Form_Label_Temperature_Location_Type }">
+                    	{! $Label.c.EIS_Form_Label_Temperature_Location_Type }
+                    </label>
+                </th>
+                <th class="location-header">
+                    <label class="slds-truncate" title="{! $Label.c.EIS_Form_Label_Temperature_Location_Train }">
+                    	{! $Label.c.EIS_Form_Label_Temperature_Location_Train }
+                    </label>
+                </th>
+                <th class="food-item-header">
+                    <label class="slds-truncate" title="{! $Label.c.EIS_Form_Label_Temperature_Food_Item }">
+                    	{! $Label.c.EIS_Form_Label_Temperature_Food_Item }
+                    </label>
+                </th>
+                <th class="temperature-header">
+                    <label class="slds-truncate" title="{! v.trackingWrapper.trackingUnitLabel }">
+                    	{! v.trackingWrapper.trackingUnitLabel }
+                    </label>
+                </th>
+                <th style="width:1em;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <aura:iteration var="tracking" items="{! v.trackingWrapper.trackingList }" indexVar="iTemp">
+                <tr>
+                    <td>
+                        <ui:inputSelect value="{! tracking.EIS_Location_Type__c }" change="{! c.onchangeLocationTypeSelect }" 
+                                        label="{! iTemp }" labelClass="hide-picklist">
+                            <aura:iteration var="locationTypeLabel" items="{! v.trackingWrapper.locationTypePicklist }" >
+                                <ui:inputSelectOption label="{! locationTypeLabel }" text="{! locationTypeLabel }" />
+                            </aura:iteration>
+                        </ui:inputSelect>
+                    </td>
+                    <td>
+                        <input type="text" class="slds-input" value="{! tracking.EIS_Location__c }" data-row-index="{! iTemp }"
+                               onkeypress="{! c.preventInvalidKeypressed }"
+                               onfocus="{! c.onfocusLocationInputText }" onblur="{! c.onblurLocationInputText }" />
+                        <div class="picklist-box-body hide-picklist" id="{! globalId + '_picklist-' + iTemp }" tabindex="-1">
+                            <aura:iteration items="{! v.trackingWrapper.locationPicklist }" var="location" end="20" indexVar="iLoc">
+                                <div class="list-item slds-p-around_xx-small slds-p-left_small" tabindex="-1"
+                                     data-row-index="{! iTemp }" data-location="{! location }" onclick="{! c.handleLocationSelection }">
+                                    {! location }
+                                </div>
+                            </aura:iteration>
+                        </div>
+                    </td>
+                    <td>
+                        <input type="text" class="slds-input" value="{! tracking.EIS_Food_Item__c }" data-row-index="{! iTemp }"
+                               onkeypress="{! c.preventInvalidKeypressed }" onblur="{! c.onblurFoodItemInputText }" />
+                    </td>
+                    <td>
+                        <input type="text" class="slds-input" value="{! tracking.EIS_Temperature__c }" data-row-index="{! iTemp }"
+                               onkeypress="{! c.validateNumericInput }" onblur="{! c.onblurTemperatureInputNumber }" />
+                    </td>
+                    <td>
+                        <span onclick="{! c.onclickDeleteTrackingItem }" data-row-index="{! iTemp }">
+                            <c:EIS_LightningIcon iconName="utility:delete" iconSize="x-small"
+                                                 cursor="pointer" hoverColor="icon-trash"/>
+                        </span>
+                    </td>
+                </tr>
+            </aura:iteration>
+        </tbody>
+    </table>
+    
+    <div class="slds-p-left_large slds-m-left_large slds-m-top_x-small">
+        <span onclick="{! c.onclickAddTrackingItem }">
+            <c:EIS_LightningIcon iconName="utility:new" iconSize="small"
+                                 cursor="pointer" hoverColor="icon-complete"
+                                 label="{! 'Add ' + v.trackingWrapper.temperatureType }" />
+        </span>
+    </div>
+</aura:component>

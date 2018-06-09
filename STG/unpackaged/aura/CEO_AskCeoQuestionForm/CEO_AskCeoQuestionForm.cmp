@@ -1,0 +1,143 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes" controller="CaseController">
+    
+    <aura:attribute name="description" type="String" />
+    <aura:attribute name="newCase" type="Case" default="
+                                                        { 'sobjectType' : 'Case',
+                                                        'Description' : null,
+                                                        'ContactId' : '',
+                                                        'Location__c' : '',
+                                                        'Subject' : null,
+                                                        'Origin' : '',
+                                                        'Type' : ''
+                                                        }" />
+    <aura:attribute name="currentUser" type="User" default="
+                                                            { 'sobjectType' : 'User',
+                                                            'FirstName' : null,
+                                                            'ContactId' : '',
+                                                            'LastName' : '',
+                                                            'Email':''                                                 
+                                                            }"/>
+    <aura:attribute name="contactInfo" type="Contact" default="
+                                                               {'sobjectType' : 'Contact',
+                                                               'FirstName' : '',
+                                                               'LastName' : '',
+                                                               'OtherCity':'',
+                                                               'OtherState':'',
+                                                               'Id':null
+                                                               }"/>
+    <aura:attribute name="location" type="Contact"/>
+    <aura:attribute name="errorMsgContent" type="String"/>
+    <aura:attribute name="successMessaege" type="String"/>
+    <aura:attribute name="staticMessage" type="String"/>
+    <aura:attribute name="showForm" type="Boolean" default="false"/>
+    <aura:attribute name="showFormContent" type="Boolean" default="false"/>
+    <aura:attribute name="showOtherFormContent" type="Boolean"/>
+    <aura:attribute name="showSuccessMsg" type="Boolean"/>
+    <aura:attribute name="showErrorMsg" type="Boolean"/>
+    <aura:attribute name="disableSubmitButton" type="Boolean" default="true"/>
+    <aura:attribute name="buttonStyle" type="String" default="utility:add"/>
+    <aura:attribute name="buttonSize" type="String" default="small"/>
+    <aura:attribute name="alternativeText" type="String" default="Add New Question"/>
+    <aura:attribute name="customIcon" type="Boolean" default="false"/>
+    <aura:attribute name="iconStaticResource" type="String" default=""/>
+    <aura:attribute name="showIcon" type="Boolean" default="true"/>
+    
+    <!-- method -->
+    <aura:method name="invokeShowModal" action="{!c.showModal}" access="public" /> 
+    
+    <!--<button class="slds-button new-button" onclick="{!c.showModal}" >New Question</button>-->
+    
+    <aura:if isTrue="{!v.showIcon}" >
+        <aura:if isTrue="{!v.customIcon}">
+            <div class="float-left">
+                <a onclick="{!c.showModal}">
+                    <img src="{!'/sfsites/c/resource/' + v.iconStaticResource}" style="padding-left: 10px; height:32px; display:inline-block;"/>
+                </a>
+            </div>
+            <aura:set attribute="else">
+                <div class="float-left">
+                    <div onclick="{!c.showModal}" class="slds-button new-button main-icon">
+                        <lightning:icon iconName="{!v.buttonStyle}" variant="inverse" size="{!v.buttonSize}" alternativeText="{!v.alternativeText}" title="{!v.alternativeText}"/>
+                    </div>
+                </div>
+            </aura:set>
+        </aura:if>
+    </aura:if>
+           
+    
+    <aura:if isTrue="{!v.showForm}" >
+    <div id="modal">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" >
+                <header class="slds-modal__header tileHeader">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate" style="color:black">Submit a Question</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around--x-large" id="modal-content-id-1">     
+                    <div class="{!v.showFormContent ? 'questions' : 'questions toggle'}" id="questions" >	
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label">First Name</label>
+                            <div class="slds-form-element__control">
+                                <ui:outputText class="slds-input disabled" value="{!v.currentUser.FirstName}" aura:id="firstName" />
+                            </div>
+                        </div>
+                        
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label">Last Name</label>
+                            <div class="slds-form-element__control">
+                                <ui:outputText class="slds-input disabled" value="{!v.currentUser.LastName}" aura:id="lastName" />
+                            </div>
+                        </div>
+                        
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label">Email</label>
+                            <div class="slds-form-element__control">
+                                <ui:outputText class='slds-input disabled' value="{!v.currentUser.Email}" aura:id="email"/>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label">Location</label>
+                            <div class="slds-form-element__control">
+                                <ui:inputText class="slds-input" value="{!v.location}" aura:id="location"/>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label">
+                                Subject<span class='errorMsg'> *</span>
+                            </label>
+                            <div class="slds-form-element__control">
+                                <ui:inputText class="slds-input" placeholder="Enter your subject here" value="{!v.newCase.Subject}" aura:id="subject"/>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label">
+                                Question<span class='errorMsg'> *</span>
+                            </label>
+                            <div class="slds-form-element__control">
+                                <ui:inputTextArea class="slds-input" placeholder="Enter your question here" value="{!v.newCase.Description}" aura:id="question"/>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="{!v.showOtherFormContent ? 'submitMessage' : 'submitMessage toggle'}">
+                        <ui:outputText aura:id="successMessaege" class="{!v.showSuccessMsg ? 'thanks' : 'thanks toggle'}" value="{!v.successMessaege}"/>
+                        <ui:outputText aura:id="errorMsg" class="{!v.showErrorMsg ? 'errorMsg' : 'errorMsg toggle'}" value="{!v.errorMsgContent}"/>
+                    </div>
+                    <div class='button-section slds-float--right'>
+                        <button class="{!v.showFormContent ? 'slds-button new-button' : 'slds-button new-button toggle'}" id="clickButton" onclick="{!c.closeModal}">Cancel</button>
+                        <button class="{!v.showFormContent ? 'slds-button new-button' : 'slds-button new-button toggle'}" id="submitButton" onclick="{!c.submitCase}" disabled="{!v.disableSubmitButton}">Submit</button>
+                        <button class="{!v.showOtherFormContent ? 'slds-button new-button' : 'slds-button new-button toggle'}" id="closeButton" onclick="{!c.closeModal}">Close</button>
+                    </div>
+                    <div class='staticMessage' id="staticMessage">
+                        <ui:outputText aura:id="staticMessage" value="{!v.staticMessage}" class="{!v.showFormContent ? '' : 'toggle'}"/>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div onclick="{!c.closeModal}" class="slds-backdrop slds-backdrop_open" ></div>
+       
+    </div>
+  </aura:if>  
+</aura:component>

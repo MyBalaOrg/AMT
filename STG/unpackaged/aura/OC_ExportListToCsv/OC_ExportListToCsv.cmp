@@ -1,0 +1,38 @@
+<!-- 
+********************************************************************************************************************************************************************************************************************************************
+*	@Name			OC_ExportListToCsv
+*	@Author			Nathan Shinn, Deloitte Digital
+*	@Created Date	14th Feb 2017
+*	@Used By		OC_VerticalOrgChartComponent.cmp	
+*	@Controller		OC_SObjectListController
+********************************************************************************************************************************************************************************************************************************************
+*	@Description	This is a lightning component Used to export a query or a list Objects to a Comma-Delimited List or CSV file
+********************************************************************************************************************************************************************************************************************************************
+*	@Attribute		lstSobject		SObject[]
+*	@Attribute		lstFieldApi		string[]
+*	@Attribute		lstFieldLabel	string[]
+*	
+*
+*	@EventHandler	requery	OC_RequerySobjectExport
+********************************************************************************************************************************************************************************************************************************************
+*	@Changes
+********************************************************************************************************************************************************************************************************************************************	
+-->
+
+<aura:component controller="OC_SObjectListController"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes" 
+                access="global">
+    <!-- Attributes for describing the record list or query -->
+    <aura:attribute name="lstSobject" type="SObject[]" />
+    <aura:attribute name="lstFieldApi" type="string[]" />
+    <aura:attribute name="lstFieldLabel" type="string[]" />
+    <aura:attribute name="buttonLabel" type="string" default="Export List"/>
+    <aura:attribute name="query" type="String" description="sobject query string"/> 
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <!-- Handler for the Requery Event. Used to refresh the data under the button -->
+    <aura:handler event="c:OC_RequerySobjectExport" action="{!c.requery}"/>
+    
+    <!-- button for executint the export -->
+	<button aura:id="button" style="background-color: #005883; border: 2px solid #005883;color: white;" class="slds-button slds-button--neutral slds-theme--shade" onclick="{!c.exportToCsv}">{!v.buttonLabel}</button>
+</aura:component>

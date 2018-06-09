@@ -1,0 +1,205 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes" controller="RevSys_ObservationController" access="public">
+    <ltng:require scripts="{! $Resource.amtrak_helper_functions }" afterScriptsLoaded="{! c.scriptsLoaded }" />
+    
+    <aura:attribute name="selectedEmpList" type="SearchTabularItemWrapper[]" access="public" />
+    <aura:attribute name="selectedEmpIdSet" type="String" default="" access="public" />
+    <aura:attribute name="selectedRecordType" type="RecordType" access="public" />
+    <aura:attribute name="observation" type="Observation__c" access="public" default="{'sobjectType':'Observation__c'}"/>
+    <aura:attribute name="testEntryWrapperList" type="RevSys_TestEntryWrapper[]" access="public" />
+<!--    <aura:attribute name="osrWrapperList" type="RevSys_OccSpecReqWrapper[]" access="public" />-->
+    
+    <aura:attribute name="fieldLabelMap" type="Map" access="public" />
+    <aura:attribute name="picklistMap" type="Map" access="public" default="{}"/>
+    <aura:attribute name="requiredFieldMap" type="Map" access="public" />
+    <aura:attribute name="scoreListMap" type="Map" access="public" />
+    <aura:attribute name="needImprovementMap" type="Map" access="public" />
+    <aura:attribute name="editableFieldMap" type="Map" access="public" />
+    <aura:attribute name="testQuestionMap" type="Map" access="public" />
+    <aura:attribute name="obsRecordTypes" type="RecordType[]" access="public" />
+    <aura:attribute name="selectionState" type="Integer" default="1" access="public" />
+    <aura:attribute name="recordTypeToDisplayTestNumbers" type="String" access="private" />
+    <aura:attribute name="nextButtonLabel" type="String" default="Next" access="private" />
+    <aura:attribute name="headerTitle" type="String" default="Select Form" access="public" />
+    <aura:attribute name="testCompleted" type="Boolean" default="false" access="private" />
+    <aura:attribute name="selectedList" type="RevSys_TestWithObservationsWrapper[]" access="public" />
+    <aura:attribute name="readOnlyFields" type="FieldSetMemberWrapper[]" access="public" />
+    <aura:attribute name="allOneIsRequiredMap" type="Map" access="public" />
+    <aura:attribute name="submitMessageMap" type="Map" access="public" />
+    <aura:attribute name="submitMessage" type="String[]" access="public" />
+    <aura:attribute name="SubmitStatusMessage" type="String" access="public" /> 
+    <aura:attribute name="selectedRecordTypeId" type="String" access="public" />
+    <aura:attribute name="allFormCraftMap" type="Map" access="public" />
+    <aura:attribute name="disableNextButton" type="Boolean" default="false" access="public" />
+    <aura:attribute name="allFormScoreDefinitionMap" type="Map" access="public" />
+    <aura:attribute name="allFormScoreDefinitionArray" type="String[]" access="public" />
+    <aura:attribute name="resEmpSummMap" type="Map" access="public" />
+    <aura:attribute name="resEmpSummList" type="List" access="public" />
+    <aura:attribute name="resEmpSumObservation" type="Map" access="public" />
+    <aura:attribute name="picklistMapFormTypeDivision" type="Map" default="{}" access="public" />
+    
+    <aura:handler name="toggleLightningSpinner" event="c:RevSys_GeneralPurposeEvt" action="{! c.handleToggleLightningSpinner }"/>
+    <aura:handler name="selectRecordType" event="c:RevSys_GeneralPurposeEvt" action="{! c.handleSelectRecordType }"/>    
+    
+    <aura:handler name="enableNextButton" event="c:RevSys_GeneralPurposeEvt" action="{! c.handleEnableNextButton }"/>    
+    
+    <lightning:spinner aura:id="fidget-spinner" variant="brand" size="large" class="fidget-spinner-style" />
+    <!-- PROGRESS BAR -->
+    <div>
+    	<div class="slds-grid slds-wrap slds-size_1-of-1 path-box">
+    		<div class="slds-size_6-of-7"> 
+		    	<c:RevSys_ObservationProgressPath aura:id="thePath" selectionState="{! v.selectionState }" 
+                    selectedRecordType="{! v.selectedRecordType }" recordTypeToDisplayTestNumbers="{! v.recordTypeToDisplayTestNumbers }"
+                    hasEmployee="{! v.selectedEmpList.length > 0 }" hasTest="{ !v.testEntryWrapperList.length > 0 }" />
+		   	</div>
+		   	<div class="slds-size_1-of-7"> 
+				<div class="slds-float_right slds-p-right_medium slds-p-top_medium">
+                    <aura:if isTrue="{! and(v.selectionState > 2, equals(v.selectedRecordType.Name, $Label.c.RevSys_Observation_RT_Label_Test_1872)) }">
+    		            <button aura:id="prevbuttonPath" class="slds-button slds-button_brand slds-p-vertical_xx-small slds-p-horizontal_small footer-btn" onclick="{! c.handlePrevious }">
+    		                Previous
+    		            </button>
+                    </aura:if>
+		            <button aura:id="nextbuttonPath" class="slds-button slds-button_brand slds-p-vertical_xx-small slds-p-horizontal_small footer-btn" onclick="{! c.handleNext }" disabled="{! or(and(v.selectionState == 1, (v.selectedEmpList.length == 0)), v.disableNextButton) }">
+		                {! v.nextButtonLabel }
+		            </button>
+		        </div>
+		    </div>
+		</div>
+    </div>
+    <div class="slds-grid slds-wrap slds-grow" >
+        <!-- LEFT SIDE MAIN BODY -->
+        <div class="slds-size_2-of-3 slds-p-top_small slds-p-bottom_large slds-p-right_small slds-grow ">
+            <div class="slds-size_1-of-1 container-box">
+                <!-- FORM BUTTONS -->
+	            <c:RevSys_ObservationSelectFormCmp aura:id="select-test-cmp" selectionState="{! v.selectionState }" cmpState="1"
+	                        theObject="{! v.observation }" recordTypes="{! v.obsRecordTypes }" label="Select Form"
+	                        selectedRecordType="{! v.selectedRecordType }" />
+                 <!-- EMPLOYEE SEARCH -->
+	            <c:RevSys_ObservationSelectEmployeeCmp aura:id="select-employee-cmp" selectionState="{! v.selectionState }" cmpState="1"
+	                                            selectedEmpList="{! v.selectedEmpList }" selectedEmpIdSet="{! v.selectedEmpIdSet }"
+	                                            selectedRecordType="{! v.selectedRecordType }" showInlineResult="true" 
+                                                filterList="['Department','Craft']" />
+
+                <aura:if isTrue="{! not(equals(v.selectionState, 1)) }" >
+                    <div class="slds-text-title_caps slds-p-bottom_small " style="font-size:1rem;">
+                        {! v.selectedRecordType.Name }
+                    </div>
+                </aura:if>
+                
+                <c:RevSys_ObservationSelectTestTreeGridCmp aura:id="select-test-tree" cmpState="2" selectionState="{! v.selectionState }" selectedRecordType="{! v.selectedRecordType }" fieldLabelMap="{! v.fieldLabelMap }" picklistMap="{! v.picklistMap }" 
+                                                           observation="{! v.observation }" requiredFieldMap="{! v.requiredFieldMap }" selectedEmpList="{! v.selectedEmpList }" 
+                                                           selectedList="{!v.selectedList}"
+                                                           filterKeyList="['','']" />
+                <c:RevSys_ObservationNon1872 aura:id="non-1872-form" cmpState="2" selectionState="{! v.selectionState }" recordType="{! v.selectedRecordType }" readOnlyFields="{! v.readOnlyFields }" fieldLabelMap="{! v.fieldLabelMap }" picklistMap="{! v.picklistMap }" allFormScoreDefinitionArray="{!v.allFormScoreDefinitionArray}"/>
+       	        <c:RevSys_ObservationTestSubmit aura:id="test-submit" cmpState="3" selectionState="{! v.selectionState }" selectedRecordType="{! v.selectedRecordType }" submitMessage="{! v.submitMessage}" SubmitStatusMessage="{!v.SubmitStatusMessage}" />
+            </div>
+        </div>
+        <!-- RIGHT SIDE MAIN BODY -->
+        <div class="slds-size_1-of-3 slds-p-top_small slds-p-bottom_large">
+            
+            <div class="slds-size_1-of-1 container-box">
+                <!-- SELECTED EMPLOYEES SNAPSHOT -->
+               <!--aura:if isTrue="{! not(equals(v.selectedRecordType.Name, $Label.c.RevSys_Observation_RT_Label_Test_1878)) }"-->                    
+                 
+                <aura:if isTrue="{! and(equals(v.selectionState, 3),  equals(v.selectedRecordType.Name, $Label.c.RevSys_Observation_RT_Label_Test_1878)) }">
+                    
+                    <div class="slds-text-title_caps slds-p-bottom_small " style="font-size:1rem;">Employee Result Summary ({! v.resEmpSummList.length })</div>
+                    <aura:iteration var="selectedItem" items="{! v.resEmpSummList }" indexVar="sIndex">
+                       
+                        <lightning:card >
+                            <aura:set attribute="title">
+                                <a onclick="{!c.navigateToResSumRecord}" style="width:100%;" data-index="{!sIndex}">{!selectedItem.Name}</a>
+                            </aura:set>
+                            <!-- <ui:outputText value="Posting Location - " class="slds-size_1-of-1"/>
+                                {!selectedItem.key} <br/>
+                            <table class="slds-table slds-table_fixed-layout" >
+                                <tr>
+                                    <td class="slds-cell-wrap">
+                                        {!selectedItem.value} <br/>
+                                    </td>
+                                </tr>
+                            </table> -->
+                            <div class="slds-grid slds-wrap">
+                                <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium">
+                                    Movement Office:
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium">
+                                    {!v.resEmpSumObservation.MovementOffice__c}
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium">
+                                    Posting Location:
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium">
+                                    {!selectedItem.Observation__r.SectionTower__c}
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium">
+                                    Submission Date Time:
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium">
+                                    {!selectedItem.Observation__r.SubmissionDateTime__c}
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium">
+                                    Overall Score:
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium">
+                                    {!selectedItem.Observation__r.OverallScore__c}
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium">
+                                    Qualification Status: 
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium">
+                                    {!selectedItem.QualificationStatus__c}
+                                </div>
+                            </div>
+                        </lightning:card>
+                        
+                    </aura:iteration>
+                    
+                    <aura:set attribute="else">
+                        <div class="slds-text-title_caps slds-p-bottom_small" style="font-size:1rem;">Selected Employees ({! v.selectedEmpList.length })</div>
+                        <aura:iteration var="selectedItem" items="{! v.selectedEmpList }" indexVar="sIndex">
+                            <lightning:card >
+                                <aura:set attribute="title">
+                                    <div class="slds-size_1-of-1 slds-border_bottom">
+                                        <ui:outputText value="{! selectedItem.theName }" class="font-weight-bold"/>
+                                    </div>
+                                </aura:set>
+                                <div class="slds-grid slds-wrap slds-size_1-of-1 slds-p-horizontal_medium">
+                                    <ui:outputText value="{! selectedItem.theNumber }" class="slds-size_1-of-3"/>
+                                    <ui:outputText value="{! selectedItem.department }" class="slds-size_1-of-3"/>
+                                    <ui:outputText value="{! selectedItem.craft }" class="slds-size_1-of-3"/>
+                                </div>
+                                <div class="slds-grid slds-wrap slds-size_1-of-1 slds-p-horizontal_medium">
+                                    <aura:iteration var="testNo" items="{! selectedItem.testNames }" indexVar="testIndext">
+                                        <span class="{! (testNo.completed ? 'test-complete' : '') + ' slds-pill slds-p-horizontal_x-small'}" title="{!testNo.testNumber}"> 
+                                            <ui:outputText value="{! testNo.testNumber }" title="{! testNo.testNumber }"/>
+                                        </span>
+
+                                        <!--lightning:pill label="{! testNo.testNumber }" class="{! testNo.completed ? 'test-complete' : ''}"/-->
+                                    </aura:iteration>
+                                </div>
+                            </lightning:card>
+                        </aura:iteration>
+                    </aura:set>
+                </aura:if>
+            </div>
+           
+        </div>
+    </div>
+    <div class="slds-docked-form-footer forceRecordEditActions">
+    	<div class="slds-size_3-of-7"></div>
+    	<div class="slds-size_4-of-7 slds-p-right_medium">
+    		<div class="slds-float_right">
+                <aura:if isTrue="{! and(v.selectionState > 2, equals(v.selectedRecordType.Name, $Label.c.RevSys_Observation_RT_Label_Test_1872)) }">
+    	            <button aura:id="prevbuttonFooter" class="slds-button slds-button_brand slds-p-vertical_xx-small slds-p-horizontal_small footer-btn" onclick="{! c.handlePrevious }">
+    	                Previous
+    	            </button>
+                </aura:if>
+	            <button aura:id="nextbuttonFooter" class="slds-button slds-button_brand slds-p-vertical_xx-small slds-p-horizontal_small footer-btn" onclick="{! c.handleNext }" disabled="{! or(and(v.selectionState == 1, (v.selectedEmpList.length == 0)), v.disableNextButton) }">
+	                {! v.nextButtonLabel }
+	            </button>
+	        </div>
+        </div>
+    </div>
+	
+
+</aura:component>

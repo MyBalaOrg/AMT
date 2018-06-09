@@ -1,0 +1,19 @@
+.THIS .has-error {
+    border-color: #c23934 !important;
+}
+
+.THIS.observation-box {
+    border-bottom-color: rgb(0, 57, 107);
+    border-bottom-style: dashed;
+    border-bottom-width: 1px;
+}
+
+.THIS .repeat-finding[type=checkbox][disabled]:checked {
+    background-color: #9faab5 !important; 
+    border-color: #9faab5 !important; 
+    box-shadow: 0 0 3px #9faab5 !important;
+}
+
+.THIS .observation-desc {
+    height: 13em;
+}

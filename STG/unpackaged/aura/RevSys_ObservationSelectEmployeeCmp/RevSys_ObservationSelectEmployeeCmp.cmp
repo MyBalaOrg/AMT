@@ -1,0 +1,29 @@
+<aura:component controller="RevSys_ObservationController">
+    <aura:attribute name="selectedEmpList" type="SearchTabularItemWrapper[]" access="public" />
+    <aura:attribute name="selectedEmpIdSet" type="String" default="" access="public" />
+    <aura:attribute name="selectionState" type="Integer" access="public" />
+    <aura:attribute name="cmpState" type="Integer" access="public" />
+    <aura:attribute name="empFieldLabels" type="String[]" access="public" />
+    <aura:attribute name="deptCraftMap" type="Map" access="public" />
+    <aura:attribute name="allCraftDeptMap" type="Map" access="public" />
+    <aura:attribute name="selectedRecordType" type="RecordType" access="public" />
+    <aura:attribute name="showInlineResult" type="Boolean" access="public" default="false" />
+    <aura:attribute name="filterList" type="String[]" access="public" />    
+    <aura:attribute name="filterMap" type="Map" access="public" default="{}"/>
+    
+    <aura:registerEvent name="toggleLightningSpinner" type="c:RevSys_GeneralPurposeEvt" />
+    
+    <aura:handler name="performSearch" event="c:RevSys_GeneralPurposeEvt" action="{! c.handlePerformSearch }"/>
+    
+    <aura:method name="empSearchNon1872RTChange" action="{!c.handleEmpSearchNon1872RTChange}" />
+        
+    <aura:if isTrue="{! equals(v.selectionState, v.cmpState) }">
+        <div class="slds-grid slds-wrap slds-size_1-of-1 slds-p-around_medium">
+            <c:Search_TabularResultCmp aura:id="search-employee-cmp" label="Search Employee" selectedItemIdSet="{! v.selectedEmpIdSet }"                           placeholder="{! $Label.c.RevSys_Observation_Search_Placeholder }"
+                                       selectedList="{! v.selectedEmpList }" selectedItemsTitle="Selected Employees"   
+                                       isMultiSelect="{! equals(v.selectedRecordType.Name, $Label.c.RevSys_Observation_RT_Label_Test_1872) }" showInlineResult="{! v.showInlineResult }" 
+                                       filterList="{! v.filterList }" filterMap="{! v.filterMap }"
+                                       selectedRecordType="{! v.selectedRecordType }" />
+        </div>
+    </aura:if>
+</aura:component>

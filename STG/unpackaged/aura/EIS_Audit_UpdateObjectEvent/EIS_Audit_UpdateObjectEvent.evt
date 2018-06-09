@@ -1,0 +1,7 @@
+<aura:event type="COMPONENT">
+    <aura:attribute name="origin" type="String" />
+    <aura:attribute name="auraId" type="String" />
+    <aura:attribute name="index" type="Integer" />
+    <aura:attribute name="integerValue" type="Integer" />
+    <aura:attribute name="selectedItem" type="EIS_StaticUtils.SearchItem" />
+</aura:event>

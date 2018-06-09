@@ -1,0 +1,303 @@
+<aura:component controller="RevSys_ObservationController" >
+	<aura:attribute name="selectionState" type="Integer" access="public" />
+    <aura:attribute name="fieldLabelMap" type="Map" access="public" />
+    <aura:attribute name="picklistMap" type="Map" access="public" default="{}"/>
+    <aura:attribute name="picklistMapRegionState" type="Map" default="{}" access="public" />
+    <aura:attribute name="picklistMapStateSubDivision" type="Map" default="{}" access="public" />
+    <aura:attribute name="requiredFieldMap" type="Map" access="public" />
+    <aura:attribute name="testEntryResult" type="RevSys_TestEntryWrapper" access="public" />
+    <aura:attribute name="recordType" type="RecordType" access="public" />
+    <aura:attribute name="editableFields" type="Object[]" access="global"/>
+    <aura:attribute name="rowIndex" type="Integer" access="global"/>
+    <aura:attribute name="testIndex" type="Integer" access="public" />
+    <aura:attribute name="resultRequiredFieldMap" type="Map" default="{}" access="public"/>
+    <aura:attribute name="showCopyButton" type="Boolean" default="true" access="public" />
+    <aura:attribute name="statePicklist" type="String[]" access="public" />
+    <aura:attribute name="subdivisionPicklist" type="String[]" access="public" />
+    <aura:attribute name="isNew" type="Boolean" default="true" access="public" />
+    <aura:attribute name="isTargetAdmin" type="Boolean" access="public" default="false"/>
+
+    <aura:registerEvent name="updateEmployeeStatus" type="c:RevSys_GeneralPurposeEvt" />
+    <aura:registerEvent name="populateTestResult" type="c:RevSys_GeneralPurposeEvt" />
+    
+    <aura:method name="checkTestCompletion" action="{!c.checkForTestCompletion}" />
+    
+    <aura:method name="setStateValOnCopy" action="{!c.setStateValOnCopy}" >
+        <aura:attribute name="region" type="String" default="" /> 
+    </aura:method>
+    
+    <aura:handler name="change" value="{!v.empCompleted}" action="{!c.handleEmployeeStatusChange}"/>
+    
+    <aura:handler name="fetchSearchItems" event="c:EIS_Audit_UpdateObjectEvent" action="{! c.handleFetchSearchItemsEvent }"/>
+    <aura:handler name="searchItemSelected" event="c:EIS_Audit_UpdateObjectEvent" action="{! c.handleSearchItemSelectedEvent }"/>
+
+    <div class="slds-size_1-of-1">
+        <aura:if isTrue="{! and(v.showCopyButton, equals(v.rowIndex, 0)) }" >
+            <lightning:button class="slds-align_absolute-center" variant="brand" label="Copy" onclick="{! c.copyTestEntryResult }" />
+        </aura:if>
+        <div class="slds-grid slds-wrap">
+            <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium slds-p-bottom_small slds-p-top_medium">
+                <ui:inputDate aura:id="Date__c" label="{! v.fieldLabelMap.Date__c }" displayDatePicker="true" required="{! v.testEntryResult.requiredFields.Date__c }"
+                              value="{! v.testEntryResult.obs.Date__c }" change="{! c.checkForTestCompletion }" format="MM/dd/yyyy"/>
+            </div>
+            <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium slds-p-bottom_small slds-p-top_medium slds-clearfix">
+                <div class="slds-grid">
+                    <ui:inputSelect aura:id="TimeHH__c" 
+                                    value="{! v.testEntryResult.obs.TimeHH__c }" label="Hour"
+                                    disabled="{! empty(v.picklistMap.TimeHH__c) }"
+                                    required="{! v.testEntryResult.requiredFields.TimeHH__c }"
+                                    change="{! c.checkForTestCompletion }">
+                        <ui:inputSelectOption label="--" text="" value="true"/>
+                        <aura:iteration var="timeHour" items="{! v.picklistMap.TimeHH__c }">
+                            <ui:inputSelectOption text="{! timeHour }" label="{! timeHour }" value="{! timeHour == v.testEntryResult.obs.TimeHH__c }" />
+                        </aura:iteration>
+                    </ui:inputSelect>
+                    <div class="slds-p-left_small">
+                        <ui:inputSelect aura:id="TimeMM__c" 
+                                        value="{! v.testEntryResult.obs.TimeMM__c }" label="Minute"
+                                        disabled="{! empty(v.picklistMap.TimeMM__c) }"
+                                        required="{! v.testEntryResult.requiredFields.TimeMM__c }"
+                                        change="{! c.checkForTestCompletion }">
+                            <ui:inputSelectOption label="--" text="" value="true"/>
+                            <aura:iteration var="timeMinute" items="{! v.picklistMap.TimeMM__c }">
+                                <ui:inputSelectOption text="{! timeMinute }" label="{! timeMinute }" value="{! timeMinute == v.testEntryResult.obs.TimeMM__c }" />
+                            </aura:iteration>
+                        </ui:inputSelect>
+                    </div>
+                </div>
+            </div>
+            <aura:if isTrue="{! v.testEntryResult.isFRAtest }" >
+                <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium slds-p-bottom_small">
+                    <ui:inputSelect aura:id="Result__c"
+                                    value="{! v.testEntryResult.obs.Result__c }" 
+                                    label="{! v.fieldLabelMap.Result__c }"
+                                    required="true"
+                                    blur="{! c.checkForTestCompletion }">
+                        
+                            <ui:inputSelectOption label="{! $Label.c.Default_Picklist_Value_None }" text="" value="true"/>
+                            <ui:inputSelectOption label="{! $Label.c.RevSys_Generic_Pass }" text="{! $Label.c.RevSys_Generic_Pass }" value="{! v.testEntryResult.obs.Result__c == $Label.c.RevSys_Generic_Pass }"/>
+                            <ui:inputSelectOption label="{! $Label.c.RevSys_Generic_Fail }" text="{! $Label.c.RevSys_Generic_Fail }" value="{! v.testEntryResult.obs.Result__c == $Label.c.RevSys_Generic_Fail }"/>
+                        
+                    </ui:inputSelect>
+                </div>
+                <aura:set attribute="else">
+                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium slds-p-bottom_small">
+                        <ui:inputSelect aura:id="RailroadRule__c"
+                                        value="{! v.testEntryResult.obs.RailroadRule__c }" label="{! v.fieldLabelMap.RailroadRule__c }"
+                                        disabled="{! empty(v.picklistMap.RailroadRule__c) }"
+                                        required="{! v.testEntryResult.requiredFields.RailroadRule__c }"
+                                        change="{! c.checkForTestCompletion }">
+                            <ui:inputSelectOption label="{! $Label.c.Default_Picklist_Value_None }" text="" value="true"/>
+                            <aura:iteration var="railroadrule" items="{! v.picklistMap.RailroadRule__c }">
+                                <ui:inputSelectOption label="{! railroadrule }" text="{! railroadrule }" value="{! railroadrule == v.testEntryResult.obs.RailroadRule__c }"/>
+                            </aura:iteration>
+                        </ui:inputSelect>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium slds-p-bottom_small">
+                        <ui:inputText aura:id="TrainDescription__c"
+                                      value="{! v.testEntryResult.obs.TrainDescription__c}" 
+                                      label="{! v.fieldLabelMap.TrainDescription__c}" 
+                                      change="{! c.checkForTestCompletion }" />
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium slds-p-bottom_small">
+                        <ui:inputSelect aura:id="RegionProperty__c"
+                                        value="{! v.testEntryResult.obs.RegionProperty__c }" label="{! v.fieldLabelMap.RegionProperty__c }"
+                                        disabled="{! empty(v.picklistMap.RegionProperty__c) }"
+                                        required="{! v.testEntryResult.requiredFields.RegionProperty__c }"
+                                        change="{! c.onchangeRegionProperty }"
+                                        blur="{! c.checkForTestCompletion }">
+                            <ui:inputSelectOption label="{! $Label.c.Default_Picklist_Value_None }" text="" value="true"/>
+                            <aura:iteration var="region" items="{! v.picklistMap.RegionProperty__c }">
+                                <ui:inputSelectOption label="{! region }" text="{! region }" value="{! region == v.testEntryResult.obs.RegionProperty__c }"/>
+                            </aura:iteration>
+                        </ui:inputSelect>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium slds-p-bottom_small">
+                        <!-- blank column after MP/Location -->
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium slds-p-bottom_small">
+                        <ui:inputSelect aura:id="State__c"
+                                        value="{! v.testEntryResult.obs.State__c }" label="{! v.fieldLabelMap.State__c }"
+                                        disabled="{! or(empty(v.statePicklist), v.testEntryResult.obs.RegionProperty__c == '') }"
+                                        required="{! and(v.testEntryResult.requiredFields.State__c, !empty(v.statePicklist)) }"
+                                        change="{! c.checkForTestCompletion }">
+                            <ui:inputSelectOption label="{! $Label.c.Default_Picklist_Value_None }" text="" value="true"/>
+                            
+                            <!-- <aura:iteration var="state" items="{! v.statePicklist }"> -->
+                            <aura:iteration var="state" items="{! (empty(v.statePicklist)) ? v.picklistMap.State__c : v.statePicklist }">
+                                <ui:inputSelectOption label="{! state }" text="{! state }" value="{! state == v.testEntryResult.obs.State__c }" />
+                            </aura:iteration>
+                            
+                        </ui:inputSelect>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium slds-p-bottom_small">
+                        <ui:inputSelect aura:id="Subdivision__c"
+                                        value="{! v.testEntryResult.obs.Subdivision__c }" label="{! v.fieldLabelMap.Subdivision__c }"
+                                        disabled="{! or(empty(v.subdivisionPicklist), v.testEntryResult.obs.RegionProperty__c == '') }"
+                                        required="{! (v.testEntryResult.requiredFields.Subdivision__c) }"
+                                        change="{! c.checkForTestCompletion }">
+                            <ui:inputSelectOption label="{! $Label.c.Default_Picklist_Value_None }" text="" value="true"/>
+                            <aura:iteration var="subDivi" items="{! (empty(v.subdivisionPicklist)) ? v.picklistMap.Subdivision__c : v.subdivisionPicklist }">
+                                <ui:inputSelectOption label="{! subDivi }" text="{! subDivi }" />
+                            </aura:iteration>
+                        </ui:inputSelect>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium slds-p-bottom_small">
+                        <!-- MP/SG -->
+                        <ui:inputSelect aura:id="MpSg__c"
+                                        value="{! v.testEntryResult.obs.MpSg__c }" label="{! v.fieldLabelMap.MpSg__c }"
+                                        disabled="{! empty(v.picklistMap.MpSg__c) }"
+                                        required="{! v.testEntryResult.requiredFields.MpSg__c }"
+                                        change="{! c.onchangeMpSg }"
+                                        blur="{! c.checkForTestCompletion }">
+                            <ui:inputSelectOption label="{! $Label.c.Default_Picklist_Value_None }" text="" value="true"/>
+                            <aura:iteration var="mpsg" items="{! v.picklistMap.MpSg__c }">
+                                <ui:inputSelectOption label="{! mpsg }" text="{! mpsg }" value="{! mpsg == v.testEntryResult.obs.MpSg__c }" />
+                            </aura:iteration>
+                        </ui:inputSelect>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium slds-p-bottom_small">
+                        <!-- blank column after MP/Location -->
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium">
+                        <ui:inputSelect aura:id="PersonalAreaCode__c"
+                                        value="{! v.testEntryResult.obs.PersonalAreaCode__c }"
+                                        label="{! v.fieldLabelMap.PersonalAreaCode__c }"
+                                        disabled="{! or(equals(v.testEntryResult.obs.MpSg__c, 'MP'), equals(v.testEntryResult.obs.MpSg__c, '')) }"
+                                        required="{! equals(v.testEntryResult.obs.MpSg__c, 'Location') }"
+                                        change="{! c.checkForTestCompletion }">
+                            <ui:inputSelectOption label="{! $Label.c.Default_Picklist_Value_None }" text="" value="true"/>
+                            <aura:iteration var="supCommentSelection" items="{! v.picklistMap.PersonalAreaCode__c }">
+                                <ui:inputSelectOption label="{! supCommentSelection }" text="{! supCommentSelection }" value="{! supCommentSelection == v.testEntryResult.obs.PersonalAreaCode__c }" />
+                            </aura:iteration>
+                        </ui:inputSelect>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium slds-p-bottom_small">
+                        <!-- MP/SG number -->
+                        <ui:inputText aura:id="MpSgNumber__c"
+                                      value="{! v.testEntryResult.obs.MpSgNumber__c }" label="{! v.fieldLabelMap.MpSgNumber__c }" 
+                                      required="{! equals(v.testEntryResult.obs.MpSg__c, 'MP') }"
+                                      disabled="{! or(equals(v.testEntryResult.obs.MpSg__c, 'Location'), equals(v.testEntryResult.obs.MpSg__c, '')) }"
+                                      blur="{! c.checkForTestCompletion }"/>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium slds-p-bottom_small">
+                        <!-- speed -->
+                        <ui:inputNumber aura:id="Speed__c"
+                                        value="{! v.testEntryResult.obs.Speed__c }" label="{! v.fieldLabelMap.Speed__c }" 
+                                        required="{!v.testEntryResult.checkMethodReq}"
+                                        disabled="{!not(v.testEntryResult.checkMethodPermitted)}"
+                                        blur="{! c.checkForTestCompletion }"/>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium slds-p-bottom_small">
+                       <!--  <aura:if isTrue="{! (testEntryResult.speedCheckMethodList.length > 0) }"> -->
+                            <!-- speed check method -->
+                            <ui:inputSelect aura:id="SpeedCheckMethod__c"
+                                            value="{! v.testEntryResult.obs.SpeedCheckMethod__c }" label="Check Method"
+                                            disabled="{! empty(v.testEntryResult.speedCheckMethodList) }"
+                                            required="{! and(not(empty(v.testEntryResult.speedCheckMethodList)),(v.testEntryResult.obs.Speed__c != null))}" 
+                                            change="{! c.checkForTestCompletion }">
+                                <ui:inputSelectOption label="{! $Label.c.Default_Picklist_Value_None }" text="" value="true"/>
+                                <!-- <aura:iteration var="scmethod" items="{! testEntryResult.speedCheckMethodList }"> -->
+                                <aura:iteration var="scmethod" items="{! v.testEntryResult.speedCheckMethodList }">
+                                    <ui:inputSelectOption label="{! scmethod }" text="{! scmethod }" value="{! scmethod == v.testEntryResult.obs.SpeedCheckMethod__c }" />
+                                </aura:iteration>
+                            </ui:inputSelect>
+                        <!-- </aura:if> -->
+                    </div>
+                    <!--<div class="slds-col slds-size_1-of-2 slds-p-around_medium">
+                        <ui:inputText aura:id="Nearest_Station_Interlocking_Description__c"
+                                      value="{! v.testEntryResult.Nearest_Station_Interlocking_Description__c}" 
+                                      label="{! v.fieldLabelMap.Nearest_Station_Interlocking_Description__c}"
+                                      change="{! c.checkForTestCompletion }" />
+                    </div>-->
+                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium slds-p-bottom_small">
+                        <ui:inputSelect aura:id="Result__c"
+                                        value="{! v.testEntryResult.obs.Result__c }" 
+                                        label="{! v.fieldLabelMap.Result__c }"
+                                        disabled="{! (notequals(v.testEntryResult.testNumber, '128')) ? empty(v.picklistMap.Result__c) : true }"
+                                        required="{! v.testEntryResult.requiredFields.Result__c }"
+                                        change="{! c.onchangeResult }"
+                                        blur="{! c.checkForTestCompletion }">
+                            
+                            <aura:if isTrue="{! notequals(v.testEntryResult.testNumber, '128') }">
+                                <ui:inputSelectOption label="{! $Label.c.Default_Picklist_Value_None }" text="" value="true"/>
+                                <aura:iteration var="result" items="{! v.picklistMap.Result__c }">
+                                    <aura:if isTrue="{! and(result != $Label.c.RevSys_Generic_Pass, result != $Label.c.RevSys_Generic_Fail)}" >
+                                        <ui:inputSelectOption label="{! result }" text="{! result }" value="{! result == v.testEntryResult.obs.Result__c }" />
+                                    </aura:if>
+                                </aura:iteration>
+                                <aura:set attribute="else">
+                                    <ui:inputSelectOption label="{! $Label.c.Revsys_1872_Result_Compliant }" text="{! $Label.c.Revsys_1872_Result_Compliant }" value="false"/>
+                                </aura:set>
+                            </aura:if>
+                            
+                        </ui:inputSelect>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium slds-p-bottom_small">
+                        <ui:inputSelect aura:id="PersonallyObserved__c"
+                                        value="{! v.testEntryResult.obs.PersonallyObserved__c }" 
+                                        label="{! v.fieldLabelMap.PersonallyObserved__c }"
+                                        disabled="{! empty(v.picklistMap.PersonallyObserved__c) }"
+                                        required="{! v.testEntryResult.requiredFields.PersonallyObserved__c }"
+                                        change="{! c.checkForTestCompletion }">
+                            <ui:inputSelectOption label="{! $Label.c.Default_Picklist_Value_None }" text="" value="true"/>
+                            <aura:iteration var="personallyObserved" items="{! v.picklistMap.PersonallyObserved__c }">
+                                <ui:inputSelectOption label="{! personallyObserved }" text="{! personallyObserved }" value="{! personallyObserved == v.testEntryResult.obs.PersonallyObserved__c }" />
+                            </aura:iteration>
+                        </ui:inputSelect>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium slds-p-bottom_small">
+                        <ui:inputText aura:id="NonComplianceRuleNumber__c" maxlength="50"
+                                      value="{! v.testEntryResult.obs.NonComplianceRuleNumber__c }" 
+                                      label="{! v.fieldLabelMap.NonComplianceRuleNumber__c }"
+                                      required="{! and(notequals(v.testEntryResult.obs.Result__c, ''), notequals(v.testEntryResult.obs.Result__c, $Label.c.Revsys_1872_Result_Compliant)) }"
+                                      disabled="{! equals(v.testEntryResult.obs.Result__c, 'C = Compliance') }"
+                                      blur="{! c.checkForTestCompletion }"/>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium slds-p-bottom_small">
+                        <ui:inputSelect aura:id="DiscussedWithEmployee__c"
+                                        value="{! v.testEntryResult.obs.DiscussedWithEmployee__c }" 
+                                        label="{! v.fieldLabelMap.DiscussedWithEmployee__c }"
+                                        disabled="{! empty(v.picklistMap.DiscussedWithEmployee__c) }"
+                                        required="{! v.testEntryResult.requiredFields.DiscussedWithEmployee__c }"
+                                        change="{! c.checkForTestCompletion }">
+                            <ui:inputSelectOption label="{! $Label.c.Default_Picklist_Value_None }" text="" value="true"/>
+                            <aura:iteration var="discussed" items="{! v.picklistMap.DiscussedWithEmployee__c }">
+                                <ui:inputSelectOption label="{! discussed }" text="{! discussed }" value="{! discussed == v.testEntryResult.obs.DiscussedWithEmployee__c }" />
+                            </aura:iteration>
+                        </ui:inputSelect>
+                    </div>
+                    <!-- 5/15/2018 do not require Supervisors Comment when result is non-compliance-->
+                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium slds-p-bottom_small">
+                        <ui:inputSelect aura:id="SupervisorsCommentSelection__c"
+                                        value="{! v.testEntryResult.obs.SupervisorsCommentSelection__c }" 
+                                        label="{! v.fieldLabelMap.SupervisorsCommentSelection__c }"
+                                        disabled="{! empty(v.picklistMap.SupervisorsCommentSelection__c) }"
+                                        change="{! c.checkForTestCompletion }">
+                            <ui:inputSelectOption label="{! $Label.c.Default_Picklist_Value_None }" text="" value="true"/>
+                            <aura:iteration var="supCommentSelection" items="{! v.picklistMap.SupervisorsCommentSelection__c }">
+                                <ui:inputSelectOption label="{! supCommentSelection }" text="{! supCommentSelection }" value="{! supCommentSelection == v.testEntryResult.obs.SupervisorsCommentSelection__c }"/>
+                            </aura:iteration>
+                        </ui:inputSelect>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium slds-p-bottom_small">
+                        <ui:inputTextArea aura:id="Comments__c" maxlength="1500"
+                                          value="{! v.testEntryResult.obs.Comments__c }" 
+                                          label="{! v.fieldLabelMap.Comments__c }"
+                                          required="{! and(notequals(v.testEntryResult.obs.Result__c, ''), notequals(v.testEntryResult.obs.Result__c, $Label.c.Revsys_1872_Result_Compliant)) }"
+                                          blur="{! c.checkForTestCompletion }"/>
+                    </div>
+                    <!--
+                    <div class="slds-size_1-of-2 slds-p-around_medium" aura:id="NearestStationInterlocking" tabindex="0" onblur="{! c.checkForTestCompletion }" >
+                        <aura:if isTrue="{! equals(v.testEntryResult.MpSg__c, 'Location') }"><span class="required">*</span></aura:if>
+                        <label class="lookup-label">{! v.fieldLabelMap.NearestStationInterlocking__c }</label>
+                        <c:EIS_TypeaheadSearch aura:id="NearestStationInterlocking__c" isExpanded="true" 
+                                               selectedItemLabel="{! v.testEntryResult.NearestStationInterlocking__r.Name }" disabled="{! equals(v.testEntryResult.MpSg__c, 'MP') }" />
+                        
+                    </div>
+                    -->
+                </aura:set>
+            </aura:if>
+        </div>
+    </div>
+</aura:component>

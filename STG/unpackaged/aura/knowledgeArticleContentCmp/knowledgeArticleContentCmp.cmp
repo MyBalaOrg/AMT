@@ -1,0 +1,90 @@
+<aura:component implements="flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes,force:hasRecordId" access="global" controller="KnowledgeArticleContentController" >
+    <!--attributes-->
+    <aura:attribute name="knowledgeArticle" type="Knowledge__kav" />
+    <aura:attribute name="knowledgeArticleRecordType" type="String" />
+    <!--/attributes-->
+    
+    <!--handlers-->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <!--/handlers-->
+    
+    <!--component-->
+    <!--{!$ObjectType.Knowledge__kav.Fields.Title.Summary}-->
+    <div>
+        <lightning:layout >
+            <lightning:layoutItem flexibility="auto" padding="around-small">
+                <span class="doc-icon">
+                    <lightning:icon iconName="standard:document" size="small" alternativeText="Document"/>
+                </span>
+                <span class="record-type">
+                    <ui:outputText value="{!v.knowledgeArticleRecordType}" />
+                </span>
+            </lightning:layoutItem>
+        </lightning:layout>
+        
+        <aura:if isTrue="{!v.knowledgeArticle.Title != null}" >
+            <lightning:layout >
+                <lightning:layoutItem flexibility="auto" padding="around-small">
+                    <div class="slds-page-header__title main-title">
+                        <ui:outputText value="{!v.knowledgeArticle.Title}" />
+                        <lightning:icon class="preiew-icon" iconName="action:preview" size="x-small" alternativeText="Indicates approval"/>
+                        <ui:outputNumber class="total-views" value="{!v.knowledgeArticle.ArticleTotalViewCount}" />
+                    </div>
+                </lightning:layoutItem>
+            </lightning:layout>
+        </aura:if>
+        
+        <lightning:layout >
+            
+            <aura:if isTrue="{!v.knowledgeArticle.DepartmentArticleNumber__c != null}" >
+                <lightning:layoutItem class="slds-p-left_small">
+                    <!--{!$ObjectType.Knowledge__kav.Fields.Title.Summary}-->
+                    <span class="last-pulished-date">
+                        <ui:outputTextArea value="{!v.knowledgeArticle.DepartmentArticleNumber__c}" />
+                    </span>
+                    
+                </lightning:layoutItem>
+                
+                <lightning:layoutItem >
+                    <span class ="dot">
+                        
+                    </span>
+                    
+                </lightning:layoutItem>
+                
+            </aura:if>     
+            
+            <aura:if isTrue="{!v.knowledgeArticle.LastPublishedDate != null}" >
+                <lightning:layoutItem >
+                    <span class="last-pulished-date">
+                        <span>
+                            Last Published Date: 
+                        </span>
+                        <ui:outputDate value="{!v.knowledgeArticle.LastPublishedDate}"  />
+                    </span>
+                </lightning:layoutItem>
+            </aura:if>
+        </lightning:layout>
+        
+        <aura:if isTrue="{!v.knowledgeArticle.Summary != null}" >
+            <lightning:layout >
+                <lightning:layoutItem flexibility="auto" padding="around-small">
+                    <div class="summary">
+                        <!--{!$ObjectType.Knowledge__kav.Fields.Title.Summary}-->
+                        <ui:outputTextArea value="{!v.knowledgeArticle.Summary}" />
+                    </div>
+                </lightning:layoutItem>
+            </lightning:layout>
+        </aura:if>
+        
+        <aura:if isTrue="{!v.knowledgeArticle.Body__c != null}" >
+            <lightning:layout >
+                <lightning:layoutItem flexibility="auto" padding="around-small">
+                    <!--{!$ObjectType.Knowledge__kav.Fields.Title.Body__c}-->
+                    <lightning:formattedRichText value="{!v.knowledgeArticle.Body__c}" />
+                </lightning:layoutItem>
+            </lightning:layout>
+        </aura:if>
+    </div>
+    <!--/component-->
+</aura:component>

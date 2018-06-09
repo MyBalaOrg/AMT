@@ -1,0 +1,81 @@
+<aura:component implements="flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes" controller="DataFeedTileController">
+	<aura:attribute name="header" type="String" default="Tile Header" required="true"/>
+    <aura:attribute name="primaryObject" type="String" default="Case" required="true"/>
+    <aura:attribute name="recordTypeFilter" type="String" required="true" />
+    <aura:attribute name="headerField" type="String" required="true"/>
+    <aura:attribute name="descriptionField" type="String" />
+    <aura:attribute name="secondaryObject" type="String" />
+    <aura:attribute name="secondaryRelationshipField" type="String" />
+    <aura:attribute name="secondaryField" type="String" />
+    <aura:attribute name="height" type="Integer" default="425" required="true"/>
+    <aura:attribute name="numberRecords" type="String" default="5" required="true"/>
+    <aura:attribute name="viewPrivate" type="Boolean" default="False"/>
+    <aura:attribute name="headerLink" type="Boolean"/>
+    <aura:attribute name="headerUrl" type="String"/>
+    <aura:attribute name="askCeo" type="Boolean" default="False"/>
+    <aura:attribute name="output" type="List"/>
+    <aura:attribute name="openModal" type="Integer" />
+    <aura:attribute name="orderBy" type="String" required="true" default="Descending" />
+    <aura:attribute name="orderByField" type="String" required="true" default="CreatedDate"/>
+    <aura:attribute name="filterField" type="String"/>
+    <aura:attribute name="filterCriteria" type="String" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+     <div class="slds-border_bottom slds-border_left slds-border_right slds-border_top">
+        <div class="tileHeader">
+       	    <ui:outputText value="{!v.header}"/>
+            <aura:if isTrue="{!v.askCeo}">
+                <div style="float:right; padding-right:10px" >
+                    <c:askCEOQuestionFormCmp />
+                </div>
+            </aura:if>  
+   	    </div>
+        
+        <div class="body" style="{!'height:' + v.height + 'px'}">
+        	<aura:iteration items="{!v.output}" var="row" indexVar="key">         
+	            	<div class="primary">
+	                    <aura:if isTrue="{!v.headerLink}">
+	                        <a href="{!row.value[1]}" target="_blank">{!row.key} </a> 
+	                        <aura:set attribute="else">
+	                         {!row.key}
+	                        </aura:set>
+	                    </aura:if>
+                	</div>
+                    <div class="secondary"> {!row.value[0]} </div>
+
+
+                    <div class="morePadding">
+                		<a onclick="{!c.viewSecondary}" class="{!v.primaryObject == 'Case' ? '' : 'displayNone'}" id="more" data-index="{!key}"> More </a>
+                	</div>
+
+                    <div style="display:none" id="{!key + v.header}">
+					<section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+						<div class="slds-modal__container">
+							 <header class="slds-modal__header tileHeader">
+						        <h2  class="slds-text-heading_medium slds-hyphenate">{!row.value[2]}</h2>
+						      </header>
+							<div class="slds-modal__content slds-p-around_medium" >
+							<div class="primaryModal">  
+                                <aura:if isTrue="{!v.headerLink}">
+                                    <a href="{!row.value[1]}" target="_blank">{!row.key} </a> 
+                                    <aura:set attribute="else">
+                                     {!row.key}
+                                    </aura:set>
+                                </aura:if>
+                            </div>
+							<div class="secondaryModal"> {!row.value[0]} </div>
+								<div class='button-section slds-float--right'>
+								    <button class="slds-button new-button" id="closeButton" onclick="{!c.hideSecondary}">Close</button>
+								</div>
+							</div>
+						</div>
+					</section>
+					<div class="slds-backdrop slds-backdrop_open"></div>
+					</div>
+			</aura:iteration>
+        </div>
+
+    </div>
+
+</aura:component>

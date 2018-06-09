@@ -1,0 +1,4 @@
+<aura:event type="APPLICATION" description="Used to refresh search lists">
+<aura:attribute name="query" type="string" 
+                description="The query to run again"/>
+</aura:event>

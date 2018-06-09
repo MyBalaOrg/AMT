@@ -1,0 +1,163 @@
+<aura:component controller="RevSys_Obs_RecordDetailCtrl">
+    <aura:attribute name="trWrapperList" type="RevSys_TestResultWrapper[]" access="public" />
+    <aura:attribute name="selectedRecordType" type="RecordType" access="public" />
+    <aura:attribute name="obsFieldLabelMap" type="Map" access="public" />
+    <aura:attribute name="selectionState" type="Integer" access="public" />
+    <aura:attribute name="cmpState" type="Integer" access="public" />
+    <aura:attribute name="openEditModal" type="Boolean" access="public" default="false"/>
+    <aura:attribute name="openEditFindingModal" type="Boolean" access="public" default="false"/>
+    
+    <aura:attribute name="testQuestionList" type="Finding__c[]" access="public" />
+    <aura:attribute name="scoreList" type="Integer[]" default="[0,1,2,3,4]" access="public" />
+    <aura:attribute name="needImprovement" type="String" access="public" />
+    <aura:attribute name="needImprovementRequired" type="Boolean" default="false" access="public" />
+    <aura:attribute name="needImprovementMap" type="Map" access="public" />
+    <aura:attribute name="selectedResultIndex" type="Integer" default="0" access="public" />
+    <aura:attribute name="comments" type="String" access="public" />
+    <aura:attribute name="commentsRequired" type="Boolean" default="false" access="public" />
+    
+    <aura:registerEvent name="toggleLightningSpinner" type="c:RevSys_GeneralPurposeEvt" />
+    
+    <aura:if isTrue="{! equals(v.selectionState, v.cmpState) }">
+        <div class="slds-size_1-of-1 slds-p-horizontal_medium">
+            <div class="slds-p-left_medium">
+                <button class="slds-button slds-button_neutral sharp-corner-btn" value="true" onclick="{! c.onclickToggleAllTables }">
+                    Expand All Tables
+                </button>
+                <button class="slds-button slds-button_neutral sharp-corner-btn" onclick="{! c.onclickToggleAllTables }">
+                    Collapse All Tables
+                </button>
+            </div>
+            <div class="slds-grid slds-wrap slds-p-horizontal_medium slds-p-top_medium">
+                <aura:if isTrue="{! equals(v.selectedRecordType.Name, $Label.c.RevSys_Observation_RT_Label_Test_1872) }">
+                    <aura:iteration var="trWrapper" items="{! v.trWrapperList }" indexVar="wrapperIndex">
+                        <div class="slds-size_1-of-1 slds-p-horizontal_medium slds-m-bottom_small employee-result-table">
+                            <div class="slds-text-title_caps slds-p-vertical_small employee-name" 
+                                 onclick="{! c.toggleResultDisplay }" data-wrapper-index="{! wrapperIndex }">
+                                {! trWrapper.employeeName }
+                            </div>
+                            <aura:if isTrue="{! !trWrapper.display }">
+                                <table class="slds-table slds-table--bordered slds-table--cell-buffer slds-p-bottom_small slds-table_fixed-layout">
+                                    <thead>
+                                        <tr class="slds-text-title_caps">
+                                            <th><label>Edit</label></th>
+                                            <th><label>{! v.obsFieldLabelMap.result__c }</label></th>
+                                            <th><label>{! v.obsFieldLabelMap.personallyobserved__c }</label></th>
+                                            <th><label>{! v.obsFieldLabelMap.noncompliancerulenumber__c }</label></th>
+                                            <th><label>{! v.obsFieldLabelMap.discussed_with_employee__c }</label></th>
+                                            <th><label>{! v.obsFieldLabelMap.status__c }</label></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration var="result" items="{! trWrapper.testResults }" indexVar="resultIndex">
+                                            <tr>
+                                                <td>
+                                                    <a href="javascript:void(0)" onclick="{! c.openForceRecordEdit }" 
+                                                       data-record-id="{! result.Id }" data-test-number="{! result.TestNumber__c }">
+                                                        {! empty(result.TestNumber__c) ? 'Edit' : result.TestNumber__c }
+                                                    </a>
+                                                </td>
+                                                <td> <ui:outputText value="{! result.Result__c }" /> </td>
+                                                <td> <ui:outputText value="{! result.PersonallyObserved__c }" /> </td>
+                                                <td> <ui:outputText value="{! result.NonComplianceRuleNumber__c }" /> </td>
+                                                <td> <ui:outputText value="{! result.Discussed_with_Employee__c }" /> </td>
+                                                <td> <ui:outputText value="{! result.Status__c }" /> </td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </aura:if>
+                            
+                        </div>
+                    </aura:iteration>
+                    
+                    
+                    <aura:set attribute="else">
+                        <aura:iteration var="trWrapper" items="{! v.trWrapperList }" indexVar="wrapperIndex">
+                            <div class="slds-size_1-of-1 slds-p-horizontal_medium slds-m-bottom_small employee-result-table">
+                                <div class="slds-text-title_caps slds-p-vertical_small employee-name" 
+                                     onclick="{! c.toggleResultDisplay }" data-wrapper-index="{! wrapperIndex }">
+                                    {! trWrapper.employeeName }
+                                </div>
+                                <aura:if isTrue="{! !trWrapper.display }">
+                                    <table class="slds-table slds-table--bordered slds-table--cell-buffer slds-p-bottom_small slds-table_fixed-layout">
+                                        <thead>
+                                            <tr class="slds-text-title_caps">
+                                                <th><label>Edit</label></th>
+                                                <th><label>Edit Scores</label></th>
+                                                <th><label>{! v.obsFieldLabelMap.qualificationstatus__c }</label></th>
+                                                <th><label>{! v.obsFieldLabelMap.overallscore__c }</label></th>
+                                                <th><label>{! v.obsFieldLabelMap.needsimprovement__c }</label></th>
+                                                <th><label>{! v.obsFieldLabelMap.status__c }</label></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <aura:iteration var="result" items="{! trWrapper.testResults }" indexVar="resultIndex">
+                                                <tr>
+                                                    <td>
+                                                        <a href="javascript:void(0)" onclick="{! c.openForceRecordEdit }" 
+                                                           data-record-id="{! result.Id }" data-test-number="{! result.TestNumber__c }">
+                                                            Edit
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        <a href="javascript:void(0)" onclick="{! c.openEditFinndingModal }" 
+                                                           data-wrapper-index="{! wrapperIndex }">
+                                                            Edit Scores
+                                                        </a>
+                                                    </td>
+                                                    <td> <ui:outputText value="{! result.QualificationStatus__c }" /> </td>
+                                                    <td> <ui:outputText value="{! result.OverallScore__c }" /> </td>
+                                                    <td> <ui:outputText value="{! result.NeedsImprovement__c }" /> </td>
+                                                    <td> <ui:outputText value="{! result.Status__c }" /> </td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </tbody>
+                                    </table>
+                                </aura:if>
+                                
+                            </div>
+                        </aura:iteration>
+                        
+                        <!-- MODAL for editting Findings -->
+                        <aura:if isTrue="{! v.openEditFindingModal }">
+                            <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open">
+                                <div class="slds-modal__container edit-finding-modal">
+                                    <div class="slds-modal__header">
+                                        <h2 id="header99" class="slds-text-heading_medium">Edit Tests</h2>
+                                    </div>
+                                    
+                                    <div class="slds-modal__content slds-p-around_medium">
+                                        <c:RevSys_ObservationTestScoresCmp aura:id="testScore-cmp" findingList="{! v.testQuestionList }" scoreList="{! v.scoreList }" needImprovementRequired="{! v.needImprovementRequired }" needImprovementMap="{! v.needImprovementMap }"/>
+                                        <div class="slds-size_1-of-1 slds-p-horizontal_large slds-p-bottom_medium">
+                                            <ui:inputTextArea aura:id="Comments__c" maxlength="1500"
+                                                              value="{! v.comments }" 
+                                                              label="{! v.obsFieldLabelMap.comments__c }"
+                                                              required="{! v.commentsRequired }"/>
+                                        </div>
+                                        <div class="slds-size_1-of-1 slds-p-horizontal_large slds-p-bottom_medium">
+                                            <ui:inputTextArea aura:id="NeedsImprovement__c" maxlength="1500"
+                                                              value="{! v.needImprovement }" 
+                                                              label="{! v.obsFieldLabelMap.needsimprovement__c }"
+                                                              required="{! v.needImprovementRequired }"/>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="slds-modal__footer">
+                                        <button class="slds-button slds-button_neutral" onclick="{! c.cancelEditFindings }">Cancel</button>
+                                        <button class="slds-button slds-button_brand" onclick="{! c.saveEditFindings }">Save</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-backdrop slds-backdrop_open"></div>
+                        </aura:if>
+                    </aura:set>
+                </aura:if>
+            </div>
+        </div>
+    </aura:if>
+    
+    <aura:if isTrue="{! v.openEditModal }">
+        <c:Force_RecordEditModalCmp aura:id="force-record-edit" openModal="{! v.openEditModal }" />
+    </aura:if>
+</aura:component>

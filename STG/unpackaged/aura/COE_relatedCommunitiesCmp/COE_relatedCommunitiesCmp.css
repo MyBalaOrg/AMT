@@ -1,0 +1,79 @@
+.THIS.comp {
+    overflow: hidden;
+}
+
+.THIS .body{
+	line-height: 1.3;
+    padding: 0 10px;
+	font-family: OpenSans,Helvetica,Arial,sans-serif;
+    overflow: hidden;
+}
+
+.THIS .tileHeader{
+	height:50px; 
+	/*position:relative; */
+	/*font-size: 14px;
+	background-color: #004D6E;
+	color:white;*/
+	line-height:50px;
+	padding-left: 10px;
+    font-family: OpenSans,Helvetica,Arial,sans-serif;
+}
+
+.THIS .ask-icon {
+    /*float: right;
+    bottom: 60px;
+    padding-right: 20px;
+    position: relative;*/
+    background-color: #E6E9EB;
+    /*height: 66px;*/
+}
+
+.THIS .ask-icon .main-icon {
+    padding: 0;
+    border-radius: 50%;
+    margin: 8px 0 8px 15px;
+}
+
+.THIS .commuity-icon {
+    width: 48px;
+    height: 48px;
+    margin: 8px 0 8px 15px;
+    border-radius: 50%;
+    background-color: #167fae;
+}
+
+.THIS .commuity-icon:hover {
+    background-color: #1ca1d3;
+}
+
+.THIS .commuity-icon-container {
+    cursor: pointer;
+    margin-left: 8px;
+}
+
+.THIS .commuity-icon-container span {
+    border-radius: 50%;
+    background-color: #167fae;
+    margin: 8px 0;
+}
+
+.THIS .commuity-icon-container span:hover {
+    background-color: #1ca1d3;
+}
+
+.THIS .feed-item {
+    cursor: pointer;
+    border-bottom: 1px solid #d4d4d4;
+    padding: 14px 0;
+    /*white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;*/
+    font-family: OpenSans,Helvetica,Arial,sans-serif;
+    font-size: 13px;
+    line-height: 21px; /* SC- 259 : PK: add line height  */
+}
+
+.THIS .feed-item:hover {
+    color: #2574a9;
+}

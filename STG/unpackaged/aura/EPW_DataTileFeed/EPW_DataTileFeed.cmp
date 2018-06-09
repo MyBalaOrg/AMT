@@ -1,0 +1,387 @@
+<aura:component implements="flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes" controller="EPW_DataFeedTileController">
+    <aura:attribute name="header" type="String" default="none"/>
+    <aura:attribute name="primaryObject" type="String" default="Case" required="true"/>
+    <aura:attribute name="recordTypeFilter" type="String" required="true" />
+    <aura:attribute name="headerField" type="String" required="true"/> 
+    <aura:attribute name="descriptionField" type="String" />
+    <aura:attribute name="secondaryObject" type="String" />
+    <aura:attribute name="secondaryRelationshipField" type="String" />
+    <aura:attribute name="secondaryField" type="String" />
+    <aura:attribute name="height" type="Integer" default="425" description="Height of the component" required="true"/>
+    <aura:attribute name="numberRecords" type="String" default="5" required="true"/>
+    <aura:attribute name="viewPrivate" type="Boolean" default="False"/>
+    <aura:attribute name="headerLink" type="Boolean"/>
+    <aura:attribute name="headerUrl" type="String"/>
+    <aura:attribute name="askCeo" type="Boolean" default="False"/>
+    <aura:attribute name="output" type="List"/>
+    <aura:attribute name="openModal" type="Integer" />
+    <aura:attribute name="orderBy" type="String" required="true" default="Descending" />
+    <aura:attribute name="orderByField" type="String" required="true" default="CreatedDate"/>
+    <aura:attribute name="filterField" type="String"/>
+    <aura:attribute name="filterCriteria" type="String" />
+    <aura:attribute name="imageUrl" type="String" default=""/>    
+    <aura:attribute name="secondaryRichText" type="Boolean" default="False"/>
+    <aura:attribute name="iconStaticResource" type="String" default=""/>
+    <aura:attribute name="customIcon" type="Boolean" default="False"/> 
+    <aura:attribute name="caseModal" type="Boolean" default="False" />    
+    <aura:attribute name="openInNewWindow" type="Boolean" default="False" />
+    
+    
+    <aura:attribute name="showTileHeader" type="Boolean" description="Tile header can be hidden" default="true" />
+    <aura:attribute name="headerBackgroundcolor" type="String" description="Background color of the header" default="transparent" />
+    <aura:attribute name="titleFontColor" type="String" description="Title Font Color" default="black" />
+    <aura:attribute name="titleFontSize" type="Integer" description="Title Font Size" default="14" required="true" />
+    <aura:attribute name="tileContentBackgroundColor" type="String" description="Tile Content Background color" default="transparent" />
+    <aura:attribute name="borderCornerRadius" type="Integer" description="Border Corder Radius" default="0" />
+    <aura:attribute name="shadow" type="String" description="3D shadow" default="0 2px 4px 0 rgba(0,0,0,0.2)" />
+    
+    <aura:attribute name="showBorder" type="Boolean" description="Controls the border" default="true" />
+    <aura:attribute name="showDivider" type="Boolean" description="Controls the divider" default="true" />
+    <aura:attribute name="showPublishedDate" type="Boolean" description="Show Published Date" default="false" />
+    <aura:attribute name="askRichardSearch" type="String" default=""/>
+    <aura:attribute name="AdditionalIcon" type="Boolean" default="False" />
+    <aura:attribute name="useiFrame" type="Boolean" default="False" />
+    <aura:attribute name="askRichardSearchIcon" type="String" default="standard:answer_public"/>
+    <aura:attribute name="headerIndents" type="Boolean" description="Controls the header indents" default="true" />
+    <aura:attribute name="headerHeight" type="String" description="Height of Header" />
+    <!-- Begin attributes for pagination --> 
+    <aura:attribute name="recordsPerPage" type="Integer"/> <!-- Design component --> 
+    <aura:attribute name="currentPage" type="Integer" default="1"/>
+    <aura:attribute name="currentPageNumber" type="Integer" default="1"/>
+    <aura:attribute name="endPage" type="Integer" default="1"/> 
+    <aura:attribute name="showButtons" type="Boolean" default="False" />
+
+    <aura:attribute name="pages" type="String[]" /> 
+    <aura:handler name="change" value="{!v.currentPage}" action="{!c.currentPageChange}"/>
+    <!-- End attributes for pagination --> 
+    
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <!--<div class="slds-border_bottom slds-border_left slds-border_right slds-border_top">-->
+    <div class="comp" style="{! join(' ',
+                             v.showBorder ? 'border: 1px solid #d4d4d4;' : '',
+                             not(empty(v.borderCornerRadius)) ? 'border-radius: '+v.borderCornerRadius+'px;' : '',
+                             not(empty(v.shadow)) ? 'box-shadow: '+v.shadow+';' : '') }">
+        <!--<div class="tileHeader slds-truncate">
+            <ui:outputText value="{!v.header}"/>
+        </div>-->
+        
+        <div class="tileHeader slds-truncate" onclick="{!$Browser.formFactor != 'DESKTOP' ? c.sectionOne : ''}" 
+             style="{! join(' ',
+                    v.showTileHeader ? 'display: block;' : 'display: none;',
+                    empty(v.headerHeight) ? 'height:50px; line-height:50px' : 'height: ' + v.headerHeight + 'px;','line-height: ' + v.headerHeight + 'px;',
+                    or(empty(v.headerBackgroundcolor),v.headerBackgroundcolor == 'none') ? '' : 'background-color: '+v.headerBackgroundcolor+';',
+                    or(empty(v.titleFontColor),v.titleFontColor == 'none') ? '' : 'color: '+v.titleFontColor+';',
+                    'font-size: ' + v.titleFontSize + 'px;',
+                    $Browser.formFactor != 'DESKTOP' ? 'cursor: pointer;' : 'cursor: default;',
+                    v.showDivider ? 'border-bottom: 1px solid #d4d4d4;' : '') }">
+            <section class="slds-clearfix">
+                <div class="slds-float--left ">
+                    <aura:if isTrue="{!$Browser.formFactor != 'DESKTOP' ? true : false}">
+                        <lightning:icon class="slds-show icn" aura:id="articleOne" iconName="utility:add" size="x-small" alternativeText="Indicates add"/>
+                        <lightning:icon class="slds-hide icn" aura:id="articleOne" iconName="utility:dash" size="x-small" alternativeText="Indicates dash"/>
+                    </aura:if>
+                </div>
+                <div class="slds-m-left--large slds-truncate" style="{!v.headerIndents ? 'margin-left: 1.5rem;' : 'margin-left: 0rem;'}">
+                    {! not(or(empty(v.header),v.header=='none')) ? v.header : '' }
+                </div>
+                
+            </section>
+        </div>
+        <aura:if isTrue="{!or($Browser.formFactor == 'DESKTOP',not(v.showTileHeader)) ? true : false}">
+            <aura:if isTrue="{!v.askCeo}">
+                <div aura:id="articleOne" class="ask-icon" style="{!join(' ',
+                                                                  or(empty(v.tileContentBackgroundColor),v.tileContentBackgroundColor == 'none') ? '' : 'background-color: '+v.tileContentBackgroundColor+';')}">
+                    <c:CEO_AskCeoQuestionForm alternativeText="Post a Question to Richard" buttonStyle="standard:question_feed" buttonSize="medium" 
+                                              customIcon="{!v.customIcon}" iconStaticResource="{!v.iconStaticResource}" />
+                    <aura:if isTrue="{!v.AdditionalIcon}"> 
+                        <div class="slds-button new-button main-icon position-initial">
+                            <aura:if isTrue="{!equals(v.askRichardSearchIcon,'standard:answer_public')}">
+                                <div onclick="{!c.navigateToUrl}" style="height:32px; width:32px;">
+                                    <lightning:icon iconName="{!v.askRichardSearchIcon}"  variant="inverse"  alternativeText="View All Answered Questions" title="View All Answered Questions" size="medium"/>
+                                </div>
+                                
+                                <!-- <lightning:buttonicon iconName="{!v.askRichardSearchIcon}"  variant="inverse"  alternativeText="View All Answered Questions" title="View All Answered Questions" onclick="{!c.navigateToUrl}" size="small"/> -->
+                                <aura:set attribute="else">
+                                    <a href="{!v.askRichardSearch}">
+                                        <img src="{!'/sfsites/c/resource/' + v.askRichardSearchIcon}" style="height:32px; display:inline-block;" />
+                                    </a>
+                                </aura:set>
+                            </aura:if>
+                        </div>
+                    </aura:if>
+                </div>
+            </aura:if>
+            <!--<div aura:id="articleOne" class="body slds-border_bottom slds-border_left slds-border_right" 
+                     style="{!join(' ',
+                            or(empty(v.tileContentBackgroundColor),v.tileContentBackgroundColor == 'none') ? '' : 'background-color: '+v.tileContentBackgroundColor+';',
+                            v.askCeo ? 'height:' + (v.height - 53) + 'px;' : 'height:' + (v.height) + 'px;')}">-->
+            <div aura:id="articleOne" class="body" 
+                 style="{!join(' ',
+                        or(empty(v.tileContentBackgroundColor),v.tileContentBackgroundColor == 'none') ? '' : 'background-color: '+v.tileContentBackgroundColor+';',
+                        v.askCeo ? 'height:' + (v.height - 53) + 'px;' : 'height:' + (v.height) + 'px;')}">
+                <div class="container-new">
+                    <aura:iteration items="{!v.output}" var="row" indexVar="key">               
+                        <!-- <aura:if isTrue="{!lessthan(key,v.recordsPerPage)}">
+                        <div class="outerContainer">
+                            <aura:set attribute="else">
+                                <div class="outerContainer">
+                            </aura:set>
+                    </aura:if> -->
+                        <div class="outerContainer" id="{!'row' + (key + 1)}" style="{!'padding-bottom:15px; ' + if(lessthan(key,v.recordsPerPage), if(row.value[3] != 'noThumbnail', 'display:inline-block;', 'display:block;') , 'display:none;')}">
+                            <div class="innerLeftContainer" style="{!row.value[3] != 'noThumbnail' ? 'width: 105px; padding-right:5px; float: left;' : 'display:none'}" >
+                                <aura:if isTrue="{!v.useiFrame}">
+                                    <div onclick="{!c.navigateToIframe}" class="pointerOnHover" data-origin="{!row.value[1]}" style="font-size:16px; font-weight:bold;">  
+                                        <lightning:formattedRichText value="{!row.value[3]}" /> 
+                                    </div>                                    
+                                    <aura:set attribute="else">
+                                        <a href="{!row.value[1]}" target="_self"> 
+                                            <lightning:formattedRichText value="{!row.value[3]}" />  
+                                        </a>
+                                    </aura:set>
+                                </aura:if>
+                            </div>
+                            
+                            <div class="innerRightContainer" style="{!row.value[3] != 'noThumbnail' ? 'display:inline-block; width: 61%;' : '' }" > 
+                                <div class="primary" >
+                                    <aura:if isTrue="{!v.headerLink}">
+                                        <aura:if isTrue="{!v.useiFrame}">
+                                            <aura:if isTrue="{!v.openInNewWindow}">
+                                                <!-- added class ColorFont -->
+                                                <a class="ColorFont" onclick="{!c.navigateToIframenewWindow}" data-origin="{!row.value[1]}" style="font-size:16px; font-weight:bold;">{!row.key}</a>
+                                                <aura:set attribute="else">
+                                                    <!-- added class ColorFont -->
+                                                    <a class="ColorFont" onclick="{!c.navigateToIframe}" data-origin="{!row.value[1]}" style="font-size:16px; font-weight:bold;">{!row.key}</a>
+                                                </aura:set>
+                                            </aura:if>
+                                            
+                                            <aura:set attribute="else">
+                                                <aura:if isTrue="{!v.openInNewWindow}">
+                                                    <a class="ColorFont" href="{!row.value[1]}" target="_blank">{!row.key} </a> 
+                                                    <aura:set attribute="else">
+                                                        <a class="ColorFont" href="{!row.value[1]}" target="_self">{!row.key} </a>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </aura:set>
+                                        </aura:if>
+                                        
+                                        <aura:set attribute="else">
+                                            <aura:if isTrue="{!v.caseModal}">
+                                                <!--<a onclick="{!c.viewSecondary}" id="more" data-index="{!key}" style="font-size:16px; font-weight:bold;"> {!if(equals(v.filterCriteria,'Special Employee Advisory'), row.value[4], '' ) +  row.key}  </a>
+                                                <aura:set attribute="else"> {!if(equals(v.filterCriteria,'Special Employee Advisory'), row.value[4], '' ) +  row.key}  </aura:set>-->
+                                                <a onclick="{!c.viewSecondary}" id="more" data-index="{!key}" style="font-size:16px; font-weight:bold; color:#0275d8;"> {!if(equals(v.filterCriteria,'Special Employee Advisory'), row.value[4] + ' - ', '' ) + row.key}  </a>
+                                                <aura:set attribute="else"> {!row.key}  </aura:set>
+                                            </aura:if>
+                                            <!--<a onclick="{!c.viewSecondary}" id="more" data-index="{!key}" style="font-size:16px; font-weight:bold;"> {!if(equals(v.filterCriteria,'Special Employee Advisory'), row.value[4], '' ) +  row.key}  </a>-->
+                                        </aura:set>                                        
+                                    </aura:if> 
+                                </div>
+                                
+                                <aura:if isTrue="{!and(v.showPublishedDate, and(equals(v.primaryObject, 'Portal_Content__c'), not(empty(row.value[4]))))}" >
+                                    <div class="last-pulished-date">
+                                        Published Date: {!row.value[4]}
+                                    </div>
+                                </aura:if>
+                                
+                                <aura:if isTrue="{!and(v.showPublishedDate, equals(v.primaryObject, 'Case'), not(empty(row.value[4])))}" >
+                                    <div class="last-pulished-date">
+                                        Response Date: {!row.value[4]}
+                                    </div>
+                                </aura:if>
+                                
+                                <div class="secondary"> 
+                                    <aura:if isTrue="{!v.secondaryRichText}">
+                                        <lightning:formattedRichText value="{!row.value[0]}" />  
+                                        <aura:set attribute="else"> {!row.value[0]} </aura:set>
+                                    </aura:if>
+                                    
+                                </div>
+                            </div>   
+                        </div>      
+                        
+                        <!-- <div class="morePadding">
+                        <a onclick="{!c.viewSecondary}" class="{!v.primaryObject == 'Case' ? '' : 'displayNone'}" id="more" data-index="{!key}"> More </a>
+                    </div> -->
+                        
+                        <div style="display:none" id="{!key + v.header}">
+                            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                                <div class="slds-modal__container">
+                                    <header class="slds-modal__header tileHeader">
+                                        <h2  class="slds-text-heading_medium slds-hyphenate">{!row.value[2]}</h2>
+                                    </header>
+                                    <div class="slds-modal__content slds-p-around_medium" >
+                                        <div class="primaryModal">  
+                                            <aura:if isTrue="{!v.headerLink}">
+                                                <aura:if isTrue="{!v.useiFrame}">
+                                                    <a onclick="{!c.navigateToIframe}" data-origin="{!row.value[1]}" style="font-size:16px; font-weight:bold;">{!row.key}</a>
+                                                    <aura:set attribute="else">
+                                                        <a class="ColorFont" href="{!row.value[1]}" target="_self">{!row.key} </a> 
+                                                    </aura:set>
+                                                </aura:if>
+                                                <aura:set attribute="else">
+                                                    {!row.key}
+                                                </aura:set>
+                                            </aura:if>
+                                        </div>
+                                        <div class="secondaryModal"> {!row.value[0]} </div>
+                                        <div class='button-section slds-float--right'>
+                                            <button class="slds-button_brand slds-button new-button" id="closeButton" onclick="{!c.hideSecondary}"> Close </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                            <div class="slds-backdrop slds-backdrop_open"></div>
+                        </div>
+                        
+                    </aura:iteration>
+                </div>
+            </div>     
+            
+            <!-- Buttons for pagination --> 
+            <aura:if isTrue="{!v.showButtons}">
+                <div class="button-group" style="{!'background-color:' + v.tileContentBackgroundColor}">
+                    <lightning:button label="Previous" disabled="{!v.currentPageNumber == 1}"  
+                                      onclick="{!c.previous}" variant="brand" class="amtrak-button"/>
+                    <aura:iteration items="{!v.pages}" var="num">
+                        <aura:if isTrue="{!v.currentPageNumber == num}" >
+                            <a style="color: rgb(51, 51, 51);" onclick="{!c.pageSelect}" data-page="{!num}">{!num}</a>&nbsp;
+                            <aura:set attribute="else" >
+                                <a class="ColorFont" onclick="{!c.pageSelect}" data-page="{!num}">{!num}</a>&nbsp;
+                            </aura:set>
+                        </aura:if>
+                    </aura:iteration>
+                    <lightning:button label="Next" disabled="{!v.currentPageNumber == v.endPage}" 
+                                      onclick="{!c.next}" variant="brand" class="amtrak-button"/>
+                </div>
+            </aura:if>
+            <!-- End Buttons for pagination -->
+        </aura:if> 
+        <aura:if isTrue="{!v.askCeo}">
+            <div aura:id="articleOne" class="slds-hide ask-icon" style="{!join(' ',
+                                                                        or(empty(v.tileContentBackgroundColor),v.tileContentBackgroundColor == 'none') ? '' : 'background-color: '+v.tileContentBackgroundColor+';')}" >
+                <c:CEO_AskCeoQuestionForm alternativeText="Post a Question to Richard" buttonStyle="standard:question_feed" buttonSize="medium"/>
+                
+                <aura:if isTrue="{!v.AdditionalIcon}"> 
+                    <div class="slds-button new-button main-icon">
+                        <aura:if isTrue="{!equals(v.askRichardSearchIcon,'standard:answer_public')}">
+                            <div onclick="{!c.navigateToUrl}" style="height:32px; width:32px;">
+                                <lightning:icon iconName="{!v.askRichardSearchIcon}" alternativeText="View All Answered Questions" title="View All Answered Questions" size="medium"/>
+                            </div>
+                            <!-- <lightning:buttonicon iconName="{!v.askRichardSearchIcon}"  variant="inverse"  alternativeText="View All Answered Questions" title="View All Answered Questions" onclick="{!c.navigateToUrl}" size="small"/> -->
+                            <aura:set attribute="else">
+                                <a href="{!v.askRichardSearch}">
+                                    <img src="{!'/sfsites/c/resource/' + v.askRichardSearchIcon}" style="height:32px; display:inline-block;"/>
+                                </a>
+                            </aura:set>
+                        </aura:if>
+                        
+                    </div>
+                </aura:if>
+            </div>
+            
+        </aura:if> 
+        
+        <div aura:id="articleOne" class="slds-hide body" 
+             style="{!join(' ',
+                    or(empty(v.tileContentBackgroundColor),v.tileContentBackgroundColor == 'none') ? '' : 'background-color: '+v.tileContentBackgroundColor+';',
+                    v.askCeo ? 'height:' + (v.height - 53) + 'px;' : 'height:' + (v.height) + 'px;')}">
+            <aura:iteration items="{!v.output}" var="row" indexVar="key"> 
+                
+                <div class="outerContainer" style="{!if(row.value[3] != 'noThumbnail', 'display:inline-block;', 'display:block; padding-bottom:15px; ')}">
+                    <div class="innerLeftContainer" style="{!row.value[3] != 'noThumbnail' ? 'width: 105px; padding-right:5px; float: left;' : 'display:none'}" >
+                        <aura:if isTrue="{!v.useiFrame}">
+                            <div onclick="{!c.navigateToIframe}" class="pointerOnHover" data-origin="{!row.value[1]}" style="font-size:16px; font-weight:bold;">  
+                                <lightning:formattedRichText value="{!row.value[3]}" /> 
+                            </div>                                    
+                            <aura:set attribute="else">
+                                <a href="{!row.value[1]}" target="_self"> 
+                                    <lightning:formattedRichText value="{!row.value[3]}" />  
+                                </a>
+                            </aura:set>
+                        </aura:if>
+                    </div>
+                    
+                    <div class="innerRightContainer" style="{!row.value[3] != 'noThumbnail' ? 'display:inline-block; width: 61%;' : '' }" > 
+                        <div class="primary">
+                            <aura:if isTrue="{!v.headerLink}">
+                                <aura:if isTrue="{!v.useiFrame}">
+                                    <aura:if isTrue="{!v.openInNewWindow}">
+                                        <!-- added class ColorFont -->
+                                        <a class="ColorFont" onclick="{!c.navigateToIframenewWindow}" data-origin="{!row.value[1]}" style="font-size:16px; font-weight:bold;">{!row.key}</a>
+                                        <aura:set attribute="else">
+                                            <!-- added class ColorFont -->
+                                            <a class="ColorFont" onclick="{!c.navigateToIframe}" data-origin="{!row.value[1]}" style="font-size:16px; font-weight:bold;">{!row.key}</a>
+                                        </aura:set>
+                                    </aura:if>
+                                    
+                                    <aura:set attribute="else">
+                                        <aura:if isTrue="{!v.openInNewWindow}">
+                                            <a class="ColorFont" href="{!row.value[1]}" target="_blank">{!row.key} </a> 
+                                            <aura:set attribute="else">
+                                                <a class="ColorFont" href="{!row.value[1]}" target="_self">{!row.key} </a> 
+                                            </aura:set>
+                                        </aura:if>
+                                    </aura:set>
+                                </aura:if> 
+                                <aura:set attribute="else">
+                                    <!-- added class ColorFont -->
+                                    <a class="ColorFont" onclick="{!c.viewSecondary}" id="more" data-index="{!key}"> {!row.key} </a>
+                                </aura:set>
+                            </aura:if>
+                        </div>
+                        
+                        <aura:if isTrue="{!and(v.showPublishedDate, equals(v.filterCriteria,'Special Employee Advisory'), not(empty(row.value[4])))}" >
+                            <div class="last-pulished-date">
+                                {!row.value[4]}
+                            </div>
+                        </aura:if>
+                        
+                        <div class="secondary">
+                            <aura:if isTrue="{!v.secondaryRichText}">
+                                <lightning:formattedRichText value="{!row.value[0]}" />  
+                                <aura:set attribute="else"> {!row.value[0]} </aura:set>
+                            </aura:if>
+                        </div>
+                    </div>   
+                </div>      
+                
+                <!--<div class="morePadding">
+                    <a onclick="{!c.viewSecondary}" class="{!v.primaryObject == 'Case' ? '' : 'displayNone'}" id="more" data-index="{!key}"> More </a>
+                </div>-->
+                
+                <div style="display:none" id="{!key + v.header}">
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container">
+                            <header class="slds-modal__header tileHeader" >
+                                <h2  class="slds-text-heading_medium slds-hyphenate">{!row.value[2]}</h2>
+                            </header>
+                            <div class="slds-modal__content slds-p-around_medium" >
+                                <div class="primaryModal">  
+                                    <aura:if isTrue="{!v.headerLink}">
+                                        <aura:if isTrue="{!v.useiFrame}">
+                                            <a onclick="{!c.navigateToIframe}" data-origin="{!row.value[1]}" style="font-size:16px; font-weight:bold;">{!row.key}</a>
+                                            <aura:set attribute="else">
+                                                <a class="ColorFont" href="{!row.value[1]}" target="_self">{!row.key} </a> 
+                                            </aura:set>
+                                        </aura:if>
+                                        <aura:set attribute="else">
+                                            {!row.key}
+                                        </aura:set>
+                                    </aura:if>
+                                </div>
+                                <div class="secondaryModal"> {!row.value[0]} </div>
+                                <div class='button-section slds-float--right'>
+                                    <button class=".slds-button_brand slds-button new-button" id=" closeButton " onclick="{!c.hideSecondary}" >Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </div>
+            </aura:iteration>
+        </div>
+        
+    </div>
+    
+</aura:component>

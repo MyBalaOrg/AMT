@@ -1,0 +1,89 @@
+.THIS .slds-input {
+	color: black;	
+    font-size: 0.75rem;
+}
+
+.THIS .tileHeader{
+    height: 50px;
+    position: relative;
+    font-size: 14px;
+    line-height: 50px;
+    padding-left: 10px;
+}
+
+.THIS .slds-modal__header{
+	color:#fff;
+}
+
+.THIS .thanks {
+	color: black;
+    display: inline-block;
+    line-height: 1.25em;
+}
+
+.THIS .errorMsg {
+	color: red;
+}
+
+.THIS .toggle{
+    display:none;
+}
+
+.THIS .slds-form-element{
+	font-size: 75%
+}
+
+.THIS .questions {
+	line-height:10px;
+}
+
+.THIS.slds-button.new-button, .THIS .new-button
+{
+    color: #fff;
+    background: #167FAE;
+    /*padding: 0px 8px 0px 8px;*/
+    padding: 0px 5px 0px 5px;
+    cursor: pointer;
+}
+.THIS.slds-button.new-button:hover{
+    background: #1ca1d3;
+}
+.THIS .disabled {
+    background: #efefef;
+}
+.THIS .slds-button.slds-float--right{
+	margin-top: 10px;
+}
+.THIS .slds-modal, .THIS .slds-modal__content{
+    font-family: OpenSans,Helvetica,Arial,sans-serif;
+}
+.THIS .staticMessage{
+    color: #000;
+    display: inline-block;
+    line-height: 1.25em;
+    text-align: justify;
+    font-size: 11px;
+}
+.THIS .slds-input.has-error{
+    background-color: rgb(255, 255, 255);
+    border-color: rgb(194, 57, 52);
+    box-shadow: rgb(194, 57, 52) 0 0 0 1px inset;
+    background-clip: padding-box;
+}
+
+.THIS .slds-modal {
+    z-index: none;
+}
+
+.THIS .slds-backdrop {
+    z-index: auto;
+}
+
+.THIS .slds-modal__container{
+    z-index: 1;
+}
+
+.THIS .float-left {
+    float: left;
+    display: inline-block;
+}

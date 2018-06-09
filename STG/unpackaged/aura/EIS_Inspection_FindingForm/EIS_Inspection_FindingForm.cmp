@@ -1,0 +1,69 @@
+<aura:component controller="EIS_Inspection_FindingFormCtrl">
+    <aura:attribute name="disableFindings" type="Boolean" access="public" default="false" />
+    <aura:attribute name="disableCorrectiveActions" type="Boolean" access="public" default="false" />
+    <aura:attribute name="inspection" type="Audit_Inspections__c" access="public" />
+    <aura:attribute name="question" type="Questions__c" access="public" />
+    <aura:attribute name="finding_c" type="EIS_Inspection_MainCtrl.Finding" access="public" />
+    <aura:attribute name="findingNum" type="Integer" access="public" default="1"/>
+    
+    <aura:registerEvent name="toggleLightningSpinner" type="c:EIS_BooleanEvent" />
+    <aura:registerEvent name="deleteFinding" type="c:EIS_Inspection_BubbleChangesEvent"/>
+    
+    <aura:handler name="missingFinding" event="c:EIS_BooleanEvent" action="{! c.handleMissingFindingEvent }"/>
+    <aura:handler name="updateCorrectiveAction" event="c:EIS_Inspection_BubbleChangesEvent" action="{! c.handleUpdateCorrectiveActionEvent }"/>
+    
+	<div class="slds-grid slds-wrap slds-m-horizontal_small slds-m-bottom_x-small slds-p-bottom_xxx-small finding-box">
+        <div class="slds-p-right_small slds-size_1-of-2">
+            <div class="slds-p-horizontal_xx-small slds-size_1-of-1">
+                <label><span class="required-field-style">* </span>{! $Label.c.EIS_Form_Label_Finding + ' ' + v.findingNum }</label>
+                <aura:if isTrue="{! and(!empty(v.finding_c.finding.Id), !v.disableFindings) }">
+                    <span class="slds-m-left_large" onclick="{! c.onclickDeleteFinding }">
+                        <c:EIS_LightningIcon iconName="utility:delete" iconSize="x-small"
+                                             cursor="pointer" hoverColor="icon-trash"/>
+                    </span>
+                </aura:if>
+            </div>
+            <div class="slds-p-horizontal_xx-small slds-size_1-of-1">
+                <textarea aura:id="finding-description" disabled="{! v.disableFindings }"
+                          class="slds-textarea finding-desc" placeholder="{! $Label.c.EIS_Form_Placeholder_Enter_Text }" 
+                          value="{! v.finding_c.finding.EIS_Description__c }"
+                          onblur="{! c.descriptionOnBlur }" >
+                </textarea>
+                <c:EIS_ErrorMessage aura:id="finding-description-error"
+                                    message="{! $Label.c.EIS_Form_Error_Msg_Missing_Finding }"/>
+            </div>
+            <div class="slds-p-horizontal_xx-small slds-size_1-of-1">
+                <button class="slds-button slds-button_neutral slds-float_right slds-m-left_medium"
+                        disabled="{! or(empty(v.finding_c.finding.Id), v.disableFindings) }"
+                        onclick="{! c.onclickResolvedOnSpot }" >
+                    {! $Label.c.EIS_Form_Button_Resolve_On_Spot }
+                </button>
+                <aura:if isTrue="{! !empty(v.finding_c.finding.Id) }">
+                    <div class="slds-p-top_xx-small">
+                        <c:EIS_FileAttchment_Wrapper parentId="{! v.finding_c.finding.Id }" label="{! $Label.c.EIS_Form_Button_Attachment }" disable="{! v.disableFindings }" />
+                    </div>
+                </aura:if>
+            </div>
+        </div>
+        
+        <div class="slds-size_1-of-2">
+            <aura:iteration var="ca" items="{! v.finding_c.caList }" indexVar="caIndex">
+                <c:EIS_Inspection_CorrectiveAction aura:id="inspection-corrective-action" 
+                                                   disableCorrectiveActions="{! v.disableCorrectiveActions }"
+                                                   caNum="{! caIndex + 1 }" ca="{! ca }" findingNum="{! v.findingNum }"
+                                                   finding="{! v.finding_c.finding }"
+                                                   question="{! v.question }"
+                                                   inspection="{! v.inspection }"/>
+            </aura:iteration>
+            <aura:if isTrue="{! !v.disableCorrectiveActions }">
+                <div class="slds-align_absolute-center">
+                    <span onclick="{! c.addCorrectiveAction }">
+                        <c:EIS_LightningIcon iconName="utility:new" iconSize="small"
+                                             cursor="pointer" hoverColor="icon-brand"
+                                             label="{! $Label.c.EIS_Form_Icon_Label_Add_CA }" />
+                    </span>
+                </div>
+			</aura:if>            
+        </div>
+    </div>
+</aura:component>

@@ -1,0 +1,17 @@
+<aura:component implements="lightning:actionOverride,flexipage:availableForRecordHome" 
+                access="global" controller="Case_RecordTypeCheck">
+    <aura:attribute name="appName" type="String" access="private" />
+    <aura:attribute name="recordTypeId" type="String" access="public" />
+    <aura:attribute name="recordTypeName" type="String" access="public" />
+    <aura:attribute name="errorMessage" type="String" default="" access="private" />
+    
+	<aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+    
+    <div class="{! 'slds-size_1-of-1 ' + (empty(v.errorMessage) ? '':'slds-p-bottom_small') }">
+        <c:EIS_ErrorMessage message="{! v.errorMessage }" rendered="{! !empty(v.errorMessage) }" />
+    </div>
+    
+    <aura:if isTrue="{! equals(v.appName, $Label.c.App_Name_ODILR) }">
+        <c:ODILR_Case_Main recordTypeId="{! v.recordTypeId }" recordTypeName="{! v.recordTypeName }"/>
+    </aura:if>
+</aura:component>

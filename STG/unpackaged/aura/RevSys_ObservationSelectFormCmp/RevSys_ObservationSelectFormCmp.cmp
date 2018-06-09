@@ -1,0 +1,27 @@
+<aura:component >
+    <aura:attribute name="recordTypes" type="RecordType[]" access="public" />
+    <aura:attribute name="selectedRecordType" type="RecordType" access="public" />
+    <aura:attribute name="currentIndex" type="Integer" default="0" access="public" />
+    <aura:attribute name="theObject" type="Object" access="public" />
+    <aura:attribute name="selectionState" type="Integer" access="public" />
+    <aura:attribute name="cmpState" type="Integer" access="public" />
+    <aura:attribute name="label" type="String" access="public" />
+    
+    <aura:registerEvent name="selectRecordType" type="c:RevSys_GeneralPurposeEvt" />
+    
+
+    <aura:if isTrue="{! equals(v.selectionState, v.cmpState) }">
+    	<div class="slds-size_1-of-1 slds-p-left_medium">
+            <div class="slds-grid slds-wrap"> 
+                <div class="slds-size_1-of-1 slds-text-title_caps" style="font-size:1rem;">{! v.label }</div>
+                <aura:iteration var="rt" items="{! v.recordTypes }" indexVar="tabIndex">
+                    <button class="{! 'detail-tab slds-button slds-button_brand slds-m-top_x-small' 
+                                   + (equals(v.selectedRecordType.Name, rt.Name) ? ' selected-tab' : '') }"
+                            value="{! tabIndex }" onclick="{! c.onclickTab }">
+                        {! rt.Name }
+                    </button>
+                </aura:iteration>
+            </div>
+		</div>
+    </aura:if>
+</aura:component>

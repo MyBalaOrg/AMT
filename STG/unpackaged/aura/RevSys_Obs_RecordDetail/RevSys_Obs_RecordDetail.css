@@ -1,0 +1,40 @@
+.THIS {
+    background-color: white;
+    border-radius: 0.5em;
+}
+
+.THIS.fidget-spinner-style {
+    position: fixed;
+}
+
+.THIS .num-of-col-btn {
+    cursor: pointer;
+}
+
+.THIS .num-of-col-btn > span > span > svg {
+    fill: #0070d2 !important;
+    padding-bottom: 3px;
+}
+
+.THIS .num-of-col-btn:hover > span > span > svg {
+    fill: #005fb2 !important;
+}
+
+.THIS .question-container {
+    border: solid 1px #d9dbdd;
+    min-height: 5em;
+}
+
+.THIS .question-container:hover {
+    border-color: #f9f9fa;
+    background-color: #f9f9fa !important;
+    box-shadow: -2px 3px 4px rgba(0,0,0,0.17);
+}
+
+.THIS .question-container:hover > label {
+    color: black;
+}
+
+.THIS .slds-select_container::before { border-bottom: none;}
+
+.THIS .slds-select_container::after { border-top: none;}

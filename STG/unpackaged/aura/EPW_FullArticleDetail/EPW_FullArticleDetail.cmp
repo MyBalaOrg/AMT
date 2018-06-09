@@ -1,0 +1,57 @@
+<aura:component controller="EPW_CarouselController" implements="forceCommunity:availableForAllPageTypes,flexipage:availableforallpagetypes" access="global" >
+    
+    <aura:attribute name="portalContent" type="Portal_Content__c" />
+    <aura:attribute name="displayHeaders" type="Boolean" default="false" />
+    <aura:attribute name="EmployeeCommunication" type="Boolean" default="false" />
+    <aura:attribute name="SpecialEmployeeAdvisory" type="Boolean" default="false" />
+    <aura:attribute name="showPublishedDate" type="Boolean" description="Show Published Date" default="false" />
+    <aura:attribute name="titleFontSize" type="String" description="Title Font size" />
+    <aura:attribute name="titlePaddingTop" type="String" description="Title Padding Top" />
+    <aura:attribute name="titlePaddingBottom" type="String" description="Title Padding Bottom" />
+    <aura:attribute name="backgroundColor" type="String" description="Backround Color" />
+    <aura:attribute name="contentPaddingLeft" type="String" description="Content Padding Left" />
+    <aura:attribute name="contentPaddingRight" type="String" description="Content Padding Right" />
+    <aura:attribute name="contentWidth" type="Integer" description="Content width as a percent" default="100"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.fetchContentDetails}"/>    
+    
+    <div class='container' id='full-article-content' style="{! join(' ',                                          
+                                          'margin:auto; width:'+v.contentWidth+'%;',
+                                          empty(v.backgroundColor) ? 'background: transparent;' : 'background : ' + v.backgroundColor + ';')}">
+        <div class='header-container'>
+            <aura:if isTrue="{!v.displayHeaders}" >
+                <aura:if isTrue="{!v.SpecialEmployeeAdvisory}" >
+                    <img src="{!$Resource.CEO_Employee_Advisory_Header}" class = "header-logo__img"/> 
+                </aura:if>
+                <aura:if isTrue="{!v.EmployeeCommunication}" >
+                    <img src="{!$Resource.CEO_EmployeeCommunication_Header}" class = "header-logo__img"/> 
+                </aura:if>
+            </aura:if>
+        </div>
+        <div class='content-container slds-m-top__medium' style="{! join(' ',
+                                                                 	empty(v.contentPaddingLeft) ? 'padding-left: 10px;' : 'padding-left: ' + v.contentPaddingLeft + 'px;',
+                                                                 empty(v.contentPaddingRight) ? 'padding-right: 10px;' : 'padding-right: ' + v.contentPaddingRight + 'px;')}">
+            
+            <div class='slds-text-heading_medium article-title'
+                 style="{! join(' ',
+                        empty(v.titleFontSize) ? 'font-size : 12pt;' : 'font-size : ' + v.titleFontSize + 'pt;',
+                        empty(v.titlePaddingTop) ? 'padding-top: 15px;' : 'padding-top: ' + v.titlePaddingTop + 'px;',
+                        empty(v.titlePaddingBottom) ? 'padding-bottom: 15px;' : 'padding-bottom: ' + v.titlePaddingBottom + 'px;')}"
+                 >{!v.portalContent.Title__c}</div> 
+            
+            <aura:if isTrue="{!v.showPublishedDate}" >
+                <div class="last-pulished-date">
+                    Published Date: <ui:outputDate value="{!v.portalContent.Published_Date__c}"/>
+                </div>
+            </aura:if>
+            <div class='slds-m-top__medium description'>
+                <lightning:formattedRichText value="{!v.portalContent.Content__c}"/>
+            </div>
+        </div>
+        <div class='footer-container'>
+            <aura:if isTrue="{!v.displayHeaders}" >
+                <img src="{!$Resource.CEO_Employee_Advisory_Footer}" class = "header-logo__img"/> 
+            </aura:if>
+        </div>
+    </div>
+</aura:component>

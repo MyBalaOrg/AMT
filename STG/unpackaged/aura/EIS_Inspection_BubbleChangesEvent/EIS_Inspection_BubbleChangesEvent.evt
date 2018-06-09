@@ -1,0 +1,8 @@
+<aura:event type="COMPONENT">
+    <aura:attribute name="origin" type="String" />
+    <aura:attribute name="index" type="Integer" />
+    <aura:attribute name="question" type="Questions__c" />
+    <aura:attribute name="finding" type="Finding__c" />
+    <aura:attribute name="inspection" type="Audit_Inspections__c" />
+    <aura:attribute name="correctiveaction" type="Corrective_Action__c" />
+</aura:event>

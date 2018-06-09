@@ -1,0 +1,11 @@
+.THIS .slds-modal__container {
+    max-width: 100rem !important;
+    min-width: 50rem !important;
+    width: 70%;
+}
+
+.THIS .slds-modal__content {
+    overflow-y: scroll;
+    overflow-x: scroll;
+    max-height: 50rem !important;
+}

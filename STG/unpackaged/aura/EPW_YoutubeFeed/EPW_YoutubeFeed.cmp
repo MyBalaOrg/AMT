@@ -1,0 +1,107 @@
+<aura:component controller="PortalVideoController" implements="force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes">
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>       
+    <aura:attribute name="isPhone" type="boolean" default="{!$Browser.isPhone}"/>  
+    <aura:attribute name="isTablet" type="boolean" default="{!$Browser.isTablet}"/>
+    <aura:attribute name="isDesktop" type="boolean" default="{!$Browser.isDesktop}"/>
+    <aura:attribute name="shadow" type="String" description="3D shadow" default="0 2px 4px 0 rgba(0,0,0,0.2)" />
+    
+    <ltng:require scripts="/resource/youtube_resource/youtubelogic.js, /resource/youtube_resource/utility.js" afterScriptsLoaded="{!c.afterScriptsLoaded}" />
+    
+    <aura:attribute name="id"
+                    type="String"
+                    default=""/>
+    
+    <aura:attribute name="objApiName"
+                    type="String"
+                    default=""/>
+    
+    <aura:attribute name="fieldApiName"
+                    type="String"
+                    default=""/>
+    
+    <aura:attribute name="videoId"
+                    type="String"
+                    default=""/>        
+        
+    <aura:attribute name="fullscreen"
+                    type="Boolean"
+                    default="0"/>
+    
+    <aura:attribute name="fullscreen_class"
+                    type="String"
+                    default=""/>
+    
+    <aura:attribute name="width"
+                    type="String"
+                    default="100%"/>
+    
+    <aura:attribute name="height"
+                    type="String"
+                    default="inherit"/>
+    
+    <aura:attribute name="mobilewidth"
+                    type="String"
+                    default="100%"/>
+    
+    <aura:attribute name="mobileheight"
+                    type="String"
+                    default="inherit"/>    
+    
+    <aura:attribute name="tabletwidth"
+                    type="String"
+                    default="100%"/>
+    
+    <aura:attribute name="tabletheight"
+                    type="String"
+                    default="inherit"/>                 
+    
+    <aura:attribute name="autoplay"
+                    type="Boolean"
+                    default="1"/>
+    
+    <aura:attribute name="loop"
+                    type="Boolean"
+                    default="1"/>
+    
+    <aura:attribute name="controls"
+                    type="Boolean"
+                    default="0"/>
+    
+    <aura:if isTrue="{!v.isPhone}">
+        <div class="{!v.fullscreen_class}" align="center" style="{! join(' ',
+                                                                 not(empty(v.shadow)) ? 'box-shadow: '+v.shadow+';' : '') }">
+            <section id="{! 'youtube-videoplayer' + v.id}" class="{! 'video_holder'}">
+                <iframe type="text/html" width="{!v.mobilewidth}" height="{!v.mobileheight}"
+                        src="{! 'https://www.youtube.com/embed/' + v.videoId + '?&amp;autoplay=' + v.autoplay + '&amp;controls=' + v.controls + '&amp;disablekb=0&amp;fs=0&amp;loop=' + v.loop + '&amp;modestbranding=1&amp;playsinline=1&amp;rel=0&amp;showinfo=1'}"
+                        frameborder="0" allowfullscreen="0"
+                        />
+            </section>
+        </div>
+    </aura:if>    
+    
+    <aura:if isTrue="{!v.isTablet}">
+        <div class="{!v.fullscreen_class}" align="center" style="{! join(' ',
+                                                                 not(empty(v.shadow)) ? 'box-shadow: '+v.shadow+';' : '') }">
+            <section id="{! 'youtube-videoplayer' + v.id}" class="{! 'video_holder'}">
+                <iframe type="text/html" width="{!v.tabletwidth}" height="{!v.tabletheight}"
+                        src="{! 'https://www.youtube.com/embed/' + v.videoId + '?&amp;autoplay=' + v.autoplay + '&amp;controls=' + v.controls + '&amp;disablekb=0&amp;fs=0&amp;loop=' + v.loop + '&amp;modestbranding=1&amp;playsinline=1&amp;rel=0&amp;showinfo=1'}"
+                        frameborder="0" allowfullscreen="0"
+                        />
+            </section>
+        </div>
+    </aura:if>    
+    
+    <aura:if isTrue="{!v.isDesktop}">
+        <div class="{!v.fullscreen_class}" align="center" style="{! join(' ',
+                                                                 not(empty(v.shadow)) ? 'box-shadow: '+v.shadow+';' : '') }">
+            <section id="{! 'youtube-videoplayer' + v.id}" class="{! 'video_holder'}">
+                <iframe type="text/html" width="{!v.width}" height="{!v.height}"
+                        src="{! 'https://www.youtube.com/embed/' + v.videoId + '?&amp;autoplay=' + v.autoplay + '&amp;controls=' + v.controls + '&amp;disablekb=0&amp;fs=0&amp;loop=' + v.loop + '&amp;modestbranding=1&amp;playsinline=1&amp;rel=0&amp;showinfo=1'}"
+                        frameborder="0" allowfullscreen="0"
+                        />
+            </section>
+        </div>
+    </aura:if>       
+    
+</aura:component>

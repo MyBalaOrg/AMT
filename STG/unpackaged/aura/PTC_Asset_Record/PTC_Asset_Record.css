@@ -1,0 +1,20 @@
+.THIS.new-case-main-body {
+    border-radius: 0.3em;
+    padding: 2em;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    max-width: 70% !important;
+    background-color: white !important;
+}
+.THIS .open-section {
+    color: black;
+    background-color: #f3f2f2;
+}
+
+.THIS.new-asset-main-body-header {
+    border-radius: 0.3em;
+    padding: 2em;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    max-width: 70% !important;
+}

@@ -1,0 +1,4 @@
+<design:component >
+	<design:attribute name="stationAuditType" label="Station Audit Type" description="Select the Station Audit Flow type"
+                      datasource="apex://StationAuditTypePicklist" required="true" />
+</design:component>

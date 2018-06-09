@@ -1,0 +1,40 @@
+<design:component label="Amtrak Footer with Social Icons" >
+    <design:attribute name="navigationURL1" label="Icon 1 URL" default="https://www.facebook.com/Amtrak/" description="Provide the navigation url for the icon" />
+    <design:attribute name="navigationIcon1" label="Icon 1 Image URL" default="/sfsites/c/resource/Amtrak_Social_Icons/facebook.svg" description="Provide the salesforce url where the icon image is stored" />
+    <design:attribute name="navigationURL2" label="Icon 2 URL" default="https://twitter.com/amtrak"/>
+    <design:attribute name="navigationIcon2" label="Icon 2 Image URL" default="/sfsites/c/resource/Amtrak_Social_Icons/twitter.svg"/>
+    <design:attribute name="navigationURL3" label="Icon 3 URL" default="https://www.instagram.com/amtrak"/>
+    <design:attribute name="navigationIcon3" label="Icon 3 Image URL" default="/sfsites/c/resource/Amtrak_Social_Icons/instagram.svg"/>
+    <design:attribute name="navigationURL4" label="Icon 4 URL" default="https://www.linkedin.com/company/amtrak"/>
+    <design:attribute name="navigationIcon4" label="Icon 4 Image URL" default="/sfsites/c/resource/Amtrak_Social_Icons/linkedin.svg" />
+    <design:attribute name="navigationURL5" label="Icon 5 URL" default="https://plus.google.com/113087815240989591382"/>
+    <design:attribute name="navigationIcon5" label="Icon 5 Image URL" default="/sfsites/c/resource/Amtrak_Social_Icons/google.svg" />
+    <design:attribute name="navigationURL6" label="Icon 6 URL" default="https://www.youtube.com/amtrak" />
+    <design:attribute name="navigationIcon6" label="Icon 6 Image URL" default="/sfsites/c/resource/Amtrak_Social_Icons/youtube.svg" />
+    <design:attribute name="navigationURL7" label="Icon 7 URL" default="https://www.pinterest.com/amtraktravels/" />
+    <design:attribute name="navigationIcon7" label="Icon 7 Image URL" default="/sfsites/c/resource/Amtrak_Social_Icons/pinterest.svg" />
+    <design:attribute name="navigationURL8" label="Icon 8 URL"/>
+    <design:attribute name="navigationIcon8" label="Icon 8 Image URL"/>
+    <design:attribute name="header" label="Tile Header" description="Header of the tile"/>
+    <design:attribute name="navigationURL9" label="Icon 9 URL"/>
+    <design:attribute name="navigationIcon9" label="Icon 9 Image URL"/>
+    <design:attribute name="navigationURL10" label="Icon 10 URL"/>
+    <design:attribute name="navigationIcon10" label="Icon 10 Image URL"/>
+    <design:attribute name="footerText" label="Footer Text 1" description="Text of the footer"/>
+    <design:attribute name="shadow" label="3D shadow" description="Control the shadow of the tile"/>    
+    
+    <!--design for rich text content-->
+    <!--<design:attribute name="application" label="Application*" description="Application from which the content is to be fetched" datasource="apex://EPW_CustomRichContentPicklistController" />
+	<design:attribute name="objectName" label="Object*" description="Object (API Name) from which the content is to be fetched"/>
+    <design:attribute name="recordType" label="Record Type*" description="Record type (Label) from which the content is to be fetched"/>
+    <design:attribute name="fieldName" label="Field*" description="Field (API Name) from which the content is to be fetched"/>
+    <design:attribute name="title" label="Title*" description="The Title of the record that will be displayed"/>-->
+    <design:attribute name="height" label="Height in px" description="Height of the component"/>
+    
+    <!-- Community header height -->
+    <design:attribute name="heightOfCommunityHeaderCmp" label="Height Of Community Header in px" description="Height of the community header component"/>
+    
+    <!--url-->
+    <design:attribute name="urlTitle" label="URL Title" description="URL Title" />
+    <design:attribute name="url" label="URL" description="URL" />
+</design:component>

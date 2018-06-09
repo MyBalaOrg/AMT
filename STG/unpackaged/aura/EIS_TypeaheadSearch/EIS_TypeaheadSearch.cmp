@@ -1,0 +1,55 @@
+<aura:component access="public" description="Component to render typeahead search functionality" >
+    <aura:attribute name="internalId" type="Integer" access="public" />
+    <aura:attribute name="listItems" type="StaticUtils.SearchItem[]" access="public"
+                    description="List of items to be searched on" />
+    <aura:attribute name="resultItems" type="StaticUtils.SearchItem[]" access="public" 
+                    description="List of items that contains the search key" />
+    <aura:attribute name="selectedItemLabel" type="String" access="public"
+                    description="User selected item" />
+    <aura:attribute name="placeholder" type="String" default="" access="public" 
+                    description="Placeholder text for the input field" />
+    <aura:attribute name="isExpanded" type="Boolean" default="false" access="public" 
+                    description="Boolean to toggle visibility of posible search results" />
+    <aura:attribute name="disabled" type="Boolean" default="false" access="public" />
+    <aura:attribute name="hasError" type="Boolean" default="false" access="public" />
+    <aura:attribute name="previousFetchKey" type="String" default="false" access="private" />
+    <aura:attribute name="oldSearchKey" type="String" default="false" access="private" />
+    <aura:attribute name="isRequired" type="Boolean" default="fault"/>
+    <aura:attribute name="fieldLabel" type="String" access="public" />
+    <aura:attribute name="showSearchIcon" type="Boolean" access="public" default="false"/>
+    
+    <aura:registerEvent name="fetchSearchItems" type="c:EIS_Audit_UpdateObjectEvent"/>
+    <aura:registerEvent name="searchItemSelected" type="c:EIS_Audit_UpdateObjectEvent"/>
+    
+    <div aura:id="component-area" class="slds-combobox-lookup">
+        <div class="{! not(empty(v.fieldLabel)) ? 'slds-show' : 'slds-hide' }">
+            <aura:if isTrue="{! v.isRequired }"><span class="required">*</span></aura:if>
+            <label class="slds-form-element__label">{! v.fieldLabel }</label>
+        </div>
+        <div class="{! 'slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right ' + (v.hasError ? 'slds-has-error' : '') }">        
+            <input aura:id="search-box" type="text" class="{! 'slds-input' + (v.hasError ? ' has-error' : '') }" 
+                   value="{! v.selectedItemLabel }" placeholder="{! v.placeholder }" disabled="{! v.disabled }"
+                   onkeyup="{! c.onkeyupSearchBox }" onkeypress="{! c.onkeypressSearchBox }" onblur="{! c.onblurSearchBox }"/>
+            <aura:if isTrue="{! v.showSearchIcon }" >
+                <span class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right">
+                    <lightning:icon iconName="utility:search" size="xx-small"/>            
+                </span> 
+            </aura:if>      
+        </div>
+        <div aura:id="result-items-box" class="{! 'result-items-box-body ' + (v.isExpanded ? '' : 'hide-results') }" >
+            <aura:iteration items="{! v.resultItems }" var="item" end="100" indexVar="index"> <!-- Only the first 50 items will display -->
+                <div class="list-item slds-p-around_xx-small slds-p-left_small" data-index="{! index }" onclick="{! c.handleItemSelection }">
+                    <div>{! item.label }</div>
+                    <!-- ARSS204 itearte over additional fields and show fields we want -->
+                    <aura:iteration items="{! item.additionalFields }" var="eachField" >
+                        <aura:if isTrue="{!eachField.FieldAPIName == 'Email' ||
+                                         eachField.FieldAPIName == 'Department' ||
+                                         eachField.FieldAPIName == 'Position_Title__c'}" >
+                            <div class="other-field">{! eachField.FieldLabel }: {! eachField.Value }</div>
+                        </aura:if>
+                    </aura:iteration>
+                </div>
+            </aura:iteration>
+        </div>
+    </div>
+</aura:component>

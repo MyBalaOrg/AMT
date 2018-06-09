@@ -1,0 +1,23 @@
+<aura:component implements="lightning:actionOverride,force:hasRecordId" access="global" controller="Case_RecordTypeCheck">
+    <aura:attribute name="appName" type="String" access="private" />
+    <aura:attribute name="errorMessage" type="String" default="" access="private" />
+    
+	<aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+    <aura:handler name="onSaveSuccess" event="force:recordSaveSuccess" action="{! c.handleSaveSuccess }"/>
+    
+    <div class="{! 'slds-size_1-of-1 ' + (empty(v.errorMessage) ? '':'slds-p-bottom_small') }">
+        <c:EIS_ErrorMessage message="{! v.errorMessage }" rendered="{! !empty(v.errorMessage) }" />
+    </div>
+    
+    <aura:if isTrue="{! !equals(v.appName, 'ODILR') }">
+        <div class="slds-grid slds-wrap" >
+            <div class="slds-p-around_large case-edit-wrapper">
+            	<force:recordEdit aura:id="edit" recordId="{! v.recordId }"/>
+                <div class="slds-align_absolute-center slds-m-top_medium">
+                	<ui:button class="case-edit-button" label="Cancel" press="{! c.cancel }"/>
+                    <ui:button class="case-edit-button slds-button_brand" label="Save" press="{! c.save }"/>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+</aura:component>

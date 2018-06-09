@@ -1,0 +1,141 @@
+.THIS{
+    padding-bottom:0;
+}
+
+.THIS .site-logo__img {
+    background-image: t('url(' + brandLogoImage  + ')');
+    margin-left:1%;
+    height:40px;
+    padding: 10px;
+    background-repeat:no-repeat;
+    width:240px; 
+}
+
+.THIS .icn svg{
+    fill: #fff;
+    padding:0.5rem;
+    border-radius:50%;
+    width:2.5rem;
+    height:2.5rem; 
+}
+
+.THIS .icn svg:hover{
+    padding:0.5rem;
+    border-radius:50%;
+    background-color:gray;
+}
+
+.THIS.buttonMenu-align{
+    float:right;
+}
+
+.THIS.page-header {
+    min-width: 230px;
+    width: 100%;
+    top: 0;
+    z-index: 20;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    -webkit-transition: all .3s ease-in;
+    transition: all .3s ease-in;
+    /* background: linear-gradient(to right,#167fa6,#003759); */
+    padding: 10px;
+    height: 60px;
+    box-shadow:none;
+}
+
+.THIS .header-image {
+    display: inline-block;
+    width: 50%;
+    padding-top: 10px;
+}
+
+.THIS .header-buttons {
+    float: right;
+    padding: 2px;
+}
+
+.THIS .dropbtn {
+    background-color: none;
+    color: #fff;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    padding: 4px;
+}
+
+.THIS .dropdown {
+    position: relative; 
+    display: inline-block;
+    float: right !important;    
+}
+
+.THIS .dropdown-content {
+    display: none;
+    position: absolute;
+    right: 5px;
+    background-color: #f9f9f9;
+    min-width: 100px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  	z-index: 1;
+    text-align: left;
+}
+
+.THIS .dropdown-content a {
+    color: black;
+    padding: 5px 16px;
+    text-decoration: none;
+    display: block;
+    border-left: 3px solid transparent; 
+}
+
+.THIS .dropdown-content a:hover {
+    border-left: 3px solid #003759 !important;
+}
+
+.THIS .dropdown:hover .dropdown-content{
+    display: block; 
+}
+
+.THIS .user-logo {
+    color: #fff;
+}
+
+.THIS .dropdown:hover .dropbtn{
+    color: gray ;
+}
+
+.THIS .dropdown:hover .user-logo{
+    color: gray ;
+}
+
+.THIS .hidden {
+    display: none;
+}
+
+@media (max-width: 420px){
+    .THIS .header-image {
+        text-align: center;
+        width: 50%;
+        padding-top: 10px;
+    }
+    .THIS .site-logo__img {        
+        width: 100%;
+    }
+    
+    .THIS.page-header {
+        text-align: center;
+    }
+    .THIS .dropdown-content {
+        right: -22px;
+        margin-top: 5px;
+    }
+    
+    .THIS .my-profile-desk {
+        display: none;
+    }
+    
+    .THIS .hidden {
+        display: block;
+    }
+}

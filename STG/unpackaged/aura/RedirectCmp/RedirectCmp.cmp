@@ -1,0 +1,8 @@
+<aura:component implements="force:appHostable,force:lightningQuickAction,force:appHostable,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,flexipage:availableForRecordHome" controller="Revsys_GenericUtility" access="global">
+    <aura:attribute name="recordType" type="String" />
+
+    
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>    
+    
+    
+</aura:component>

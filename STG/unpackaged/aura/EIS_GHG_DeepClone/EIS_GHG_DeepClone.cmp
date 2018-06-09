@@ -1,0 +1,17 @@
+<aura:component implements="force:hasRecordId,force:lightningQuickAction" access="global" 
+                controller="EIS_GHG_DeepCloneCtrl">
+    <aura:attribute name="errorMessage" type="String" access="private" />
+    
+    <c:EIS_ErrorMessage message="{! v.errorMessage }" rendered="{! !empty(v.errorMessage) }" />
+    <div class="slds-grid slds-wrap">
+    	<div class="slds-size_1-of-2 slds-p-right_medium">
+        	<ui:inputDate aura:id="start-date" label="{! $Label.c.EIS_Form_Label_Start_Date }" required="true" displayDatePicker="true"/>
+        </div>
+        <div class="slds-size_1-of-2 slds-p-left_medium">
+        	<ui:inputDate aura:id="end-date" label="{! $Label.c.EIS_Form_Label_End_Date }" required="true" displayDatePicker="true"/>
+        </div>
+        
+        <lightning:button label="{! $Label.c.EIS_Form_Icon_Label_Begin_Cloning }" onclick="{!c.cloneTable}" variant="neutral" class="slds-m-top--medium"/>
+    </div>
+    
+</aura:component>

@@ -1,0 +1,45 @@
+<apex:page standardController="Observation__c" docType="html-5.0"> 
+    <apex:includeLightning />
+
+	<div id="lightning" />
+
+    <script>
+        $Lightning.use("c:ST_ObservationSubmissionApp", function() {
+          $Lightning.createComponent("c:ST_ObservationSubmissionCmp",
+          { state : "1" },
+          "lightning",
+          function(cmp) {
+              $A.eventService.addHandler({
+
+                event: 'force:navigateToURL',
+                handler: function(event) {
+                  if (sforce && sforce.one) {
+                    // VF page in S1 or Lightning Exp
+                    sforce.one.navigateToURL(event.getParam('url'));
+                  } else {
+                    // VF page in Classic
+                    if (event.getParam('url') === '/apex/ST_ObservationSubmissionPage') {
+                      window.location = '{!URLFOR('/apex/ST_ObservationSubmissionPage')}';
+                    }
+                  }
+                }
+            });
+            $A.eventService.addHandler({
+              event: 'force:navigateToObjectHome',
+              handler: function(event) {
+                  if (sforce && sforce.one) {
+                    // VF page in S1 or Lightning Experience
+                    sforce.one.navigateToObjectHome(event.getParam('scope'));
+                  } else {
+                    // VF page in Classic
+
+                    if (event.getParam('scope') === 'Observation__c') {
+                      window.location = '{!URLFOR($Action.Observation__c.Tab, $ObjectType.Observation__c)}';
+                    }
+                  }
+                }
+            });
+          });
+        });
+    </script>
+</apex:page>

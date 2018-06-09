@@ -1,0 +1,28 @@
+<design:component >
+    <design:attribute name="header" label="Tile Header" description="Header of the tile"/>
+    <design:attribute name="primaryObject" label="Primary Object API Name" description="The primary object to pull data from"/>
+    <design:attribute name="recordTypeFilter" label="Primary Object Record Type Label" 
+        description="The record type of the primary object to filter on"/>
+    <design:attribute name="filterField" label="Primary Object Filter Field" description="The field name of the field to filter on"/>
+    <design:attribute name="filterCriteria" label="Primary Object Filter Criteria" description="The criteria of the field on which to filter by"/>
+    <design:attribute name="headerField" label="Primary Field API Name" description="The field name of the first field to pull"/>
+    <design:attribute name="descriptionField" label="Secondary API Field Name" 
+        description="The field name of the second field to pull"/>
+
+    <design:attribute name="secondaryObject" label="Child Object Relationship API Name (__r format)" 
+        description="Example: CaseComments, Test_Objects__r"/>
+    <design:attribute name="secondaryRelationshipField" label="Parent-Child Object API Field Name ( __c format)" 
+        description="The relationship name of the secondary object (Example: ParentId for Case Comments or Contact__c on a custom object that looks up to Contact)"/>
+    <design:attribute name="secondaryField" label="Child Object API Field Name" 
+        description="The field name of the second field to pull from the secondary object"/>
+
+    <design:attribute name="orderByField" label="Order Fields by Field Name" description="Example: LastModifiedDate or CreatedDate (Note: This applies only to the primary object)"/>
+    <design:attribute name="orderBy" label="Ascending/Descending" description="Example: Ascending or Descending"/>
+    <design:attribute name="height" label="Height in px" description="Height of the tile in px" />
+	<design:attribute name="numberRecords" label="Number of Records" description="Number of rows to pull into tile"/>
+    <design:attribute name="viewPrivate" label="Pull Private records" description="Pull private records (Note: Currently only applies to Case Comments)"/>
+    <design:attribute name="headerLink" label="Make Primary Row Hyperlinks" description="Make headers in the tile clickable links"/>
+    <design:attribute name="headerUrl" label="Primary Field URL Location API Name" description="The field name of URL that the header links to "/>
+
+
+</design:component>

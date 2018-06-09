@@ -1,0 +1,57 @@
+<aura:component >
+    <aura:attribute name="osrWrapperList" type="RevSys_OccSpecReqWrapper[]" access="public" />
+    <aura:attribute name="osrWrapperListCopy" type="RevSys_OccSpecReqWrapper[]" access="public" />
+    <aura:attribute name="selectionState" type="Integer" access="public" /> 
+    <aura:attribute name="cmpState" type="Integer" access="public" />
+    <aura:attribute name="obsTemplate" type="Observation__c" access="public" />
+    <aura:attribute name="picklistMap" type="Map" default="{}" access="public" />
+    <aura:attribute name="obsFieldLabelMap" type="Map" access="public" />
+    <aura:attribute name="obsRequiredFieldMap" type="Map" access="public" />
+    
+    <ltng:require scripts="{! $Resource.amtrak_helper_functions }" afterScriptsLoaded="{! c.scriptsLoaded }" />
+    
+    <aura:if isTrue="{! equals(v.selectionState, v.cmpState) }">
+        <div class="slds-size_1-of-1 slds-p-around_medium">
+            <div class="slds-grid slds-wrap">
+                <div class="slds-size_1-of-3 slds-p-around_medium">
+                	<ui:inputSelect aura:id="Department__c"
+                                    value="{! v.obsTemplate.Department__c }" label="{! v.obsFieldLabelMap.department__c }"
+                                    disabled="{! empty(v.picklistMap.Department__c) }"
+                                    required="{! v.obsRequiredFieldMap.Department__c }"
+                                    change="{! c.updateObsTemplateFields }">
+                        <ui:inputSelectOption label="{! $Label.c.Default_Picklist_Value_None }" text="" value="true"/>
+                        <aura:iteration var="department" items="{! v.picklistMap.Department__c }">
+                            <ui:inputSelectOption label="{! department }" text="{! department }"/>
+                        </aura:iteration>
+                    </ui:inputSelect>
+                </div>
+                <div class="slds-size_1-of-3 slds-p-around_medium">
+                    <ui:inputSelect aura:id="Craft__c"
+                                    value="{! v.obsTemplate.Craft__c }" label="{! v.obsFieldLabelMap.craft__c }"
+                                    disabled="{! empty(v.picklistMap.Craft__c) }"
+                                    required="{! v.obsRequiredFieldMap.Craft__c }"
+                                    change="{! c.updateObsTemplateFields }">
+                        <ui:inputSelectOption label="{! $Label.c.Default_Picklist_Value_None }" text="" value="true"/>
+                        <aura:iteration var="craft" items="{! v.picklistMap.Craft__c }">
+                            <ui:inputSelectOption label="{! craft }" text="{! craft }"/>
+                        </aura:iteration>
+                    </ui:inputSelect>
+                </div>
+            </div>
+            <div class="slds-p-bottom_small">
+                <button class="slds-button slds-button_neutral sharp-corner-btn" value="true" onclick="{! c.onclickToggleSelectAll }">Select All</button>
+                <button class="slds-button slds-button_neutral sharp-corner-btn" onclick="{! c.onclickToggleSelectAll }">Remove All</button>
+            </div>
+            <div class="slds-grid slds-wrap"> 
+                <aura:iteration var="osrWrapper" items="{! v.osrWrapperList }" indexVar="osrIndex">
+                    <div class="slds-size_1-of-6 slds-p-around_xx-small">
+                        <div class="{! 'slds-box test-number-box' + (osrWrapper.selected ? ' test-number-selected' : '') }" 
+                             data-index="{! osrIndex }" onclick="{! c.toggleSelectTestNumber }">
+                            <ui:outputText value="{! osrWrapper.testNumber + ' - ' + osrWrapper.testName }" />
+                        </div>
+                    </div>
+                </aura:iteration>
+            </div>
+        </div>
+    </aura:if>
+</aura:component>

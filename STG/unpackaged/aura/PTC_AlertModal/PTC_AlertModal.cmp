@@ -1,0 +1,107 @@
+<!-- 
+********************************************************************************************************************************************************************************************************************************************
+*	@Name			PTC_AlertModal
+*	@Author			Deloitte Digital
+*	@Created Date	10th May 2018
+*	@Used By		PTC App	
+********************************************************************************************************************************************************************************************************************************************
+*	@Description	Popup to display nonconfirming assets
+
+********************************************************************************************************************************************************************************************************************************************
+*	@Changes
+********************************************************************************************************************************************************************************************************************************************	
+-->
+<aura:component implements="force:appHostable,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    
+    <!--use boolean attribute for Store true/false value,
+    make default to "false" so modal box are not display on the load of component. 
+    --> 
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:attribute name = "assetList" type = "PTC_AssetWrapperClass[]"/>
+    
+    <aura:registerEvent name="PopupEvent" type="c:PTC_PopupEvt"/>
+    
+    <!--Use "slds-m-around- -xx-large" class to add standard Large padding to the component--> 
+    <div class="slds-m-around--xx-large"> 
+        
+        <!--Use aura:if tag to display Model Box, on the bese of conditions. [isOpen boolean attribute] -->   
+        <aura:if isTrue="{!v.isOpen}">
+            
+            <!--###### MODAL BOX Start From Here ######--> 
+            <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+                <div class="slds-modal__container">
+                    <!-- ###### MODAL BOX HEADER Part Start From Here ######-->
+                    <div class="slds-modal__header">
+                        <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closeModel}">
+                            X
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <lightning:icon iconName="utility:warning" variant = "warning" size="large" alternativeText="Indicates approval"/>
+                    </div>
+                    <!--###### MODAL BOX BODY Part Start From Here ######-->
+                    <div class="slds-modal__content slds-p-around--medium">
+                        
+                        <table aura:id = "AssetTable" class="fixedheight slds-table slds-table_bordered slds-table_cell-buffer slds-table_col-bordered slds-max-medium-table_stacked-horizontal"> 
+                            
+                            
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th scope="row">
+                                        <div class="slds-truncate" title="Serial Number">Serial</div>
+                                    </th>
+                                    
+                                    <th scope="row">
+                                        <div class="slds-truncate" title="S/W version">S/W</div>
+                                    </th>
+                                    
+                                    <th scope="row">
+                                        <div class="slds-truncate" title="H/W version">H/W</div>
+                                    </th>
+                                    
+                                    <th scope="row">
+                                        <div class="slds-truncate" title="S/W version">Min S/W</div>
+                                    </th>
+                                    
+                                    <th scope="row">
+                                        <div class="slds-truncate" title="H/W version">Min H/W</div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.assetList}" var="con" indexVar="userIndex">
+                                    <tr>
+                                        <td scope="row">
+                                            <div class="slds-truncate" title="{!con.serialNumber}">{!con.serialNumber}</div>
+                                        </td>
+                                        <td scope="row">
+                                            <div class="slds-truncate" title="{!con.hwVersion}">{!con.swVersion}</div>
+                                        </td>
+                                        <td scope="row">
+                                            <div class="slds-truncate" title="{!con.swVersion}">{!con.hwVersion}</div>
+                                        </td>
+                                        
+                                        <td scope="row">
+                                            <div class="slds-truncate" title="{!con.minSwVersion}">{!con.minSwVersion}</div>
+                                        </td>
+                                        <td scope="row">
+                                            <div class="slds-truncate" title="{!con.minHwVersion}">{!con.minHwVersion}</div>
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                    <!--###### MODAL BOX FOOTER Part Start From Here ######-->
+                    <div class="slds-modal__footer">
+                    	 <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}" >Cancel</button>
+                    	 <button class="slds-button slds-button--brand" onclick="{!c.confirmPressed}" >Confirm?</button>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-backdrop slds-backdrop--open"></div>
+            <!--###### MODAL BOX Part END Here ######-->
+            
+        </aura:if>
+    </div>
+</aura:component>

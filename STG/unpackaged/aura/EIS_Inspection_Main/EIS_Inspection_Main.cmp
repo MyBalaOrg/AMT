@@ -1,0 +1,44 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" access="global" 
+                controller="EIS_Inspection_MainCtrl">
+    
+    <aura:attribute name="disableFindings" type="Boolean" access="private" default="false" />
+    <aura:attribute name="disableCorrectiveActions" type="Boolean" access="private" default="false" />
+    <aura:attribute name="disableHeaderButtons" type="Boolean" access="private" default="false" />
+    <aura:attribute name="inspection" type="Audit_Inspections__c" access="public" />
+    <aura:attribute name="inspectionForm" type="EIS_Inspection_MainCtrl.InspectionForm" access="public" />
+    <aura:attribute name="errorMessage" type="String" default="" access="public" />
+	<ltng:require styles="{!$Resource.ExternalCssforAudit}"/>
+    
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
+	<aura:handler name="headerButtonClicked" event="c:EIS_BooleanEvent" action="{! c.handleHeaderButtonClicked }"/>
+    <aura:handler name="toggleLightningSpinner" event="c:EIS_BooleanEvent" action="{! c.handleToggleLightningSpinner }"/>
+    
+    <lightning:spinner aura:id="audit-loading" variant="brand" size="large" class="fidget-spinner"/>
+    
+    <c:EIS_Inspection_MainHeader inspection="{! v.inspection }" disableHeaderButtons="{! v.disableHeaderButtons }" recordId="{!v.recordId}" />
+    <c:EIS_FixedHeaderSpacing />
+    
+    <c:EIS_ErrorMessage message="{! v.errorMessage }" rendered="{! !empty(v.errorMessage) }"/>
+    
+    <div class="slds-p-around_small slds-m-around_small" 
+         style="background-color: white; border-radius: 0.5em;">
+        <aura:if isTrue="{! equals(v.inspection.RecordType.DeveloperName, $Label.c.EIS_Food_Car_Inspection_Form_Record_Type) }" >
+            <c:EIS_Inspection_Food_Car_Question_Dashboard inspection="{! v.inspection }" />
+            <aura:set attribute="else">
+                <c:EIS_Inspection_TemperatureTrackingSection inspectionId="{! v.recordId }"/>
+            </aura:set>
+        </aura:if>
+        
+        <aura:iteration var="section" items="{! v.inspectionForm.sectionList }" indexVar="sIndex">
+            <c:EIS_Inspection_QuestionSection aura:id="inspection-question-section"
+                                              section="{! section }"
+                                              inspection="{! v.inspection }" 
+                                              disableFindings="{! v.disableFindings }"
+                                              disableCorrectiveActions="{! v.disableCorrectiveActions }" />
+        </aura:iteration>
+        
+        <c:EIS_Inspection_AdditionalNotes aura:id="additional-notes" 
+                                          inspectionId="{! v.recordId }" disableForm="{! !v.inspection.EIS_Is_Active__c }"
+                                          additionalNotes="{! v.inspection.EIS_Additional_Notes__c }"/>
+    </div>
+</aura:component>

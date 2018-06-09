@@ -1,0 +1,12 @@
+.THIS .slds-radio--faux {
+    width: 2em !important;
+    height: 2em !important;
+    margin-bottom: 0.4em !important;
+}
+.THIS .slds-radio--faux:after {
+    width: 1rem !important;
+    height: 1rem !important;
+}
+.THIS .slds-form-element__label {
+    font-size: large !important;
+}

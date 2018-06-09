@@ -1,0 +1,28 @@
+<!--
+/**
+*___________________________________________________
+*@Name: ST_ObservationSubmissionEvt
+*@Author: Max Paquin mpaquin@goaldc.com
+*@Created Date: 4/21/2017
+*@Used By: SafeTrends App
+*___________________________________________________
+*@Description:  Event used to communicate with the ST_ObservationSubmissionCmp.
+*				Send Data (Observation record, List of Findings)
+*				Update state
+*___________________________________________________
+*@Changes
+* MM-DD-YYY. Explanation of the change.
+**/
+-->
+
+<aura:event type="COMPONENT" description="Event used to communicate from a child component to the ST_ObservationSubmissionCmp">
+	<aura:attribute name="obs" type="Observation__c" description="Observation__c record updated in state 1 and 4"/>
+	<aura:attribute name="initialRiskSBIs" type="SBI__c[]" description="attribute used to hold the list of SBI in state 2"/>
+	<aura:attribute name="selectedSafeSBIs" type="SBI__c[]" description="attribute used to hold the list of SBI that are labeled as safe in state 2"/>
+	<aura:attribute name="selectedRiskSBIs" type="SBI__c[]" description="attribute used to hold the list of SBI that are labeled as at-risk in state 3"/>
+	<aura:attribute name="SBI" type="SBI__c" description="SBI__c record used in State 3"/>
+	
+	<aura:attribute name="state" type="Integer" description="New state value provided by the child component"/>
+
+	 
+</aura:event>

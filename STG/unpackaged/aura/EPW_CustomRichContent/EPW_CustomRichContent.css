@@ -1,0 +1,87 @@
+.THIS.comp {
+    overflow: hidden;
+   
+}
+
+.THIS .header {
+	/*height:50px; */
+	/*position:relative; */
+	/*font-size: 14px;*/
+	/*background-color: #004D6E;*/
+	/*color:white;*/
+	/*line-height:50px;*/
+	padding-left: 10px;
+    padding-right: 10px;
+    letter-spacing: 1px;
+    font-family :Sans-Serif;
+}
+
+.THIS .content {
+    /*padding: 15px 20px 0 20px;*/
+    /*margin: 15px 20px;*/
+    overflow-y: auto;
+    font-size: 14px;
+    /*padding: 75px 0 75px 75px;*/
+    /* Below padding is to much the padding of this component to the other components*/
+    padding: 10px 10px 0px 10px;
+}
+
+.THIS .slds-rich-text-editor__output span img {
+    
+    width: 100px;
+    height: 120px;
+}
+
+.THIS .thumbnail {
+    margin: auto 15px auto 0;
+    min-width: 80px;
+}
+
+.THIS .leftlogo-righttext {
+    height: inherit;
+    
+}
+
+.THIS .link {
+    color: #0275d8;
+    cursor: pointer;
+    margin: 0 1px 1px 1px;
+    margin-bottom: 0;
+    /*padding: 10px 20px;
+    padding :10px 20px 0px 10px;*/
+    font-weight:bold;
+    display:block;
+}
+
+
+.THIS .link::after {
+    content: "";
+    border: 5px solid transparent;
+    border-left-color: inherit;
+    vertical-align: middle;
+    display: inline-block;
+    margin-left: 6px;
+    bottom: 2px;
+    right: auto;
+    
+}
+
+.THIS .link:hover {
+    text-decoration: underline;
+}
+
+.THIS .logo-and-content {
+    height: inherit;
+    padding-bottom: 16px;
+}
+
+.THIS .right-content {
+    overflow-y:auto;
+    padding-right: 20px;
+}
+
+@media (max-width: 420px) {
+    .THIS .link {
+        font-size: 11px;
+    }
+}

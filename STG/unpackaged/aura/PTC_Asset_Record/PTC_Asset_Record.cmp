@@ -1,0 +1,195 @@
+<aura:component controller="PTC_AssetRecordController" implements="lightning:actionOverride,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="recordTypeName" type="String" access="public" />
+    <aura:attribute name="recordTypeId" type="String" access="public" />
+    
+    <aura:attribute name = "locationId" type = "String"/>
+    <aura:attribute name = "contactId" type = "String"/>
+    <aura:attribute name = "productId" type = "String"/>
+    <aura:attribute name = "ctrlSystemCompNameId" type = "String"/>
+    <aura:attribute name = "locomotiveId" type = "String"/>
+    
+    <aura:attribute name="emptyCtrlSystemCompNamePlaceholder" type="boolean" default="false" description="use for, make disbale placeholder" />
+    <aura:attribute name="emptyLocationPlaceholder" type="boolean" default="false" description="use for, make disbale placeholder" />
+    <aura:attribute name="emptyContactPlaceholder" type="boolean" default="false" description="use for, make disbale placeholder" />
+    <aura:attribute name="emptyProductPlaceholder" type="boolean" default="false" description="use for, make disbale placeholder" />
+    <aura:attribute name="emptyLocomotivePlaceholder" type="boolean" default="false" description="use for, make disbale placeholder" />
+    
+    <aura:attribute name="locationList" type="Location__c[]" description="List used to hold values returned when searching for a Location"/>
+    <aura:attribute name="ctrlSystemCompNameList" type="PTC_Control_System_Component_Name__c[]"/>
+    <aura:attribute name="contactList" type="Contact[]"/>
+    <aura:attribute name="productList" type="Product2[]"/>
+    <aura:attribute name="locomotiveList" type="PTC_Locomotive__c[]"/>
+    
+    <aura:attribute name="location" type="Location__c" default="{'sobjectType': 'Location','Name' :'',}"/>
+    <aura:attribute name="ctrlSystemCompName" type="PTC_Control_System_Component_Name__c" default="{'sobjectType': 'PTC_Control_System_Component_Name__c','Name' :'',}"/>
+    <aura:attribute name="contact" type="Contact" default="{'sobjectType': 'Contact','Name' :'',}"/>
+    <aura:attribute name="PTC_Locomotive__c" type="PTC_Locomotive__c" default="{'sobjectType': 'PTC_Locomotive__c','Name' :'',}"/>
+    <aura:attribute name="product" type="Product2" default="{'sobjectType': 'Product2','Name' :'',}"/>
+    
+    <aura:attribute name="serialNumber" type="string"/>
+    <aura:attribute name = "softwareInstalled" type ="string"/>
+    <aura:attribute name = "hardwareInstalled" type ="string"/>
+    <aura:attribute name = "transactionDate" type ="string"/>
+    <aura:attribute name = "installDate" type ="string"/>
+    <aura:attribute name = "active" type ="string"/>
+    <aura:attribute name = "notConformingSoftwareHardwareVersion" type ="string"/>
+    
+    <aura:attribute name="sectionName" type="String" access="public" />
+    <aura:attribute name="displaySection" type="Boolean" default="true" access="public" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <aura:attribute name="newAsset" type="Object"/>
+    <aura:attribute name="simpleNewAsset" type="Object"/>
+    <aura:attribute name="newAssetError" type="String"/>
+    
+    <force:recordData aura:id="assetRecordCreator" 
+                      layoutType="FULL"
+                      targetRecord="{!v.newAsset}"
+                      targetFields="{!v.simpleNewAsset}"
+                      targetError="{!v.newAssetError}" />
+    
+    <div class = "new-case-main-body">
+    <div class="slds-size_1-of-1 open-section">
+        <div class="slds-section__title">
+                <span class="slds-truncate">Asset Detail</span>
+        </div>
+    </div>
+    
+    
+        
+        <div class="slds-grid  slds-gutters slds-wrap slds-p-top_medium">
+            
+            <div class = "slds-col  slds-size_1-of-2">
+                <ui:inputText 
+                              label="Serial Number" 
+                              value="{!v.simpleNewAsset.Name}" 
+                              required="true" 
+                              aura:id = "InputSerialNumber"
+                              blur = "{!c.validateSerialNumber}"/>
+            </div>    
+            
+            <div class = "slds-col  slds-size_1-of-2">
+                <ui:inputText aura:id="InputLocation" label="Location" 
+                              placeholder="{!v.emptyLocationPlaceholder == false ? 'Search Location' : ''}"
+                              keyup="{!c.findLocations}"
+                              required="true"
+                              updateOn="keyup"
+                              blur="{!c.validateLocation}"
+                              focus="{!c.clearPlaceholderLocation}"/>
+                
+                <div aura:id="locationResultDiv" class="{!v.locationList.length != 0 ?'slds-box slds-is-absolute slds-scrollable' : 'slds-hide'}" style="z-index:10000; background-color:white">
+                    <ul aura:id="locationResultUl" class="slds-has-dividers--top">
+                        <aura:iteration var="location" items="{!v.locationList}" indexVar="userIndex">
+                            <a><li class="slds-item" onclick="{!c.selectLocation}" id="{!location.Id}">{!location.Name}</li></a>
+                        </aura:iteration>
+                    </ul>
+                </div>
+            </div>
+            
+            
+            
+            <div class = "slds-col  slds-size_1-of-2">
+                <ui:inputText aura:id="InputCtrlSystemCompName" label="Control System - Component Name" 
+                              labelClass = "slds-form-element__label" 
+                              placeholder="{!v.emptyCtrlSystemCompNamePlaceholder == false ? ' Search Control System - Component Name' : ''}"
+                              keyup="{!c.findCtrlSystemCompName}"
+                              required = "true"
+                              updateOn="keyup"
+                              blur="{!c.validateCtrlSystemCompName}"
+                              focus="{!c.clearPlaceholderCtrlSystemCompName}" 
+                              class = "slds-input"/>
+                
+                <div aura:id="ctrlSystemCompNameResultDiv" class="{!v.ctrlSystemCompNameList.length != 0 ?'slds-box slds-is-absolute slds-scrollable' : 'slds-hide'}" style="z-index:10000; background-color:white">
+                    <ul aura:id="ctrlSystemCompNameResultUl" class="slds-has-dividers--top">
+                        <aura:iteration var="ctrlSystemCompName" items="{!v.ctrlSystemCompNameList}" indexVar="userIndex">
+                            <a><li class="slds-item" onclick="{!c.selectCtrlSystemCompName}" id="{!ctrlSystemCompName.Id}">{!ctrlSystemCompName.Name}</li></a>
+                        </aura:iteration>
+                    </ul>
+                </div>
+            </div>
+             <div class="slds-col slds-size_1-of-2">
+                
+                <ui:inputText aura:id="InputContact" label="Employee"
+                              placeholder="{!v.emptyContactPlaceholder == false ? 'Search Contact' : ''}"
+                              required = "true"
+                              keyup="{!c.findContacts}"
+                              updateOn="keyup"
+                              focus="{!c.clearPlaceholderContact}" 
+                              />
+                
+                <div aura:id="contactResultDiv" class="{!v.contactList.length != 0 ?'slds-box slds-is-absolute' : 'slds-hide'}" style="z-index:10000; background-color:white">
+                    <ul aura:id="contactResultUl" class="slds-has-dividers-top">
+                        <aura:iteration var="contact" items="{!v.contactList}" indexVar="userIndex">
+                            <a><li class="slds-item" onclick="{!c.selectContact}" id="{!contact.Id}">{!contact.Name}</li></a>
+                        </aura:iteration>
+                    </ul>
+                </div>
+            </div>
+            
+           
+            <div class = "slds-col  slds-size_1-of-2">
+                <ui:inputText aura:id="InputProduct" label="PTC Vendor Part Number" 
+                              placeholder="{!v.emptyProductPlaceholder == false ? 'Search Product' : ''}"
+                              keyup="{!c.findProduct}"
+                              required="true"
+                              updateOn="keyup"
+                              blur="{!c.validateProduct}"
+                              focus="{!c.clearPlaceholderProduct}" />
+                
+                <div aura:id="productResultDiv" class="{!v.productList.length != 0 ?'slds-box slds-is-absolute' : 'slds-hide'}" style="z-index:10000; background-color:white">
+                    <ul aura:id="productResultUl" class="slds-has-dividers--top">
+                        <aura:iteration var="product" items="{!v.productList}" indexVar="userIndex">
+                            <a><li class="slds-item" onclick="{!c.selectProduct}" id="{!product.Id}">{!product.Name}</li></a>
+                        </aura:iteration>
+                    </ul>
+                </div>
+            </div>
+            
+             <div class = "slds-col  slds-size_1-of-2">
+              <ui:inputSelect class="slds-select" label="Status"  required="true" aura:id="InputStatus" value="{!v.simpleNewAsset.Status}"/>
+                                
+                              
+            </div> 
+           
+            
+            
+            <div class = "slds-col  slds-size_1-of-2">
+                
+                <ui:inputText label="Software Installed" aura:id = "InputSoftwareInstalled" value="{!v.simpleNewAsset.PTC_Software_Installed__c}" />
+            </div> 
+            <div class = "slds-col  slds-size_1-of-2">
+                <ui:inputDate aura:id="InputTransactionDate" 
+                              label="Transaction Date" displayDatePicker="true" 
+                              value="{!v.simpleNewAsset.PTC_Transaction_Date__c}"/>
+            </div>
+            
+            <div class = "slds-col  slds-size_1-of-2">
+                
+                <ui:inputText label="Hardware Installed" aura:id = "InputHardwareInstalled" value="{!v.simpleNewAsset.PTC_Hardware_Installed__c}" />
+            </div> 
+            <div class = "slds-col  slds-size_1-of-2">
+                <ui:inputDate aura:id="InputInstallDates" 
+                              label="Install Date" displayDatePicker="true" 
+                              value="{!v.simpleNewAsset.InstallDate}"/>
+            </div> 
+            <!--
+            <div class = "slds-col  slds-size_1-of-2">
+                <ui:inputCheckbox aura:id="InputNotConformingSoftwareHardwareVersion" label="Nt conforming Software/Hardware Version" value="{!v.simpleNewAsset.PTC_Not_conforming_SW_HW_Version__c}"/>
+            </div>
+-->
+            <div class = "slds-col  slds-size_1-of-2">
+                <ui:inputCheckbox aura:id="InputActive" label="Active" value="{!v.simpleNewAsset.Active__c}"/>
+            </div>
+            <div class = "slds-p-around_medium slds-float_right">
+            <lightning:button label="Save" onclick="{!c.handleSaveAsset}"
+                              variant="brand" class="slds-m-top_medium"/>
+            
+            <lightning:button label="Cancel" onclick="{!c.handleCancel}"
+                              variant="brand" class="slds-m-top_medium"/>
+            </div>
+        </div>
+        
+    </div>
+   
+</aura:component>

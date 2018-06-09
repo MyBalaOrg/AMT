@@ -1,0 +1,24 @@
+<apex:component controller="AuditSummaryReportController" access="global">
+    
+    <!-- Attribute Definitions -->
+    <apex:attribute name="currentAuditId"
+                    type="String"
+                    description="Id of an Audit/Inspection Record"
+                    assignTo="{!auditID}"/>
+   <!-- TABLE -->
+    <table>
+        <tr>
+            <th>Category</th>
+            <th>Compliant Findings</th>
+            <th>Non-Compliant Findings</th>
+        </tr>
+        <apex:repeat value="{!findingWrapperList}" var="fw">
+        <tr>
+            <td>{!fw.category}</td>
+            <td>{!fw.compliantCount}</td>    
+            <td>{!fw.nonCompliantCount}</td>
+        </tr>
+        </apex:repeat>        
+    </table>
+    
+</apex:component>

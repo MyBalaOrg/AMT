@@ -1,0 +1,148 @@
+<!--
+ - Created by 7Summits on 9/28/17.
+ -->
+<aura:component description="Peak_Uber_Theme_SingleBarHeader_Custom_V2">
+
+    <!-- general items  -->
+    <aura:attribute name="logoUrl" type="String" />
+
+    <!-- component type -->
+    <!-- need to implement --><aura:attribute name="searchDropdown" type="Boolean" />
+    <!-- need to implement --><aura:attribute name="iconsOrder" type="String" />
+
+    <!-- layout items -->
+    <aura:attribute name="hideNotifications" type="Boolean" />
+    <aura:attribute name="hideProfile" type="Boolean" />
+    <aura:attribute name="hideMenu" type="Boolean" />
+    <aura:attribute name="hideSearch" type="Boolean" />
+
+    <!-- styles -->
+    <aura:attribute name="contentMaxWidth" type="String" />
+    <aura:attribute name="height" type="String" />
+    <aura:attribute name="bkgColor" type="String" />
+    <aura:attribute name="bkgImage" type="String" />
+    <aura:attribute name="textColor" type="String" />
+    <aura:attribute name="textColorHover" type="String" />
+
+    <!-- components -->
+    <aura:attribute name="navBarComponent" type="Aura.Component[]" />
+    <aura:attribute name="searchComponent" type="Aura.Component[]" />
+    <aura:attribute name="profileMenuComponent" type="Aura.Component[]" />
+    
+    <!-- background image -->
+    <aura:attribute name="backgroundImageUrl" type="String" />
+	 
+    <aura:handler name="init" value="{!this}" action="{!c.getPageUrl}"/>
+    
+    <!-- search -->
+    <aura:attribute name="searchValue" type="string" />
+
+    <style type="text/css">
+        .cPeak_Uber_Theme_SingleBarHeader .content .contentBody .navbar .forceCommunityNavigationMenu .menuItemLink,
+        .cPeak_Uber_Theme_SingleBarHeader .content .contentBody .navbar .forceCommunityGlobalNavigation .menuItemLink,
+        .cPeak_Uber_Theme_SingleBarHeader .content .contentBody .navbar .forceCommunityNavigationMenu ul.comm-navigation__list li a,
+        .cPeak_Uber_Theme_SingleBarHeader .content .contentBody .navbar .forceCommunityGlobalNavigation ul.comm-navigation__list li a {
+            color: {!v.textColor};
+        }
+
+        .cPeak_Uber_Theme_SingleBarHeader .content .contentBody .navbar .forceCommunityNavigationMenu .menuItemLink:hover,
+        .cPeak_Uber_Theme_SingleBarHeader .content .contentBody .navbar .forceCommunityGlobalNavigation .menuItemLink:hover,
+        .cPeak_Uber_Theme_SingleBarHeader .content .contentBody .navbar .forceCommunityNavigationMenu ul.comm-navigation__list li a:hover,
+        .cPeak_Uber_Theme_SingleBarHeader .content .contentBody .navbar .forceCommunityGlobalNavigation ul.comm-navigation__list li a:hover {
+            color: {!v.textColorHover};
+        }
+
+        .cPeak_Uber_Theme_SingleBarHeader .content .contentBody .search .slds-icon-utility-search svg {
+            fill: {!v.textColor};
+        }
+
+        .cPeak_Uber_Theme_SingleBarHeader .content .contentBody .notifications button svg {
+            fill: {!v.textColor};
+        }
+
+        .cPeak_Uber_Theme_SingleBarHeader .content .contentBody .profile .selfServiceProfileMenu .selfServiceProfileMenuTrigger .trigger-link,
+        .cPeak_Uber_Theme_SingleBarHeader .content .contentBody .profile .selfServiceUserProfileMenu .selfServiceProfileMenuTrigger .trigger-link {
+            color: {!v.textColor};
+        }
+
+        .cPeak_Uber_Theme_SingleBarHeader .content .contentBody .profile .selfServiceProfileMenu .selfServiceProfileMenuTrigger .trigger-link:hover,
+        .cPeak_Uber_Theme_SingleBarHeader .content .contentBody .profile .selfServiceUserProfileMenu .selfServiceProfileMenuTrigger .trigger-link:hover {
+            color: {!v.textColorHover};
+        }
+
+        .cPeak_Uber_Theme_SingleBarHeader .content .contentBody .profile .selfServiceProfileMenu .selfServiceProfileMenuTrigger .trigger-link:focus,
+        .cPeak_Uber_Theme_SingleBarHeader .content .contentBody .profile .selfServiceUserProfileMenu .selfServiceProfileMenuTrigger .trigger-link:focus {
+            color:{!v.textColorHover};
+        }
+    </style>
+
+
+    <div style="{!'height:' + v.height + ';background-color:' + v.bkgColor + ';background-image:url(' + v.bkgImage + ');background-position:center top;'}">
+
+        <div class="slds-p-horizontal_medium content" style="{!'max-width:' + v.contentMaxWidth}">
+            <lightning:layout class="contentBody" verticalAlign="center" horizontalAlign="spread">
+
+                <!-- NAV -->
+                <aura:if isTrue="{!v.hideMenu != true}">
+                    <lightning:layoutItem flexibility="auto" class="navbar slds-p-horizontal_medium">
+                        {!v.navBarComponent}
+                    </lightning:layoutItem>
+                </aura:if>
+                
+                <!-- LOGO -->
+                <lightning:layoutItem flexibility="grow" class="logo">
+                    <a onclick="{!c.gotoURL}" class="logo" ><img src="{!v.logoUrl}" /></a>
+                </lightning:layoutItem>
+
+                <!-- ACTION ICONS -->
+                <lightning:layoutItem flexibility="auto" class="actions slds-p-left_medium">
+                    <lightning:layout verticalAlign="center" horizontalAlign="end">
+
+                        <!-- SEARCH -->
+                        <aura:if isTrue="{!v.hideSearch != true}">
+                            <lightning:layoutItem aura:id="actionSearch" class="slds-p-right_x-small search">
+                                <!-- Are we using a search dropdown or inline search -->
+                                <aura:if isTrue="{!v.searchDropdown == true}">
+                                    <a href="javascript:void(0);" onclick="{!c.toggleSearch}">
+                                        <lightning:icon iconName="utility:search" size="small" alternativeText="Toggle Search"/>
+                                    </a>
+                                    <aura:set attribute="else">
+                                        <!-- Inline search component will be here -->
+                                    </aura:set>
+                                </aura:if>
+                            </lightning:layoutItem>
+                        </aura:if>
+
+                        <!-- NOTIFICATIONS -->
+                        <aura:if isTrue="{!v.hideNotifications != true}">
+                            <lightning:layoutItem aura:id="actionNotifications" class="slds-p-horizontal_x-small notifications"><forceCommunity:notifications /></lightning:layoutItem>
+                        </aura:if>
+
+                        <!-- PROFILE -->
+                        <aura:if isTrue="{!v.hideProfile != true}">
+                            <lightning:layoutItem aura:id="actionProfile" class="slds-p-right_large profile ">{!v.profileMenuComponent}</lightning:layoutItem>
+                        </aura:if>
+
+                    </lightning:layout>
+                </lightning:layoutItem>
+            </lightning:layout>
+        </div>
+
+        <!-- Add search dropdown to the page if needed -->
+        <aura:if isTrue="{!and(v.searchDropdown == true, v.hideSearch != true)}">
+            <div aura:id="navSearch" id="navSearch" class="navSearch">
+                <div class="navSearch-container" style="{!'max-width:' + v.contentMaxWidth}">
+                    <lightning:layout class="searchBody" verticalAlign="start" horizontalAlign="spread">
+                        <lightning:layoutItem class="searchBody-icon"><lightning:icon iconName="utility:search" size="small" alternativeText="Search"/></lightning:layoutItem>
+                        <lightning:layoutItem class="searchBody-search">{!v.searchComponent}</lightning:layoutItem>
+                        <lightning:layoutItem class="searchBody-icon">
+                            <a href="javascript:void(0);" onclick="{!c.hideSearch}"><lightning:icon iconName="utility:close" size="small" alternativeText="Clear Search"/></a>
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                </div>
+            </div>
+        </aura:if>
+
+    </div>
+
+</aura:component>

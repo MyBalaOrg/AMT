@@ -1,0 +1,296 @@
+<!--/**
+*————————————————————————————————————————————————————
+* @Name             EIS_AuditInspection_Pdf_genration
+* @Author           Kumar Suyash
+* @Created Date     07-22-2017
+* @Used By          EIS_Onsubmit_Audit_Inspection_Info
+*————————————————————————————————————————————————————
+* @Description
+* Used to genrate Pdf form for Audit and SFA
+* 
+*————————————————————————————————————————————————————
+* @Changes
+* Lakshmi 12/26/2017 - Changes to fix ARSS-142
+* Akshay 01/05/2018  -Changes to fix ARSS-153
+**/-->
+<apex:page showHeader="false" applyHtmlTag="false" applyBodyTag="false" renderAs="pdf" standardController="Audit_Inspections__c" extensions="EIS_Inspection_MainCtrlReport">
+    <html>
+        
+        <head>
+            <style>
+                @page {size:landscape;}
+                
+                style{border:0.8px solid black;}
+                th{border:0.8px solid black; padding: 5px;}
+                
+                #detail{padding: 5px;}
+                
+                @media print  
+                {
+                div{
+                //page-break-inside: avoid; 
+                }
+                }
+                h1,h2,h3,h5,h6{
+                text-align: center;
+                }
+                h3{
+                text-align: left;
+                }
+            
+                   
+                .logo{
+                 float: left;
+                 padding: 5px;
+                }
+                
+                .audit{
+                 float: right;
+                 padding: 5px;
+                }
+              
+                tr.datacell1 {
+                                    background-color: #C1FF33; 
+                                }
+                tr.datacell2 {
+                                    background-color: #33E3FF; 
+                                }
+                tr.datacell3 {
+                                    background-color: #84B6FA; 
+                                }
+                tr.datacell4 {
+                                    background-color: #80ffbf; 
+                                }
+                tr.datacell5 {
+                                    background-color: #ffff80; 
+                                }
+                .odd {
+                        background-color: #FCF7F7;
+                }
+
+                .even {
+                    background-color: #E3DCDB;
+                }
+            </style>
+            
+        </head>
+         <!--tr Style="display:{!IF(Audit_Inspections__c.recordtype.developername== "Audit" )}"-->
+        <apex:form >                   
+            <div class="audit">
+                <apex:image id="logo" url="{!$Resource.Amtrak_App_logo}" width="195"  >  </apex:image>
+                <apex:outputPanel rendered="{!IF(Audit_Inspections__c.RecordType.DeveloperName='SFA_Form',false,true) }">  
+                    <h4 style="text-align:right"> Facility Score : {!Audit_Inspections__c.EIS_Audit_Score__c } </h4>     
+                </apex:outputPanel>
+            </div>                
+            <br/> <br/>
+                
+            <table style="width:100%">
+                <tr>
+                    <td style="text-align:center;font-size:20px;"><b>Amtrak Environmental Management </b></td>
+                </tr>
+                <tr>
+                    <td style="text-align:center;font-size:15px;"><b>AEPHIS (Amtrak Environmental/Public Health Information Systems) </b></td>
+                </tr>
+            </table>
+                
+            <div class="logo">                                                      
+                <h4>  <u>Audit/SFA Detail:</u>  </h4>
+                <table class="logo" id="Color" width="158%" border="0.1px" style="border-collapse:collapse" cellpadding="5px" >
+                    <apex:repeat value="{!auditIns}" var="audInsp">                       
+                        <tr class="odd">
+                            <td width="50%"> <b>Audit/SFA Name:</b> {!audInsp.EIS_Audit_Name__c} </td>
+                            <td width="50%"> <b>Type of Audit:</b> {!audInsp.Recordtype.DeveloperName} </td>
+                        </tr>                                              
+                        <tr class="even">
+                            <td width="50%"> <b>Site/Facility Name:</b> {!audInsp.EIS_Site__r.Name} </td> 
+                            <td width="50%"> <b>Site Division:</b> {!audInsp.EIS_Site_Division__c} </td>
+                        </tr> 
+                        <tr class="odd">
+                            <td width="50%"> <b>Auditor 1:</b> {!audInsp.Auditor_1_Name__c} </td>
+                            <td width="50%"> <b>Auditor 2:</b> {!audInsp.Auditor_2_Name__c} </td>
+                        </tr> 
+                        <tr class="even">
+                            <td width="50%"> <b>Start Date:</b> {!audInsp.EIS_Start_Date__c} </td>
+                            <td width="50%"> <b>End Date:</b> {!audInsp.EIS_End_Date__c} </td>
+                        </tr> 
+                        <tr class="odd">
+                            <td width="50%"> <b>Record Number:</b> {!audInsp.Name} </td> 
+                            <td width="50%" > </td>
+                        </tr> 
+                    </apex:repeat>
+                </table>
+            </div>
+            
+            <apex:outputPanel rendered="{!IF(Audit_Inspections__c.RecordType.DeveloperName='SFA_Form',false,true) }">  
+                <div class="logo">                        
+                    <h4> <u>Summary of Findings:</u> </h4>               
+                    <table id="Color" width="125%" border="1px" style="border-collapse:collapse" cellpadding="5px">
+                        <apex:repeat value="{!auditIns}" var="audInsp">
+                            <tr>
+                                <th>Department</th>
+                                <th>Positive Findings</th>
+                                <th>Management Practices</th>
+                                <th>Potential Violations</th>
+                                <th>Audit Score</th>
+                            </tr>
+                            
+                            <tr style="display: {!IF(audInsp.EIS_Department_Weight_Transportation__c == 0, 'none', '')};" class="datacell1">
+                                <td> Transportation</td>
+                                <td> {!audInsp.EIS_Positive_Finding_Transportation__c}</td>
+                                <td> {!audInsp.EIS_Management_Practice_Transportation__c}</td>
+                                <td> {!audInsp.EIS_Potential_Violation_Transportation__c}</td>
+                                <td> {!audInsp.EIS_Department_Score_Transportation__c}</td>
+                            </tr>
+                            <tr style="display: {!IF(audInsp.EIS_Department_Weight_Mechanical__c == 0, 'none', '')};" class="datacell2">
+                                <td> Mechanical</td>
+                                <td> {!audInsp.EIS_Positive_Finding_Mechanical__c}</td>
+                                <td> {!audInsp.EIS_Management_Practice_Mechanical__c}</td>
+                                <td> {!audInsp.EIS_Potential_Violation_Mechanical__c}</td>
+                                <td> {!audInsp.EIS_Department_Score_Mechanical__c}</td>
+                            </tr>
+                            <tr style="display: {!IF(audInsp.EIS_Department_Weight_Material__c == 0, 'none', '')};" class="datacell3">
+                                <td> Material Control </td>
+                                <td> {!audInsp.EIS_Positive_Finding_Material__c}</td>
+                                <td> {!audInsp.EIS_Management_Practice_Material__c}</td>
+                                <td> {!audInsp.EIS_Potential_Violation_Material__c}</td>
+                                <td> {!audInsp.EIS_Department_Score_Material__c}</td>
+                            </tr>
+                           <tr style="display: {!IF(audInsp.EIS_Department_Weight_Engineering__c == 0, 'none', '')};" class="datacell4">
+
+                                <td> Engineering</td>
+                                <td> {!audInsp.EIS_Positive_Finding_Engineering__c}</td>
+                                <td> {!audInsp.EIS_Management_Practice_Engineering__c}</td>
+                                <td> {!audInsp.EIS_Potential_Violation_Engineering__c}</td>
+                                <td> {!audInsp.EIS_Department_Score_Engineering__c}</td>
+                            </tr> 
+                           <tr style="display: {!IF(audInsp.EIS_Department_Weight_Environment__c == 0, 'none', '')};" class="datacell5">
+                                <td> Environmental </td>
+                                <td> {!audInsp.EIS_Positive_Finding_Environment__c}</td>
+                                <td> {!audInsp.EIS_Management_Practice_Environment__c}</td>
+                                <td> {!audInsp.EIS_Potential_Violation_Environment__c}</td>
+                                <td> {!audInsp.EIS_Department_Score_Environment__c}</td>
+                            </tr>                        
+                        </apex:repeat>
+                    </table>   
+                </div>                                     
+            </apex:outputPanel>
+                
+        <apex:outputPanel rendered="{!IF(Audit_Inspections__c.RecordType.DeveloperName='SFA_Form', false,true) }">
+            <div class="logo">
+                <h4> <u>Department Weights for Scoring:</u> </h4>
+                    <table id="Color" width="158%" border="1px" style="border-collapse:collapse" cellpadding="5px" >
+                        <apex:repeat value="{!auditIns}" var="audInsp">                      
+                            <tr class="odd">
+                                <td > <b>Department Weight-Engineering:</b> {!audInsp.EIS_Department_Weight_Engineering__c} </td>
+                                <td > <b>Department Weight-Environment:</b> {!audInsp.EIS_Department_Weight_Environment__c} </td>
+                            </tr> 
+                            <tr class="even">
+                                <td > <b>Department Weight-Transportation:</b> {!audInsp.EIS_Department_Weight_Transportation__c} </td>
+                                <td > <b>Department Weight-Mechanical:</b> {!audInsp.EIS_Department_Weight_Mechanical__c} </td>
+                            </tr> 
+                            <tr class="odd">
+                                <td > <b>Department Weight-Material:</b> {!audInsp.EIS_Department_Weight_Material__c} </td>
+                                <td >  </td>
+                            </tr> 
+                        </apex:repeat>
+                    </table>
+                </div>
+            </apex:outputPanel>
+             
+             <apex:outputPanel rendered="{!IF(Audit_Inspections__c.RecordType.DeveloperName='SFA_Form', false,true ) }"> 
+            <div class="logo">
+                <h4> <u>Corrective Action Report Due Date:</u> </h4>
+                    <table id="Color" width="100%" border="1px" style="border-collapse:collapse" cellpadding="5px" >
+                            <tr class="odd">
+                                <td width="30%"> <b>Corrective Action Report Due Date:</b> </td>
+                                <td width="70%">{!CADueDates }</td>
+                               
+                            </tr> 
+                    </table>
+                </div>
+            </apex:outputPanel>
+            
+               
+             <apex:outputPanel rendered="{!IF(Audit_Inspections__c.RecordType.DeveloperName='SFA_Form',false,true) }"> 
+                <div class="logo">              
+                    <h4> <u>Review Call details:</u>   </h4>
+                    <table id="Color" width="150%" border="1px" style="border-collapse:collapse" cellpadding="5px" >
+                        <apex:repeat value="{!auditIns}" var="audInsp">                      
+                            <tr class="odd">
+                                <td> <b>Status Reports Due Dates:</b> {!audInsp.EIS_Status_Review_Due_Dates__c} </td>
+                                <td> <b>Review call phone number:</b> {!audInsp.EIS_Audit_Review_Call_Phone__c} </td>
+                            </tr> 
+                            <tr class="even">
+                                <td> <b>CAP Review Call Date:</b> {!audInsp.EIS_Audit_Review_Call_Date_Time__c} </td>
+                                <td> <b>Review call code:</b> {!audInsp.EIS_Audit_Review_Call_Code__c} </td>
+                            </tr> 
+                        </apex:repeat>
+                    </table>
+                </div>
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!IF(Audit_Inspections__c.RecordType.DeveloperName='SFA_Form',true,false) }">  
+                <div class="logo">
+                    <h4> <u>Review Call details:</u> </h4>
+                    <apex:pageBlock >
+                        <table id="Color" width="150%"  style="border-collapse:collapse" cellpadding="5px" >
+                            <apex:repeat value="{!auditIns}" var="audInsp">                      
+                                <tr>
+                                    <td > <b>Status Report Due Dates:</b> {!audInsp.EIS_Status_Review_Due_Dates__c} </td>
+                                    <td >  </td>
+                                </tr>                       
+                            </apex:repeat>
+                        </table>
+                     </apex:pageBlock>
+                  </div>            
+            </apex:outputPanel>
+            
+            <div class="logo">
+                <apex:outputPanel rendered="{!IF(Audit_Inspections__c.RecordType.DeveloperName='SFA_Form',false,true) }">  
+                    <h4><u>Audit Findings</u> </h4>
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{!IF(Audit_Inspections__c.RecordType.DeveloperName='SFA_Form',true,false) }">  
+                    <h4><u>SFA Findings</u></h4>
+                </apex:outputPanel>
+                
+               
+                <apex:pageblock >                 
+                    <apex:dataTable value="{!QuestionWrapperList}" var="qwrap" rowClasses="odd,even" styleClass="style" width="100%" cellpadding="5px" border="1px" >
+                        <apex:column headerValue="Question Id" width="10%" value="Question: {!qwrap.question.EIS_Metadata_Question_Id__c}" />
+                        <apex:column headerValue="Questions" width="70%" value="Question: {!qwrap.question.EIS_Question_Text__c}" />
+                        <apex:column headerValue="Points" value="{!qwrap.question.Points__c}" /> 
+                        <apex:column headerValue="Finding level" value="{!qwrap.question.EIS_Observation_Level__c}" />
+                        <apex:column headerValue="Corrected?" value="{!qwrap.question.EIS_Corrected__c}" />
+                        <apex:column breakBefore="true" colspan="5">
+                            <apex:dataTable value="{!qwrap.FindingList}" var="find" style="padding-left: 0px;" width="100%" cellpadding="5px" border="1px">
+                                <apex:column headerValue="Finding#" value="{!find.finding.Name}"/>
+                                <apex:column headerValue="Finding" value="{!find.finding.EIS_Description__c}"/>  
+                                 <apex:column breakBefore="true" colspan="5">
+                                    <apex:dataTable value="{!find.CorrectiveActionList}" var="ca" rowClasses="odd,even" width="100%" cellpadding="5px" border="1px" rendered="{!find.CorrectiveActionList.size!=0}" >
+                                        <apex:column headerValue="Finding#" value="{!ca.EIS_Finding__r.Name}" />
+                                        <apex:column headerValue="Corrective Action Description" value="{!ca.EIS_Description__c}" />
+                                        <apex:column headerValue="Status" value="{!ca.EIS_Status__c}" />
+                                        <apex:column headerValue="Assigned To" value="{!ca.EIS_Assigned_to__c}" />                      
+                                        <apex:column headerValue="In Progress Date" value="{!ca.EIS_Date_of_In_Progress_Status__c}" />
+                                        <apex:column headerValue="Corrective Action Completion Date" value="{!ca.EIS_Date_of_Corrected_Status__c}" />
+                                        <apex:column headerValue="Corrective Action Due Date" value="{!ca.EIS_Due_Date__c}" />
+                                    </apex:dataTable>                                 
+                                 </apex:column>
+                       </apex:dataTable>
+                           </apex:column>
+                    </apex:dataTable>  
+                </apex:pageblock>
+                
+                
+                
+                <h4><u>Additional Notes</u></h4>                    
+              <apex:pageBlock >
+                    <apex:outputPanel rendered="{!IF(Audit_Inspections__c.EIS_Additional_Notes__c != Null ,true,false)}">
+                        <apex:dataTable value="{!Audit_Inspections__c}" var="aI" width="100%" cellpadding="5px" border="1px" >
+                            <apex:column headerValue="Additional General Notes" value="{!aI.EIS_Additional_Notes__c}" />
+                        </apex:dataTable>
+                    </apex:outputPanel> 
+                </apex:pageBlock>
+                </div>
+        </apex:form>       
+    </html>
+</apex:page>

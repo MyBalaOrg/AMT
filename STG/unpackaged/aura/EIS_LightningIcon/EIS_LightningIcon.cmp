@@ -1,0 +1,17 @@
+<aura:component >
+    <aura:attribute name="iconName" type="String" access="public" />
+    <aura:attribute name="iconSize" type="String" access="public" default="small"/>
+    <aura:attribute name="label" type="String" access="public" default="" />
+    <aura:attribute name="cursor" type="String" access="public" default="default"/>
+    <aura:attribute name="hoverColor" type="String" access="public" />
+    <aura:attribute name="fillColor" type="String" access="public" />
+    
+    <label class="{! v.hoverColor }"
+         style="{! 'cursor:' + v.cursor + ';' }">
+        <lightning:icon class="{! v.fillColor }"
+                        iconName="{! v.iconName }" size="{! v.iconSize }"/>
+        <aura:if isTrue="{! not(empty(v.label)) }">
+            <span class="slds-p-left_x-small">{! v.label }</span>
+        </aura:if>
+    </label>
+</aura:component>

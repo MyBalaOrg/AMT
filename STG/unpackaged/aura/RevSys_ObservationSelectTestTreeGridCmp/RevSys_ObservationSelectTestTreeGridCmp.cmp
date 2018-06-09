@@ -1,0 +1,43 @@
+<aura:component >
+    <aura:attribute name="selectedEmpList" type="SearchTabularItemWrapper[]" access="public" />
+    <aura:attribute name="selectionState" type="Integer" access="public" />
+    <aura:attribute name="cmpState" type="Integer" access="public" />
+    <aura:attribute name="selectedRecordType" type="RecordType" access="public" />
+    <aura:attribute name="testWithObservationsList" type="RevSys_TestWithObservationsWrapper[]" access="public" />
+    <aura:attribute name="filteredList" type="RevSys_TestWithObservationsWrapper[]" access="public" />
+    <aura:attribute name="selectedList" type="RevSys_TestWithObservationsWrapper[]" access="public" />
+    <aura:attribute name="treeColumns" type="List" access="public" />
+    <aura:attribute name="fieldLabelMap" type="Map" access="public" />
+    <aura:attribute name="picklistMap" type="Map" access="public" default="{}"/>
+    <aura:attribute name="picklistMapRegionState" type="Map" default="{}" access="public" />
+    <aura:attribute name="picklistMapStateSubDivision" type="Map" default="{}" access="public" />
+    <aura:attribute name="observation" type="Observation__c" access="public"/>
+    <aura:attribute name="requiredFieldMap" type="Map" access="public" />
+    <aura:attribute name="editableFields" type="Object[]" access="global"/>
+    <aura:attribute name="filterKeyList" type="String[]" access="public" />
+    
+
+    <aura:registerEvent name="sendSelectedEmployee" type="c:RevSys_GeneralPurposeEvt" />
+    <!--
+	<aura:method name="createTestList" action="{! c.createTestList }" />
+	<aura:method name="createTreeGrid" action="{! c.handleCreateTreeGrid }" />
+-->
+    
+    <aura:if isTrue="{! and(or(equals(v.selectionState, v.cmpState), equals(v.selectionState, 3)),  equals(v.selectedRecordType.Name, $Label.c.RevSys_Observation_RT_Label_Test_1872)) }">
+        <div class="slds-size_1-of-1 slds-p-around_medium">
+            <aura:if isTrue="{! notequals(v.selectionState, 3) }">
+                <div class="slds-size_1-of-1 slds-text-title_caps slds-align_absolute-center slds-p-bottom_medium" style="font-size:1rem;">Select Test Numbers</div>
+                <aura:set attribute="else">
+                    <div class="slds-size_1-of-1 slds-text-title_caps slds-align_absolute-center slds-p-bottom_medium" style="font-size:1rem;">Result Entry</div>
+                </aura:set>
+            </aura:if>
+            
+            <c:RevSys_ObservationTestWithEmployeeCmp aura:id="testEmployees" testWithObservationsList="{! v.testWithObservationsList }" selectedList="{! v.selectedList }" 
+                                                     cmpState="{! v.cmpState }" selectionState="{! v.selectionState }" fieldLabelMap="{! v.fieldLabelMap }" 
+                                                     picklistMap="{! v.picklistMap }" requiredFieldMap="{! v.requiredFieldMap }" picklistMapRegionState="{! v.picklistMapRegionState }" 
+                                                     recordType="{! v.selectedRecordType }" editableFields="{! v.editableFields }" selectedEmpList="{! v.selectedEmpList }" 
+                                                     filterKeyList="{!v.filterKeyList}" filteredList="{!v.filteredList}"
+                                                     picklistMapStateSubDivision="{! v.picklistMapStateSubDivision }" />
+        </div>
+    </aura:if>
+</aura:component>

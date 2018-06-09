@@ -1,0 +1,63 @@
+.THIS .red-text {
+    color: #cc0000 !important;
+} 
+
+.THIS .orange-text {
+    color: #D67510 !important; 
+}
+
+.THIS .green-text {
+    color: #009602 !important;
+}
+
+.THIS .red-bg {
+    background-color: #cc0000 !important; 
+    color: white !important;
+} 
+
+.THIS .orange-bg {
+    background-color: #D67510 !important; 
+    color: white !important;
+}
+
+.THIS .green-bg {
+    background-color: #009602 !important; 
+    color: white !important;
+}
+
+.THIS .orange-bg[disabled], .THIS .green-bg[disabled] {
+    background-color: rgb(224, 229, 238) !important;
+    border-color: rgba(0, 0, 0, 0);
+}
+
+.THIS .custom-button-size {
+    height: 4em;
+    margin: 0.5em;
+    width: 31%;
+    line-height: 1.5em;
+}
+
+.THIS .custom-button-size[disabled] {
+    background-color: rgb(224, 229, 238) !important;
+    border-color: rgba(0, 0, 0, 0) !important;
+}
+
+.THIS#audit-main-header {
+    top : 204px !important;
+    position: fixed;
+    padding-bottom: 0;
+    padding-right: 0;
+    padding-left: 0;
+    z-index: 1 !important;
+    max-height: 120px;
+    min-height: 120px;
+}
+
+.THIS .has-error {
+    border-color: #c23934 !important;
+}
+
+.THIS .final-closure-btn {
+    background-color: rgb(0, 57, 107); 
+    border-color: rgb(0, 57, 107);
+}

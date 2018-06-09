@@ -1,0 +1,45 @@
+<aura:component controller="EIS_Inspection_TemperatureTrackingCtrl">
+    <aura:attribute name="trackingWrappers" type="EIS_Inspection_TemperatureTrackingCtrl.TemperatureTracking[]" access="public" />
+    <aura:attribute name="foodTrackingWrapper" type="EIS_Inspection_TemperatureTrackingCtrl.TemperatureTracking" access="public" />
+	<aura:attribute name="inspectionId" type="String" access="public" />
+    <aura:attribute name="displaySection" type="Boolean" default="false" access="public" />
+    <aura:attribute name="sectionHeader" type="String" default="" access="public" />
+    
+    <aura:handler name="init" value="{! this }" action="{! c.doInit }"/>
+    
+    <div class="slds-grid slds-wrap slds-grid_pull-padded">
+        <div class="slds-p-horizontal_small slds-size_1-of-1" >
+            <div class="slds-section__title">
+                <div class="slds-button slds-section__title-action" onclick="{! c.toggleDisplaySection }" >
+                    <div class="slds-size_2-of-3" >
+                        <aura:if isTrue="{! v.displaySection }">
+                            <lightning:icon class="slds-p-right_x-small" iconName="utility:chevrondown" size="xx-small"/>
+                            <aura:set attribute="else">
+                                <lightning:icon class="slds-p-right_x-small" iconName="utility:chevronup" size="xx-small"/>
+                            </aura:set>
+                        </aura:if>
+                        <span class="slds-truncate" title="{! v.sectionHeader }">{! v.sectionHeader }</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <aura:if isTrue="{! v.displaySection }">
+            <div class="slds-p-horizontal_small slds-size_1-of-1" >
+                <div class="slds-grid slds-wrap">
+                    <aura:iteration var="tempTracking" items="{! v.trackingWrappers }">
+                        <div class="slds-size_1-of-3 slds-p-horizontal_small slds-p-bottom_medium">
+                            <c:EIS_Inspection_TemperatureTracking inspectionId="{! v.inspectionId }" trackingWrapper="{! tempTracking }"/>
+                        </div>
+                    </aura:iteration>
+                    <aura:if isTrue="{! !empty(v.foodTrackingWrapper) }">
+                        <div class="slds-size_3-of-4 slds-p-horizontal_small slds-p-bottom_medium">
+                            <c:EIS_Inspection_TemperatureFoodTracking inspectionId="{! v.inspectionId }" trackingWrapper="{! v.foodTrackingWrapper }"/>
+                        </div>
+                    </aura:if>
+                </div>
+            </div>
+        </aura:if>
+    </div>
+    <br/>
+</aura:component>

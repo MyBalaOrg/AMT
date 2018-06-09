@@ -1,0 +1,27 @@
+<apex:component controller="Revsys_Non1872FindingsController" access="global">
+    <apex:attribute name="ObsId" 
+                    type="String" 
+                    description="Id of the Observation" 
+                    assignTo="{!observationId}"/>
+    
+    <table style="width:75%">
+        <tr>
+            <th colspan="4">Finding Information</th>
+        </tr>
+        <tr>
+            <td>Sequence</td>
+            <td>Question</td>      
+            <td>Score</td>
+            <td>Critical to Passing Exam</td>
+            
+        </tr>
+        <apex:repeat value="{!findings}" var="fn">
+            <tr>
+                <td>{!fn.Sequence__c}</td>
+                <td>{!fn.Sub_category__c}</td>
+                <td>{!fn.Score__c}</td>
+                <td>{!fn.IsCriticalItem__c}</td>
+            </tr>
+        </apex:repeat>        
+    </table>
+</apex:component>

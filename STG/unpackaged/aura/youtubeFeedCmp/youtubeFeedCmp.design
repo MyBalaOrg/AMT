@@ -1,0 +1,17 @@
+<design:component label="Amtrak Youtube Feed">
+    
+    <design:attribute name="objApiName" label="Object API Name" description="Provide the Salesforce object API name" placeholder="e.g. Portal_Video__c" />
+    <design:attribute name="fieldApiName" label="Field API Name" description="Provide the field API name which contains the video url" placeholder="e.g. Video_Id__c" />
+    <design:attribute name="width" label="Desktop Video Width" default="50%" placeholder="e.g. 50%" description="Applicable only when the Full Screen is unchecked. Please specify whether the value is in pixels (eg. 740px) or percentage (eg. 100%)"/>
+    <design:attribute name="height" label="Desktop Video Height" default="350px" placeholder="e.g. 350px" description="Applicable only when the Full Screen is unchecked."/>
+    <design:attribute name="tabletwidth" label="Tablet Video Width" default="100%" placeholder="e.g. 100%" description="Only for mobile display"/>       
+    <design:attribute name="tabletheight" label="Tablet Video Height" default="350px" placeholder="" description="Only for mobile display"/>
+    <design:attribute name="mobilewidth" label="Mobile Video Width" default="100%" placeholder="e.g. 100%" description="Only for mobile display"/>       
+    <design:attribute name="mobileheight" label="Mobile Video Height" default="" placeholder="" description="Only for mobile display"/>
+    <design:attribute name="fullscreen" label="Full Screen" default="0" description="Video will occupy the whole screen ignoring Video Height."/>
+    <design:attribute name="autoplay" label="Autoplay" default="1" />
+    <design:attribute name="loop" label="Loop" default="1" />
+    <design:attribute name="controls" label="Video Controls" default="0" />
+	<design:attribute name="shadow" label="3D shadow" description="Control the shadow of the tile"/>    
+    
+</design:component>

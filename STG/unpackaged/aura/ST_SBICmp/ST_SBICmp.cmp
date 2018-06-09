@@ -1,0 +1,150 @@
+<!--
+/**
+*___________________________________________________
+*@Name: ST_SBICmp
+*@Author: Max Paquin mpaquin@goaldc.com
+*@Created Date: 4/19/2017
+*@Used By: SafeTrends App
+*___________________________________________________
+*@Description:
+*
+*___________________________________________________
+*@Changes
+* MM-DD-YYY. Explanation of the change.
+**/
+-->
+<aura:component controller="ST_ObservationController">
+	<ltng:require scripts="{!$Resource.jQuery_224}" afterScriptsLoaded="{!c.afterScriptsLoaded}"/>
+
+<!-- List of attributes -->	
+	<aura:attribute name="department" type="String" default="" description="Represent the department associated with an observation"/>
+	<aura:attribute name="state" type="Integer" default="2" description="Represent the state of the ST_ObservationSubmissionApp"/>
+	<aura:attribute name="sbiList" type="SBI__c[]" default="[]" description="Contains the list of SBI records associated with a department"/>
+	<aura:attribute name="modalTitle" type="String" description="Title of the modal"/>
+	<aura:attribute name="modalDescription" type="String" description="Description of the SBI shown in the modal"/>
+	<aura:attribute name="selectedRiskSBI" type="SBI__c[]" description="attribute used to hold the list of SBI that are labeled as risk"/>
+	<aura:attribute name="selectedSafeSBI" type="SBI__c[]" description="attribute used to hold the list of SBI that are labeled as safe"/>
+	<aura:attribute name="finalRiskSBI" type="SBI__c[]" description="array to hold the final list of of SBI"/>
+    
+	<!-- findingBehaviorOptions need to be removed -->
+	<aura:attribute name="findingBehaviorOptions" type="List" description="list used for the ST_RiskFindingCmp to set the behavior options"/>	
+
+<!-- List of methods -->
+    <aura:method name="backButtonPress" action="{!c.enableNextButton}">
+        <aura:attribute name="param" type="Boolean" Default="false"/>
+    </aura:method>
+
+<!--List of event handlers and publisher-->
+	<aura:registerEvent name="ST_ObservationSubmissionEvt" type="c:ST_ObservationSubmissionEvt" description="Event used to pass information to ST_ObservationSubmissionCmp"/>
+	<aura:handler name="init" action="{!c.doInit}" value="{!this}"/> 
+    <aura:handler name="ST_RiskSBIEvt" event="c:ST_RiskSBIEvt" action="{!c.receiveRiskSBI}"/>
+
+<!--    Component Body    -->
+
+	<div class="slds-container--large slds-container--center">
+		<div aura:id="stateTwoInnerDiv" class="{!v.state == 2 ? 'slds-show' : 'slds-hide'}">
+
+			<!--    header section start    -->
+		    <div aura:id="sbiHeader">
+		        <h1 class="slds-text-heading--medium"><Strong>Safety Behavior Items</Strong></h1> 
+		        <br/>
+		        <p>Review the list and indicate whether an SBI is considered "Safe" or "At Risk".</p>
+		    </div>    		       
+		    <br /><br />
+			<!--    header section end    -->
+
+			<!--    sbi List section start    -->
+			<div>
+				<aura:iteration var="item" items="{!v.sbiList}" indexVar="i">
+					<div class="slds-card slds-m-bottom--medium">
+	                	<div class="slds-card__header slds-grid">
+	                		<header class="slds-media slds-media--center slds-has-flexi-truncate slds-grid slds-grid--align-spread">
+	                			<div>
+	                				{!item.Name} &nbsp;
+	                             	<div class="slds-form-element__icon">
+	                                    <a href="#" title="{!item.Name}" rel="{!item.SBI_Description__c}" onclick="{!c.showDescInfo}" class="info-icon">i</a>
+	                                </div>
+	                			</div>
+	                			
+	                			<div class="slds-grid slds-grid--align-end">
+        <div class="radio-btns">
+                            <span class="slds-m-horizontal--medium">
+                                <button id="{!item.Id+'-safe'}" value="{!i}" name="{!item.Name}" onclick="{!c.createSafe}"  />
+                                &nbsp;
+                                <label>Safe</label>
+                                &nbsp;&nbsp;
+                                <button id="{!item.Id+'-risk'}" value="{!i}" name="{!item.Name}" onclick="{!c.createRisk}"  />
+                                &nbsp;
+                                <label>At Risk</label>
+                            </span>
+                        </div>    
+    
+ 
+
+								</div>
+							</header>
+	                	</div>
+	                </div>
+				</aura:iteration>
+			</div>
+		</div>
+		<!--    sbi List section end    -->
+
+		<!--    At risk findings section start    -->
+		<div aura:id="stateThreeInnerDiv">
+			<aura:if isTrue="{!v.state == 3 }">
+				<div aura:id="descriptionHeader">
+					<h1 class="slds-text-heading--medium"><Strong>Descriptions</Strong></h1> 
+
+					<aura:if isTrue="{!v.selectedRiskSBI.length == 0}">
+						<p>No At Risk Behaviors were selected. Please proceed to the next screen.</p>
+						<aura:set attribute="else">
+							<p>Please add a description for each of the "At Risk" SBIs below.</p>
+							<br/> <br/>
+							<!-- iterate over the selectedRiskSBI -->
+							<div>
+								<aura:iteration var="SBI" items="{!v.selectedRiskSBI}" indexVar="i">
+									<c:ST_RiskFindingCmp aura:Id="ST_RiskFindingCmp" selectedSBI="{!SBI}" sbiPosition="{!i}" findingBehaviorOptions="{!v.findingBehaviorOptions}"/>
+								</aura:iteration>
+							</div>
+						</aura:set>
+					</aura:if>
+				</div>
+			</aura:if>
+		</div>
+		<!--    At risk findings section end    -->
+
+		<!--    modal section start    -->
+		<div class="slds">
+        <div aura:id="modal-parent" aria-hidden="true" role="dialog" class="slds-modal">
+            <div class="slds-modal__container">
+            	    <div onclick="{!c.cancelModal}" class="slds-grid slds-grid--align-end">
+                        <lightning:icon iconName="utility:close" size="small" alternativeText="Close Window" variant="inverse"/>
+                	</div>
+                <div class="slds-modal__header">
+
+                    <h2 aura:id="modal-header" class="slds-text-heading--medium">{!v.modalTitle}</h2>
+
+                </div>
+                <div class="slds-modal__content slds-p-around--large">
+                    <p>{!v.modalDescription}</p>
+                </div>             
+            </div>
+        </div>
+        <div aura:id="modal-backdrop"  class="slds-backdrop"></div>
+    	</div>
+		<!--    modal section end    -->
+
+		<!--    button section start    -->
+
+		<lightning:layout horizontalAlign="spread" class="slds-p-top--small slds-border--top" >
+		 	<lightning:button label="Back" onclick="{!c.backButtonClicked}"/>
+		 	<div class=" slds-grid slds-grid--align-end">
+				<lightning:button label="Cancel" onclick="{!c.cancelButtonClicked}"/>
+				<lightning:button aura:id="ST_SBIcmp_next" label="Next" variant="brand" onclick="{!c.nextButtonClicked}"/>
+			</div>
+		</lightning:layout>
+
+		<!--    button section end    -->
+	</div>	
+</aura:component>

@@ -1,0 +1,3 @@
+<aura:event type="COMPONENT" description="Event used to send a completed SBI to ST_SBICmp">
+	<aura:attribute name="atRiskSBI" type="SBI__c" description="at-risk SBI"/>
+</aura:event>

@@ -1,0 +1,153 @@
+<!--
+/**
+*___________________________________________________
+*@Name: ST_SRiskFindingCmp
+*@Author: Max Paquin mpaquin@goaldc.com
+*@Created Date: 4/21/2017
+*@Used By: SafeTrends App
+*___________________________________________________
+*@Description: Component used to hold a single At Risk Finding
+*
+*___________________________________________________
+*@Changes
+* MM-DD-YYY. Explanation of the change.
+**/
+-->
+<aura:component >
+<!-- List of attributes -->	
+
+	<aura:attribute name="findingIndex" type="Integer" default="0" description="Position of the finding in the SBI.Findings__r array"/>
+	<aura:attribute name="selectedSBI" type="SBI__c" description="SBI record passed down by the ST_SBICmp"/>
+	<aura:attribute name="componentSBI" type="SBI__c" description="Represent the SBI currently in the component"/>
+	<aura:attribute name="sbiPosition" type="Integer" description="Represent the position of the SBI in the parent List"/>
+	<aura:attribute name="isExpanded" type="Boolean" default="true" description="Controls the display of the fields"/>
+	<aura:attribute name="findingArrLength" type="Integer" default="1" description="corresponds to the total number of risk finding associated with an SBI"/>
+	<aura:attribute name="findingBehaviorOptions" type="List" default="[]" description="List of options for the behavior select field - WIP"/>
+<!-- List of aura:method -->
+
+	<aura:method name="getFindings" action="{!c.getFindings}">
+		<aura:attribute name="getFinding" type="Boolean"/>
+	</aura:method>
+	
+<!--List of event handlers and publisher-->	
+	<aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+	<aura:handler name="sbiChange" value="{!v.selectedSBI}" action="{!c.selectedSBIChange}"/>
+
+	<aura:registerEvent name="ST_RiskSBIEvt" type="c:ST_RiskSBIEvt" description="Event used to send a completed SBI to ST_SBICmp"/>
+
+<!--    Component Body    -->
+
+	<div class="c-container">
+	<div class="slds-card slds-m-bottom--medium">
+		<!--    SBI description section start	-->
+		<div class="slds-card__header slds-grid slds-grid--align-spread slds-p-bottom--medium slds-p-top--medium slds-border--bottom">
+            <p>{!v.componentSBI.Name}</p>
+            <div>At Risk: <span>{!v.componentSBI.Findings__r.length}</span></div>
+        </div>
+		<!--	SBI description section end    --> 
+
+		<!--    findingList section start    -->
+		<aura:iteration var="finding" items="{!v.componentSBI.Findings__r}" indexVar="findingIndex">
+			<div aura:id="findingList" class="slds-card__body">
+				<ol class="slds-list--ordered">  
+					<ul class="slds-m-left--large slds-m-around--medium ">{!findingIndex+1}.
+						<div>
+							<div aura:id="chevronDiv">
+						        <aura:if isTrue="{!v.isExpanded}">
+				            	    <div onclick="{!c.toggleDesc}">
+				                        <lightning:icon iconName="utility:chevrondown" size="x-small" alternativeText="Hide Finding" />
+				                	</div>
+						            <aura:set attribute="else">
+				            	    <div onclick="{!c.toggleDesc}">
+				                        <lightning:icon iconName="utility:chevronright" size="x-small" alternativeText="Hide Finding" />
+				                	</div>
+						            </aura:set>
+						        </aura:if>
+					        </div>
+
+					        <p>At Risk</p>
+					        <br/>
+					        <div aura:id='formDiv' class="{!v.isExpanded ? 'slds-show' : 'slds-hide'}">
+						        <div aura:id='fieldDiv' class="slds-m-bottom_large">
+										<lightning:select aura:id="inputField" name="Behavior" label="Type of Behavior" required="true" 
+											messageWhenValueMissing="Please Choose a Behavior." value="{!finding.Behavior__c}">
+											<option value="" selected="{!finding.Behavior__c == '' ? 'selected' : ''}">Choose Behavior</option>
+                                            <aura:iteration items="{!v.findingBehaviorOptions}" var="item">
+                                            	<option text="{!item}" value="{!item}" selected="{!item.selected}"/>
+                                            </aura:iteration>
+									       
+									    </lightning:select>
+
+										<div class="slds-form-element" >
+											<div class="slds-form-element__control">
+												<lightning:textarea aura:id="inputField" 
+													name="While" 
+													value="{!finding.While__c}" 
+													label="While" 
+													maxlength="300" 
+													required="true" messageWhenValueMissing="Cannot be blank." placeholder="What was the person doing?"/>
+											</div>
+										</div>
+										<div class="slds-form-element">
+											<div class="slds-form-element__control">
+												<lightning:textarea aura:id="inputField" 
+													name="Was" 
+													value="{!finding.Was__c}" 
+													label="Was" 
+													maxlength="300" 
+													required="true" 
+													messageWhenValueMissing="Cannot be blank." 
+													placeholder="What was the at-risk behavior?"/>
+											</div>
+										</div>
+										<div class="slds-form-element">
+											<div class="slds-form-element__control">
+												<lightning:textarea aura:id="inputField" 
+													name="Because" 
+													value="{!finding.Because__c}" 
+													label="Because" 
+													maxlength="300" 
+													required="true" 
+													messageWhenValueMissing="Cannot be blank." 
+													placeholder="What were the barriers?"/>
+											</div>
+										</div>
+										<div class="slds-form-element">
+											<div class="slds-form-element__control">
+												<lightning:textarea aura:id="inputField" 
+													name="Solution" 
+													value="{!finding.Solution__c}" 
+													label="Solution" 
+													maxlength="300" 
+													required="true" 
+													messageWhenValueMissing="Cannot be blank." 
+													placeholder="Condition-what fixing or purchasing is suggested? Behavior-Meanwhile, what behavior whill they do?"/>
+											</div>
+										</div>
+										<lightning:select aura:id="inputField" name="Try__c" label="Try" required="true" 
+											messageWhenValueMissing="Cannot be blank." value="{!finding.Try__c}">
+
+									        <option value="" selected="{!finding.Try__c == '' ? 'selected' : ''}">Choose an option</option>
+									        <option value="Yes" selected="{!finding.Try__c == 'Yes' ? 'selected' : ''}">Yes</option>
+									        <option value="No" selected="{!finding.Try__c == 'No' ? 'selected' : ''}">No</option>
+
+									    </lightning:select>
+								</div>
+								<div>    
+							        <lightning:buttonGroup >
+							            <lightning:button label="+ Add Risk" name="{!findingIndex}" onclick="{!c.addFinding}"/>
+							            <div class="{!v.componentSBI.Findings__r.length == 1  ? 'slds-hide' : 'slds-show'}">
+							            <lightning:button label="- Remove Risk" name="{!findingIndex}" onclick="{!c.removeFinding}"/>
+							        	</div>
+							        </lightning:buttonGroup>
+							    </div>
+							</div>
+						</div>
+					</ul>
+				</ol>
+			</div>
+		</aura:iteration>
+		<!--    findingList section end    -->
+	</div>
+	</div>
+</aura:component>

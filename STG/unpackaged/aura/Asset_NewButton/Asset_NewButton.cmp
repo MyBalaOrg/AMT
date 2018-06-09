@@ -1,0 +1,12 @@
+<aura:component implements="lightning:actionOverride,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" controller="Asset_RecordTypeCheck">
+    <aura:attribute name="appName" type="String" access="private" />
+    <aura:attribute name="recordTypeId" type="String" access="public" />
+    <aura:attribute name="recordTypeName" type="String" access="public" />
+    <aura:attribute name="errorMessage" type="String" default="" access="private" />
+    
+	<aura:handler name="init" value="{! this }" action="{! c.doInit }" />
+        
+    <aura:if isTrue="{! equals(v.appName, $Label.c.App_Name_PTC) }"> 
+        <c:PTC_Asset_Record recordTypeId="{! v.recordTypeId }" recordTypeName="{! v.recordTypeName }"/>
+    </aura:if>
+</aura:component>

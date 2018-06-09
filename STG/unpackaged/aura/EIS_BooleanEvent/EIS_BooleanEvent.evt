@@ -1,0 +1,5 @@
+<aura:event type="COMPONENT">
+    <aura:attribute name="origin" type="String" />
+    <aura:attribute name="value" type="Boolean" />
+    <aura:attribute name="description" type="Boolean" />
+</aura:event>

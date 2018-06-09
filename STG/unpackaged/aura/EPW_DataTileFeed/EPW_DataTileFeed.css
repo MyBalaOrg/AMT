@@ -1,0 +1,196 @@
+.THIS.comp {
+    overflow: hidden;
+}
+
+.THIS .body{
+	line-height: 1.3;
+	padding-top:15px;
+}
+
+.THIS .tileHeader{
+	height:50px; 
+	line-height:50px;
+	padding-left: 10px;
+    font-family : sans-serif;
+}
+
+.THIS .primary{
+	color:#167FA6;
+	font-size:16px;
+	font-weight: bold;
+	display: block; 
+	display: -webkit-box;
+	max-width: 100%;
+	height: auto; 
+	margin: 0 auto;
+    margin-bottom: 7px;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.THIS .secondary{
+	display: block; 
+	display: -webkit-box;
+	max-width: 100%;
+	height: auto; 
+	margin: 0 auto;
+	font-size: 13px;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	
+}
+
+.THIS .primaryModal{
+	color:#167FA6;
+	font-size:16px;
+	font-weight: bold;
+}
+
+.THIS .secondaryModal{
+	font-size:13px;
+}
+
+.THIS .body {
+	padding-left: 10px;
+	padding-right: 10px;
+    padding-top : 10px;
+	font-family: sans-serif;
+	overflow:auto;
+}
+
+.THIS #more{
+	font-size:13px;
+}
+
+.THIS .displayNone{
+    display:none;
+}
+
+.THIS .morePadding{
+	padding-bottom: 15px
+}
+
+.THIS .ask-icon .slds-icon_container {
+    background-color: transparent;
+}
+
+.THIS .ask-icon {
+    /*float: right;
+    bottom: 60px;
+    padding-right: 20px;
+    position: relative;
+    height: 66px;
+    background-color: #dde5e6;*/
+    background-color: #E6E9EB;
+    height: 53px;
+}
+
+.THIS .ask-icon .main-icon {
+    padding: 0;
+    border-radius: 50%;
+    margin: 8px 0 8px 15px;
+}
+
+.THIS .content {
+    /*padding: 15px 20px 0 20px;*/
+    /*margin: 15px 20px;*/
+    overflow-y: hidden;
+    font-size: 14px;
+    padding: 15px 0 15px 20px;
+}
+
+.THIS .outerContainer {
+	display: inline-block;
+}
+
+.THIS .icn svg{
+ /*fill: #e6e6e6; */
+   
+}
+
+.THIS .amtrak-button:disabled {
+    /*background: rgb(201, 199, 197);
+    border-color: rgb(201, 199, 197);*/
+    color: #e6e9eb;
+}
+
+.THIS .amtrak-button:focus {
+    box-shadow: none;
+}
+
+.THIS .amtrak-button {
+    /*background-color: #167fa6;
+    border-color: #167fa6;
+    padding: 5px 10px;
+    color: white; */
+    border: none;
+    background: none;
+    text-align: center;
+    color: #0275d8; 
+    font-size: 14px;
+    font-family: OpenSans,Helvetica,Arial,sans-serif;
+    line-height: 1.5;
+    margin-right: 2px;
+}
+
+.THIS .amtrak-button:hover {
+    text-decoration: underline;
+}
+
+.THIS .amtrak-button:disabled:hover {
+    text-decoration: none;
+}
+
+.THIS .container-new {
+    min-height: 335px;
+}
+
+.THIS .button-group {
+    margin:0 auto; 
+    /*padding-bottom:10px;
+    padding-right:10px;*/
+    padding: 10px;
+    text-align: right;
+    font-family: OpenSans,Helvetica,Arial,sans-serif;
+}
+
+.THIS .last-pulished-date {
+    font-size: 10px;
+    color: #8f9db1;
+    font-style: italic;
+    margin-bottom: 7px;
+}
+
+.THIS .pointerOnHover:hover{
+    cursor: pointer;
+    
+}
+
+.THIS .slds-button_brand{
+    background-color:#167fae !important; 
+    border-color:#167fae !important;
+}
+
+.THIS.slds-button.new-button, .THIS .new-button
+{
+    color: #fff;
+    background: #167FAE;
+    /*padding: 0px 8px 0px 8px;*/
+    padding: 0px 5px 0px 5px;
+    cursor: pointer;
+}
+.THIS.slds-button.new-button:hover{
+    background: #1ca1d3;
+}
+
+.THIS .ColorFont{
+    color:#0275d8;
+}
+
+.THIS .position-initial {
+    position: initial;
+}

@@ -1,0 +1,27 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes,flexipage:availableForRecordHome" access="public">
+
+    <aura:attribute name="observation" type="Observation__c" access="public"/>
+    <aura:attribute name="employeeInfo" type="Aura.Component[]" access="public"/>
+    <aura:attribute name="readOnlyFields" type="Object[]" access="global"/>
+    <aura:attribute name="showSectionHeader" type="Boolean" default="fault" access="public"/>
+
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+
+	<div class="slds-section slds-is-open slds-size_1-of-1 slds-p-horizontal_x-small slds-m-bottom_small">
+		<div class="{!if(v.showSectionHeader,'slds-show','slds-hide')}">
+			<h3 class="slds-section__title slds-theme_shade slds-p-horizontal_small">
+				<span clss="slds-truncate">{! $Label.c.RevSys_Observation_Section_Employee_Info }</span>
+			</h3>
+		</div>
+		
+	    <lightning:recordViewForm recordId="{! v.observation.Id }" objectApiName="Observation__c">
+	        <div class="slds-grid slds-wrap slds-p-horizontal_small slds-p-top_small" >
+	          	<aura:iteration var="info" items="{! v.employeeInfo }" indexVar="i">
+		    		<div class="slds-size_1-of-2">
+	              		{! info }
+	              	</div>
+	            </aura:iteration>
+	        </div>
+	    </lightning:recordViewForm> 
+	</div>           
+</aura:component>

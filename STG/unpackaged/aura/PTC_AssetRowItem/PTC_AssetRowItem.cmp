@@ -1,0 +1,134 @@
+<!-- 
+********************************************************************************************************************************************************************************************************************************************
+*	@Name			PTC_AssetRowItem
+*	@Author			Deloitte Digital
+*	@Created Date	10th May 2018
+*	@Used By		PTC App	
+*	@Controller		PTC_AssetInstallationController
+********************************************************************************************************************************************************************************************************************************************
+*	@Description	This is a lightning component which holds one row to be installed
+
+********************************************************************************************************************************************************************************************************************************************
+*	@Changes
+********************************************************************************************************************************************************************************************************************************************	
+-->
+<aura:component controller = "PTC_AssetInstallationController" implements="force:hasRecordId,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >    
+    
+    <!--ATTRIBUTE-->
+    <aura:attribute name="serialOptions" type="List"/>
+    <aura:attribute name = "conformingSerialNums" type = "List"/>
+    <aura:attribute name = "nonConformSerialNums" type = "List"/>
+    <aura:attribute name="wrapperInstance" type="PTC_AssetWrapperClass"/>
+    <aura:attribute name = "currentSelectedCompName" type = "String"/>
+    <aura:attribute name="assetWrapperList" type="PTC_AssetWrapperClass[]"/> 
+    <aura:attribute name = "controlSysPickValues" type = "String[]"/>
+    <aura:attribute name = "componentNamesPickValues" type = "String[]"/>
+    <aura:attribute name = "partNumbers" type = "Product2[]"/>
+    <aura:attribute name = "selectedControlSys" type = "String"/>
+    <aura:attribute name = "selectedCompName" type = "String"/>
+    <aura:attribute name = "selectedPartNumber" type = "String"/>
+    <aura:attribute name = "selectedSerialNumber" type = "String"/>
+    <aura:attribute name = "parentRecordId" type = "String"/>
+    <aura:attribute name = "isComNameDisabled" type = "Boolean" default = "true"/>
+    <aura:attribute name = "isPartDisabled" type = "Boolean" default = "true"/>
+    <aura:attribute name = "isSerialDisabled" type = "Boolean" default = "true"/>
+    <aura:attribute name = "isHwDisabled" type = "Boolean" default = "true"/>
+    <aura:attribute name = "isSwDisabled" type = "Boolean" default = "true"/>
+    <aura:attribute name = "serialExists" type = "Boolean" default = "true"/>
+    <aura:attribute name = "unknownSerialNum" type = "String"/>
+    <aura:attribute name = "showSerialText" type = "boolean" default = "false"/>
+    <aura:attribute name = "showSerialSelect" type = "boolean" default = "true"/>
+    <aura:attribute name="rowIndex" type="String"/>
+    <aura:attribute name = "versions" type = "List"/>
+    
+    <!--HANDLER-->
+    <aura:handler event="c:PTC_SelectionEvt" action="{!c.handleSelection}"/>
+    
+    <!-- EVENT REGISTERATION  --> 
+    <aura:registerEvent name="DeleteRowEvt" type="c:PTC_DeleteRowEvt"/> 
+    <aura:registerEvent name="AddRowEvt" type="c:PTC_AddNewRowEvt"/> 
+    
+    <!--TABLE-->       
+    <td role = "col" >
+        <ui:inputSelect  class = "slds-input" disabled = "{!v.isComNameDisabled}" aura:id = "InputComponentName" change = "{!c.onCompNameChange}" value="{!v.wrapperInstance.componentName}">
+            <option value = "" text = "--None--"/>
+            <aura:iteration items="{!v.componentNamesPickValues}" var="item" >
+                <option value="{!item}" text="{!item}"></option>
+            </aura:iteration>
+        </ui:inputSelect>
+    </td>
+    <td role = "col" >
+        
+        <ui:inputSelect class = "slds-input" disabled = "{!v.isPartDisabled}" aura:id = "InputPartNumber" change = "{!c.onPartNumberChange}" value="{!v.wrapperInstance.prodId}">
+            <option value = "" text = "--None--"/>
+            <aura:iteration items="{!v.partNumbers}" var="item" >
+                <option value="{!item.Id}" text="{!item.Name}"></option>
+            </aura:iteration>              
+        </ui:inputSelect>
+        
+    </td>
+    <td role = "col" >
+        
+        <aura:if isTrue = "{!v.showSerialSelect}">
+            <ui:inputSelect disabled = "{!v.isSerialDisabled}" 
+                            class = "slds-select" 
+                            aura:id = "InputSerialNumber" 
+                            change = "{!c.onSerialNumberChange}" 
+                            value="{!v.wrapperInstance.assetId}">
+                 <option value = "" text = "--None--"/>
+                <aura:if isTrue = "{!v.conformingSerialNums.length > 0}">
+                <optgroup label="Conforming Serial Numbers">
+                    <aura:iteration items="{!v.conformingSerialNums}" var="item">
+                        <option text="{!item.label}" value="{!item.value}"/>
+                    </aura:iteration>
+                </optgroup>
+                    </aura:if>
+           
+                <aura:if isTrue = "{!v.nonConformSerialNums.length > 0}">
+                <optgroup label="Non Conforming Serial Numbers">
+                    <aura:iteration items="{!v.nonConformSerialNums}" var="item">
+                        <option text="{!item.label}" value="{!item.value}"/>
+                    </aura:iteration>
+                </optgroup>
+                </aura:if>
+                 <option value = "Add" text = "Add New Serial"/>
+                
+                
+            </ui:inputSelect>
+            
+        </aura:if>
+        
+        <aura:if isTrue = "{!v.showSerialText}">
+            <ui:inputText placeholder = "Enter Serial" aura:id = "InputSerialNumber1" class = "slds-p-around_none" disabled = "{!v.isSerialDisabled}" change = "{!c.onSerialNumberChange}" value="{!v.unknownSerialNum}"/>
+        </aura:if>
+        
+    </td>
+    <td role = "col"> 
+        <ui:inputText aura:id = "InputSwVersion" class = "slds-input" disabled = "{!v.isHwDisabled}" value="{!v.wrapperInstance.swVersion}"/>
+    </td>
+    
+    <td role = "col" >
+        
+        <ui:inputText aura:id = "InputHwVersion" class = "slds-input" disabled = "{!v.isSwDisabled}" value="{!v.wrapperInstance.hwVersion}"/>
+    </td>
+    <td role = "col">
+        
+        <aura:if isTrue="{!v.rowIndex == 0}">
+            
+            <a onclick="{!c.addNewRow}">
+                <lightning:icon iconName="utility:add" class="slds-avatar slds-avatar--x-small" size="small" alternativeText="add"/>
+                <span class="slds-assistive-text">Add Icon</span>
+            </a>
+            
+            
+            <aura:set attribute="else">
+                
+                <a onclick="{!c.removeRow}">
+                    <lightning:icon class="slds-avatar slds-avatar--x-small" variant="error" iconName="utility:dash" size="small" alternativeText="icon"/>
+                    <span class="slds-assistive-text">Delete Icon</span>
+                </a>
+                
+            </aura:set> 
+        </aura:if>
+    </td> 
+</aura:component>

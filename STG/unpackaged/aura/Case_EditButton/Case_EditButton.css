@@ -1,0 +1,10 @@
+.THIS .case-edit-wrapper {
+    margin: auto;
+    background-color: white;
+    border-radius: 1em;
+    width: 90em;
+}
+
+.THIS .case-edit-button {
+    min-width: 10em;
+}

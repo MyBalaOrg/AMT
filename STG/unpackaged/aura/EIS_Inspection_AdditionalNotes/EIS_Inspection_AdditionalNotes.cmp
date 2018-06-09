@@ -1,0 +1,34 @@
+<aura:component controller="EIS_Inspection_MainCtrl">
+    <aura:attribute name="sectionTitle" type="String" default="Sample Title" access="public" />
+    <aura:attribute name="displaySection" type="Boolean" default="true" access="private" />
+    <aura:attribute name="inspectionId" type="String" access="public" />
+    <aura:attribute name="additionalNotes" type="String" access="public" />
+    <aura:attribute name="disableForm" type="Boolean" access="public" default="false" />
+    
+    <aura:registerEvent name="toggleLightningSpinner" type="c:EIS_BooleanEvent" />
+    
+    <div class="slds-grid slds-wrap slds-grid_pull-padded">
+        <div class="slds-p-horizontal_small slds-size_1-of-1" >
+            <h3 class="slds-section__title">
+                <button class="slds-button slds-section__title-action"
+                        onclick="{! c.toggleDisplaySection }" >
+                    <aura:if isTrue="{! v.displaySection }">
+                    	<lightning:icon class="slds-p-right_x-small" iconName="utility:chevrondown" size="xx-small"/>
+                    	<aura:set attribute="else">
+                        	<lightning:icon class="slds-p-right_x-small" iconName="utility:chevronup" size="xx-small"/>
+                        </aura:set>
+                    </aura:if>
+                    <span class="slds-truncate" title="Additional General Notes">Additional General Notes</span>
+                </button>
+            </h3>
+        </div>
+        <aura:if isTrue="{! v.displaySection }">
+            <div class="slds-p-horizontal_small slds-size_1-of-1" >
+                <textarea class="slds-textarea" placeholder="Additional Notes ..." onblur="{! c.onblurAdditionalNotes}"
+                          disabled="{! v.disableForm }">
+                	{! v.additionalNotes }
+                </textarea>
+            </div>
+        </aura:if>
+    </div>
+</aura:component>

@@ -1,0 +1,24 @@
+.THIS .employee-result-table {
+    border-radius: 0.5em;
+    border: 1px solid rgb(112, 110, 107);
+}
+
+.THIS .employee-name:hover {
+    font-weight: bold !important;
+    cursor: pointer;
+}
+.THIS table td{
+    white-space:initial;
+    word-wrap: break-word;
+}
+
+.THIS .slds-table_fixed-layout,.THIS .slds-table th {
+    white-space:initial;
+}
+
+.THIS .edit-finding-modal {
+    height: 80vh !important;
+    top: 6rem !important;
+    max-width: none !important;
+    width: 70% !important;
+}

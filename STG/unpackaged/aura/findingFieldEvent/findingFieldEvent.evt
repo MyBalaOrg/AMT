@@ -1,0 +1,6 @@
+<aura:event type="Component" description="Event template">
+
+	<aura:attribute name="fieldName" type="String" access="GLOBAL" default=""/>
+    <aura:attribute name="fieldValue" type="String" access="GLOBAL" default=""/>
+
+</aura:event>

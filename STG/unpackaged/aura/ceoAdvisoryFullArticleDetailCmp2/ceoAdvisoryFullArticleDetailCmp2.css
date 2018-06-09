@@ -1,0 +1,24 @@
+.THIS .article-title{
+    color: #167fa6;
+    font-weight: bold;
+}
+.THIS .header-container{
+    position: relative;    
+}
+.THIS .article-title-header{
+    color: #fff;
+    font-weight: bold;
+    position: absolute;
+    top: 3px;
+    left: 15px;
+    font-size: 30px;
+    font-size: 3vw;
+}
+.THIS .header-logo__img {
+    width:100%;
+    height:auto;
+}
+.THIS .description{
+    font-family: OpenSans,Helvetica,Arial,sans-serif;
+    text-align: justify;
+}

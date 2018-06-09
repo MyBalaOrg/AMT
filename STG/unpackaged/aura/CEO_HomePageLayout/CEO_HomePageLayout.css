@@ -1,0 +1,35 @@
+.THIS.main-layout {
+    font-family: OpenSans,Helvetica,Arial,sans-serif;
+    color: #00344d;
+}
+
+.THIS .topTile {
+    /*padding: 10px 0;*/
+    max-width: 1140px;
+    margin: auto;
+    font-size: 14px;
+}
+.THIS .topTile-main {
+    padding-bottom: 0;
+}
+
+.THIS .content-main {
+    padding-bottom: 0;
+}
+
+.THIS .center-tile, .THIS .bottom-tile, .THIS .content-main, .THIS .topTile-main {
+    padding: 20px;
+}
+
+.THIS .line {
+    border-bottom: 1px solid #ccc;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+
+.THIS .footer {
+   position:absolute;
+   bottom: -500px;
+   width:100%;
+}

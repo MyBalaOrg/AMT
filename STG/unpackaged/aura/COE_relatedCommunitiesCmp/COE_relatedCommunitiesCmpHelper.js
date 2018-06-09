@@ -1,0 +1,5 @@
+({
+    populatePropertiesArray : function(component) {
+        
+    }
+ })

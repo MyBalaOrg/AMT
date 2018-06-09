@@ -1,0 +1,233 @@
+<!-- 
+********************************************************************************************************************************************************************************************************************************************
+*	@Name			PTC_AssetInstallationParent
+*	@Author			Deloitte Digital
+*	@Created Date	10th May 2018
+*	@Used By		PTC App	
+*	@Controller		PTC_AssetInstallationController
+********************************************************************************************************************************************************************************************************************************************
+*	@Description	This is a lightning component which forms a top level component to display the assets which are installed
+     and the assets which would be installed.
+
+********************************************************************************************************************************************************************************************************************************************
+*	@Changes
+********************************************************************************************************************************************************************************************************************************************	
+-->
+<aura:component controller="PTC_AssetInstallationController" implements="force:hasRecordId,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+    
+    
+    <!--ATTRIBUTES -->
+    <aura:attribute name = "confirmPressed" type = "Boolean" default = "false"/>
+    <aura:attribute name = "cancelPressed" type = "Boolean" default = "false"/>
+    <aura:attribute name = "openModal" type = "Boolean" default = "false"/>
+    <aura:attribute name = "nonConformingList" type = "PTC_AssetWrapperClass[]"/>
+    <aura:attribute name="wrapperList" type="PTC_AssetWrapperClass[]"/> 
+    <aura:attribute name="wrapperDeleteInstance" type="PTC_AssetWrapperClass"/> 
+    <aura:attribute name="assetDeleteWrapperList" type="PTC_AssetWrapperClass[]"/> 
+    <aura:attribute name = "isLoading" type = "Boolean" default = "false"/>
+    <aura:attribute name = "validInstallation" type = "Boolean" default = "true"/>
+    <aura:attribute name = "locationId" type = "String"/>
+    <aura:attribute name = "listToUninstall" type="PTC_AssetWrapperClass[]"/>
+    <aura:attribute name = "disabledDeleteIcon" type = "Boolean" default="true"/>
+    <aura:attribute name = "selectedDate" type = "String"/>
+    <aura:attribute name = "contactId" type = "String"/>
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="selectedControlSys" type = "String"/>
+    <aura:attribute name = "controlSystemPickValues" type = "String[]"/>
+    <aura:attribute name = "componentNames" type = "String[]"/>
+    <aura:attribute name = "partNumbers" type = "String[]"/>
+    <aura:attribute name="disableLocation" type="Boolean" default="false" description="Value set if the user has access to only 1 location"/>
+    <aura:attribute name="emptyLocationPlaceholder" type="boolean" default="false" description="use for, make disbale placeholder" />
+    <aura:attribute name="emptyContactPlaceholder" type="boolean" default="false" description="use for, make disbale placeholder" />
+    <aura:attribute name="locationList" type="Location__c[]" description="List used to hold values returned when searching for a Location"/>
+    <aura:attribute name = "hideUpdateAssetButton" type = "Boolean" description = "Hide Update button" default = "false"/>
+    <aura:attribute name="location" type="Location__c" description="represent the selected location" 
+                    default="{'sobjectType': 'Location',
+                             'Name' :'',
+                             }"/>
+    
+    <aura:attribute name="contactList" type="Contact[]" description="List used to hold values returned when searching for a Location"/>
+    <aura:attribute name="contact" type="Contact" description="represent the selected contact" 
+                    default="{'sobjectType': 'Contact',
+                             'Name' :'',
+                             }"/>
+    
+    
+    <!--EVENT HANDLER -->
+    <aura:handler name="DeleteRowEvt" event="c:PTC_DeleteRowEvt" action="{!c.removeDeletedRow}"/>
+    <aura:handler name="AddRowEvt" event="c:PTC_AddNewRowEvt" action="{!c.addNewRow}"/>
+    <aura:handler name="PopupEvent" event="c:PTC_PopupEvt" action="{!c.handlePopup}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    
+    <!-- EVENT REGISTERATION -->
+    <aura:registerEvent name="sendSelection" type="c:PTC_SelectionEvt"/> 
+    
+    
+    <!-- MARKUP -->
+    <div class = "top-section slds-p-around_small">
+        <div class = "slds-grid slds-wrap slds-grid--pull-padded">
+            <div class = "slds-col slds-p-horizontal--small slds-size--1-of-2">
+                <!--DATE -->
+                <ui:inputDate aura:id="Inputdate" label="Date"
+                              class="slds-input"
+                              labelClass="slds-form-element__label"
+                              displayDatePicker="true"
+                              required="true"
+                              value = "{!v.selectedDate}"
+                              format="MM/DD/YYYY"
+                              blur = "{!c.validateTransactionDate}"/>
+                
+                <!--CONTROL SYSTEM -->
+                <ui:inputSelect required = "true" 
+                                label = "Control System" 
+                                class = "slds-select" 
+                                aura:id = "InputControlSys" 
+                                change = "{!c.onControlSysChange}" 
+                                value="{!v.selectedControlSys}"
+                                blur="{!c.validateControlSystem}">
+                    <option value = "" text = "--None--"/>
+                    <aura:iteration items="{!v.controlSystemPickValues}" var="item" >
+                        <option value="{!item}" text="{!item}"></option>
+                    </aura:iteration>              
+                </ui:inputSelect>
+            </div>
+            
+            
+            <div class = "slds-col slds-p-horizontal--small slds-size--1-of-2">
+                <!--LOCATION SEARCH -->
+                <ui:inputText aura:id="InputLocation" label="Location"
+                              disabled="{!v.disableLocation}"
+                              placeholder="{!v.emptyLocationPlaceholder == false ? 'Search Location' : ''}"
+                              keyup="{!c.findLocations}"
+                              required = "true"
+                              updateOn="keyup"
+                              blur="{!c.validateLocation}"
+                              focus="{!c.clearPlaceholderLocation}"/>
+                
+                <div aura:id="locationResultDiv" class="{!v.locationList.length != 0 ?'slds-box slds-is-absolute slds-scrollable' : 'slds-hide'}" style="z-index:10000; background-color:white">
+                    <ul aura:id="locationResultUl" class="slds-has-dividers--top">
+                        <aura:iteration var="location" items="{!v.locationList}" indexVar="userIndex">
+                            <a><li class="slds-item" onclick="{!c.selectLocation}" id="{!location.Id}">{!location.Name}</li></a>
+                        </aura:iteration>
+                    </ul>
+                </div>
+                
+                
+                <!--CONTACT SEARCH -->
+                <ui:inputText aura:id="InputContact" label="Contact"
+                              disabled="{!v.disableContact}"
+                              placeholder="{!v.emptyContactPlaceholder == false ? 'Search Contact' : ''}"
+                              keyup="{!c.findContacts}"
+                              required = "true"
+                              updateOn="keyup"
+                              blur="{!c.validateContact}"
+                              focus="{!c.clearPlaceholderContact}"
+                              />
+                
+                <div aura:id="contactResultDiv" class="{!v.contactList.length != 0 ?'slds-box slds-is-absolute' : 'slds-hide'}" style="z-index:10000; background-color:white">
+                    <ul aura:id="contactResultUl" class="slds-has-dividers--top">
+                        <aura:iteration var="contact" items="{!v.contactList}" indexVar="userIndex">
+                            <a><li class="slds-item" onclick="{!c.selectContact}" id="{!contact.Id}">{!contact.Name}</li></a>
+                        </aura:iteration>
+                    </ul>
+                </div>
+            </div>   
+            
+        </div>
+    </div>
+    
+    <aura:if isTrue="{!v.isLoading}">
+        <div class="slds-p-horizontal--small slds-size--1-of-1">
+            <div class="slds-p-horizontal--small slds-size--1-of-1 isActivityLoading">
+                <lightning:spinner variant="brand" size="small"/>
+            </div>   
+        </div>
+    </aura:if>
+    
+    <!--TABLE-->         
+    <table aura:id = "AssetTable" class="fixedheight slds-table slds-table_bordered slds-table_cell-buffer slds-table_col-bordered slds-max-medium-table_stacked-horizontal"> 
+        
+        
+        <thead>
+            <tr class="slds-text-title_caps">
+                <th scope="row">
+                    <div class="slds-truncate" title="Component Name">Component Name</div>
+                </th>
+                <th scope="row">
+                    <div class="slds-truncate" title="Part Number">Part Number</div>
+                </th>
+                <th scope="row">
+                    <div class="slds-truncate" title="Serial Number">Serial Number</div>
+                </th>
+                
+                
+                
+                <th scope="row">
+                    <div class="slds-truncate" title="S/W version">S/W version</div>
+                </th>
+                
+                <th scope="row">
+                    <div class="slds-truncate" title="H/W version">H/W version</div>
+                </th>
+                
+                <th scope="row">
+                    <div class="slds-truncate" title="Action">Action</div>
+                </th>
+            </tr>
+        </thead>   
+        <tbody>
+            <aura:iteration items="{!v.assetDeleteWrapperList}" var="con" indexVar="userIndex">
+                <tr>
+                    <td scope="row">
+                        <div class="slds-truncate" title="{!con.componentName}">{!con.componentName}</div>
+                    </td>
+                    <td scope="row">
+                        <div class="slds-truncate" title="{!con.partNumber}">{!con.partNumber}</div>
+                    </td>
+                    <td scope="row">
+                        <div class="slds-truncate" title="{!con.serialNumber}">{!con.serialNumber}</div>
+                    </td>
+                    
+                    
+                    <td scope="row">
+                        <div class="slds-truncate" title="{!con.hwVersion}">{!con.swVersion}</div>
+                    </td>
+                    <td scope="row">
+                        <div class="slds-truncate" title="{!con.swVersion}">{!con.hwVersion}</div>
+                    </td>
+                    <td scope="row slds-cell-shrink">
+                        <div class="slds-form-element">
+                            <label class="slds-checkbox_toggle slds-grid">
+                                <ui:inputCheckbox change="{!c.removeItem}" value="{!con.isSelected}" text="{!con.Id}"/>
+                                <span id="toggle-desc" class="slds-checkbox_faux_container" aria-live="assertive">
+                                    <span class="slds-checkbox_faux"></span>
+                                    <span class="slds-checkbox_on">Cancel</span>
+                                    <span class="slds-checkbox_off">Uninstall</span>
+                                </span>
+                            </label>
+                        </div>
+                    </td>
+                </tr>
+            </aura:iteration>
+            <!--Iterate the child Component for display Table rows 
+               with pass the List Item Index for track the Every child Component 
+               and pass each List -->
+            
+            <aura:iteration items="{!v.wrapperList}" var="item" indexVar="index">
+                
+                <tr class="{! v.showError? 'slds-theme_warning':'slds-text-title_caps slds-p-around_none'}">
+                    <c:PTC_AssetRowItem componentNamesPickValues = "{!v.componentNames}"  parentRecordId = "{!v.recordId}"  wrapperInstance="{!item}" rowIndex="{!index}" />
+                </tr>
+                
+            </aura:iteration>
+            
+        </tbody>
+    </table>
+    <br/>
+    <!--Save Button which is call Install Assets js function on click -->
+    
+    <button aura:id = "Update" class="slds-button slds-button_brand slds-float_right" onclick="{!c.installAssets}" >Update Assets</button>
+    <!-- Non Confirming Modal -->
+    <c:PTC_AlertModal isOpen = "{!v.openModal}" assetList ="{!v.nonConformingList}"/>
+</aura:component>

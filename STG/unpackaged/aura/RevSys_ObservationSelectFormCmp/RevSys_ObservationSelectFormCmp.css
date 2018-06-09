@@ -1,0 +1,39 @@
+.THIS .test-form-box {
+    min-height: 5rem;
+    word-wrap: break-word;
+}
+
+.THIS .test-form-box:hover {
+    border-color: #f9f9fa;
+    background-color: #f9f9fa;
+    box-shadow: -2px 3px 4px rgba(0,0,0,0.17);
+    color: black;
+    cursor: pointer;
+}
+
+.THIS .test-form-selected {
+    color: white;
+    border-color: #1589ee;
+    background-color: #1589ee;
+}
+
+.THIS .test-form-selected:hover {
+    color: white !important;
+    border-color: #5eb4ff !important;
+    background-color: #5eb4ff !important;
+}
+
+.THIS .detail-tab {
+    margin-bottom: 0;
+    margin-left: 0;
+    margin-right: 0.5;
+    border-color: white;
+    background-color: rgba(176, 177, 171, 1);
+    font-size: 1rem;
+    line-height: 1.875rem;
+}
+
+.THIS .selected-tab {
+    border-color: rgba(0, 68, 135, 1.0);
+    background-color: rgba(0, 68, 135, 1.0);
+}

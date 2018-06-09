@@ -1,0 +1,315 @@
+<aura:component controller="RevSys_Obs_RecordDetailCtrl">
+    <aura:attribute name="obsFieldLabelMap" type="Map" access="public" />
+    <aura:attribute name="obsRequiredFieldMap" type="Map" access="public" />
+    <aura:attribute name="obsTemplate" type="Observation__c" access="public" />
+    
+    <aura:attribute name="picklistMap" type="Map" default="{}" access="public" />
+    <aura:attribute name="picklistMapRegionState" type="Map" default="{}" access="public" />
+    
+    <aura:attribute name="selectedEmpList" type="SearchTabularItemWrapper[]" access="public" />
+    <aura:attribute name="selectedEmpIdSet" type="String" default="" access="public" />
+    <aura:attribute name="selectionState" type="Integer" access="public" />
+    <aura:attribute name="cmpState" type="Integer" access="public" />
+    <aura:attribute name="empFieldLabels" type="String[]" access="public" />
+    <aura:attribute name="deptCraftMap" type="Map" access="public" />
+    <aura:attribute name="allCraftDeptMap" type="Map" access="public" />
+    <aura:attribute name="selectedRecordType" type="RecordType" access="public" />
+    
+    <aura:handler name="fetchSearchItems" event="c:EIS_Audit_UpdateObjectEvent" action="{! c.handleFetchSearchItemsEvent }"/>
+    <aura:handler name="searchItemSelected" event="c:EIS_Audit_UpdateObjectEvent" action="{! c.handleSearchItemSelectedEvent }"/>
+    
+    <aura:registerEvent name="toggleLightningSpinner" type="c:RevSys_GeneralPurposeEvt" />
+    
+    <aura:handler name="performSearch" event="c:RevSys_GeneralPurposeEvt" action="{! c.handlePerformSearch }"/>
+    
+    <aura:method name="allEmployeeSearch" action="{! c.handleAllEmployeeSearch }" />
+    
+    <aura:if isTrue="{! equals(v.selectionState, v.cmpState) }">
+        <div class="slds-size_1-of-1 slds-p-around_medium">
+            <!--
+            <aura:if isTrue="{! notequals(v.selectedRecordType.Name, $Label.c.RevSys_Observation_RT_Label_Test_1872) }">
+            	<div class="slds-size_1-of-1 slds-text-title_caps slds-align_absolute-center slds-p-top_medium" style="font-size:1.5rem;">Select Employee</div>
+            </aura:if>-->
+            <c:Search_TabularResultCmp aura:id="search-employee-cmp" label="Employee Search" selectedItemIdSet="{! v.selectedEmpIdSet }"
+                                       selectedList="{! v.selectedEmpList }" fieldLabels="{! v.empFieldLabels }"
+                                       selectedItemsTitle="Selected Employees" modalTitle="Employee Search Results"  
+                                       isMultiSelect="{! equals(v.selectedRecordType.Name, $Label.c.RevSys_Observation_RT_Label_Test_1872) }" />
+        </div>
+        
+        <div class="slds-grid slds-wrap">
+            <aura:if isTrue="{! notequals(v.selectedRecordType.Name, $Label.c.RevSys_Observation_RT_Label_Test_1872) }">
+                <div class="slds-size_1-of-3 slds-p-around_medium">
+                    <ui:inputDate aura:id="Date__c" label="{! v.obsFieldLabelMap.date__c }" displayDatePicker="true" required="{! v.obsRequiredFieldMap.Date__c }"
+                                  value="{! v.obsTemplate.Date__c }" blur="{! c.updateObsTemplateFields }" format="MM/dd/yyyy"/>
+                </div>
+                <div class="slds-size_1-of-3 slds-p-around_medium slds-clearfix">
+                    <lightning:select aura:id="TimeHH__c" class="slds-float_left" 
+                                      value="{! v.obsTemplate.TimeHH__c }" label="Hour"
+                                      disabled="{! empty(v.picklistMap.TimeHH__c) }"
+                                      required="{! v.obsRequiredFieldMap.TimeHH__c }"
+                                      onblur="{! c.updateObsTemplateFields }">
+                        <aura:iteration var="timeHour" items="{! v.picklistMap.TimeHH__c }">
+                            <option value="{! timeHour }">{! timeHour }</option>
+                        </aura:iteration>
+                    </lightning:select>
+                    <lightning:select aura:id="TimeMM__c" class="slds-float_left slds-p-left_medium" 
+                                      value="{! v.obsTemplate.TimeMM__c  }" label="Minute"
+                                      disabled="{! empty(v.picklistMap.TimeMM__c ) }"
+                                      required="{! v.obsRequiredFieldMap.TimeMM__c }"
+                                      onblur="{! c.updateObsTemplateFields }">
+                        <aura:iteration var="timeMinute" items="{! v.picklistMap.TimeMM__c }">
+                            <option value="{! timeMinute }">{! timeMinute }</option>
+                        </aura:iteration>
+                    </lightning:select>
+                </div>
+                <div class="slds-size_1-of-3 slds-p-around_medium">
+                </div>
+            </aura:if>
+        	<!-- Test 1875 and Test 1877 -->
+            <aura:if isTrue="{! or(equals(v.selectedRecordType.Name, $Label.c.RevSys_Observation_RT_Label_Test_1875), equals(v.selectedRecordType.Name, $Label.c.RevSys_Observation_RT_Label_Test_1877)) }">
+                
+                <div class="slds-size_1-of-3 slds-p-around_medium">
+                    <label class="lookup-label">{! v.obsFieldLabelMap.operatedfromcode__c }</label>
+                    <c:EIS_TypeaheadSearch aura:id="OperatedFromCode__c" isExpanded="true" 
+                                           selectedItemLabel="{! v.obsTemplate.OperatedFromCode__r.Name }" />
+                    <!--
+                        <ui:inputText aura:id="OperatedFromCode__c"
+                                      value="{! v.obsTemplate.OperatedFromCode__c }" 
+                                      required="{! v.obsRequiredFieldMap.OperatedFromCode__c }"
+                                      label="{! v.obsFieldLabelMap.operatedfromcode__c }"  
+                                      blur="{! c.updateObsTemplateFields }"/>-->
+                </div>
+                <div class="slds-size_1-of-3 slds-p-around_medium">
+                    <ui:inputText aura:id="OperatedFromText__c"
+                                  value="{! v.obsTemplate.OperatedFromText__c }" 
+                                  label="{! v.obsFieldLabelMap.operatedfromtext__c }" 
+                                  blur="{! c.updateObsTemplateFields }"/>
+                </div>
+                <div class="slds-size_1-of-3 slds-p-around_medium"/>
+                <div class="slds-size_1-of-3 slds-p-around_medium">
+                    <label class="lookup-label">{! v.obsFieldLabelMap.operatedtocode__c }</label>
+                    <c:EIS_TypeaheadSearch aura:id="OperatedToCode__c" isExpanded="true" 
+                                           selectedItemLabel="{! v.obsTemplate.OperatedToCode__r.Name }" />
+                    <!-- <ui:inputText aura:id="OperatedToCode__c"
+                                      value="{! v.obsTemplate.OperatedToCode__c }" 
+                                      required="{! v.obsRequiredFieldMap.OperatedToCode__c }"
+                                      label="{! v.obsFieldLabelMap.operatedtocode__c }"  blur="{! c.updateObsTemplateFields }"/>-->
+                </div>
+                <div class="slds-size_1-of-3 slds-p-around_medium">
+                    <ui:inputText aura:id="OperatedToText__c"
+                                  value="{! v.obsTemplate.OperatedToText__c }" 
+                                  label="{! v.obsFieldLabelMap.operatedtotext__c }" blur="{! c.updateObsTemplateFields }"/>
+                </div>
+                <div class="slds-size_1-of-3 slds-p-around_medium"/>
+                <div class="slds-size_1-of-3 slds-p-around_medium">
+                    <aura:if isTrue="{! v.obsRequiredFieldMap.Train__c }"><span class="required">*</span></aura:if>
+                    <label class="lookup-label">{! v.obsFieldLabelMap.train__c }</label>
+                    <c:EIS_TypeaheadSearch aura:id="Train__c" isExpanded="true" 
+                                           selectedItemLabel="{! v.obsTemplate.Train__r.Name }" />
+                    <!--
+                        <ui:inputText aura:id="Train__c"
+                                      value="{! v.obsTemplate.Train__c }" 
+                                      required="{! v.obsRequiredFieldMap.Train__c }"
+                                      label="{! v.obsFieldLabelMap.train__c }" blur="{! c.updateObsTemplateFields }"/>-->
+                </div>
+                <div class="slds-size_1-of-3 slds-p-around_medium">
+                    <ui:inputText aura:id="EngineNumber__c"
+                                  value="{! v.obsTemplate.EngineNumber__c }" maxlength="15"
+                                  required="{! v.obsRequiredFieldMap.EngineNumber__c }"
+                                  label="{! v.obsFieldLabelMap.enginenumber__c }" blur="{! c.updateObsTemplateFields }"/>
+                </div>
+                <div class="slds-size_1-of-3 slds-p-around_medium">
+                    <ui:inputNumber aura:id="NumberOfEngines__c"
+                                    value="{! v.obsTemplate.NumberOfEngines__c }" maxlength="7"
+                                    required="{! v.obsRequiredFieldMap.NumberOfEngines__c }"
+                                    label="{! v.obsFieldLabelMap.numberofengines__c }" blur="{! c.updateObsTemplateFields }"/>
+                </div>
+                <div class="slds-size_1-of-3 slds-p-around_medium">
+                    <ui:inputNumber aura:id="NumberOfCars__c"
+                                    value="{! v.obsTemplate.NumberOfCars__c }" maxlength="7"
+                                    required="{! v.obsRequiredFieldMap.NumberOfCars__c }"
+                                    label="{! v.obsFieldLabelMap.numberofcars__c }" blur="{! c.updateObsTemplateFields }"/>
+                </div>
+                <div class="slds-size_1-of-3 slds-p-around_medium">
+                    <ui:inputSelect aura:id="InitialQualification__c"
+                                    value="{! v.obsTemplate.InitialQualification__c }" label="{! v.obsFieldLabelMap.initialqualification__c }"
+                                    disabled="{! empty(v.picklistMap.InitialQualification__c) }"
+                                    required="{! v.obsRequiredFieldMap.InitialQualification__c }"
+                                    change="{! c.updateObsTemplateFields }">
+                        <ui:inputSelectOption label="{! $Label.c.Default_Picklist_Value_None }" text="" value="true"/>
+                        <aura:iteration var="initQual" items="{! v.picklistMap.InitialQualification__c }">
+                            <ui:inputSelectOption label="{! initQual }" text="{! initQual }"/>
+                        </aura:iteration>
+                    </ui:inputSelect>
+                </div>
+                <div class="slds-size_1-of-3 slds-p-around_medium"/>
+                <!--
+                    <div class="slds-size_1-of-2 slds-p-around_medium">
+                        <ui:inputTextArea aura:id="Comments__c"
+                                          value="{! v.obsTemplate.Comments__c }" maxlength="1500"
+                                          label="{! v.obsFieldLabelMap.comments__c }"
+                                          required="{! v.obsRequiredFieldMap.Comments__c }"/>
+                    </div>
+                    <div class="slds-size_1-of-2 slds-p-around_medium">
+                        <ui:inputTextArea aura:id="NeedsImprovement__c"
+                                          value="{! v.obsTemplate.NeedsImprovement__c }" maxlength="1500"
+                                          label="{! v.obsFieldLabelMap.needsimprovement__c }"
+                                          required="{! v.obsRequiredFieldMap.NeedsImprovement__c }"/>
+                    </div> -->
+                
+            </aura:if>
+            <!-- Test 1876 -->
+            <aura:if isTrue="{! equals(v.selectedRecordType.Name, $Label.c.RevSys_Observation_RT_Label_Test_1876) }">
+                <!--
+                    <div class="slds-size_1-of-3 slds-p-around_medium">
+                        <ui:inputCheckBox aura:id="OnTheJobTraining__c"
+                                          value="{! v.obsTemplate.IsOnJobTraining__c }" 
+                                          required="{! v.obsRequiredFieldMap.IsOnJobTraining__c }"
+                                          label="{! v.obsFieldLabelMap.isonjobtraining__c }" blur="{! c.updateObsTemplateFields }"/>
+                    </div>
+                    <div class="slds-size_1-of-3 slds-p-around_medium">
+                        <ui:inputSelect aura:id="Method__c"
+                                        value="{! v.obsTemplate.Method__c }" label="{! v.obsFieldLabelMap.method__c }"
+                                        disabled="{! empty(v.picklistMap.Method__c) }"
+                                        required="{! v.obsTemplate.IsOnJobTraining__c }"
+                                        change="{! c.updateObsTemplateFields }">
+                            <ui:inputSelectOption label="{! $Label.c.Default_Picklist_Value_None }" text="" value="true"/>
+                            <aura:iteration var="method" items="{! v.picklistMap.Method__c }">
+                                <ui:inputSelectOption label="{! method }" text="{! method }"/>
+                            </aura:iteration>
+                        </ui:inputSelect>
+                    </div>
+                    <div class="slds-size_1-of-3 slds-p-around_medium"/>
+                  -->
+                <div class="slds-size_1-of-3 slds-p-around_medium">
+                    <label class="lookup-label">Evaluated From</label>
+                    <c:EIS_TypeaheadSearch aura:id="OperatedFromCode__c" isExpanded="true" 
+                                           selectedItemLabel="{! v.obsTemplate.OperatedFromCode__r.Name }" />
+                </div>
+                <div class="slds-size_1-of-3 slds-p-around_medium">
+                    <ui:inputText aura:id="OperatedFromText__c"
+                                  value="{! v.obsTemplate.OperatedFromText__c }" 
+                                  label="Evaluated From Description" 
+                                  blur="{! c.updateObsTemplateFields }"/>
+                </div>
+                <div class="slds-size_1-of-3 slds-p-around_medium"/>
+                <div class="slds-size_1-of-3 slds-p-around_medium">
+                    <label class="lookup-label">Evaluated To</label>
+                    <c:EIS_TypeaheadSearch aura:id="OperatedToCode__c" isExpanded="true" 
+                                           selectedItemLabel="{! v.obsTemplate.OperatedToCode__r.Name }" />
+                </div>
+                <div class="slds-size_1-of-3 slds-p-around_medium">
+                    <ui:inputText aura:id="OperatedToText__c"
+                                  value="{! v.obsTemplate.OperatedToText__c }" 
+                                  label="Evaluated To Description" blur="{! c.updateObsTemplateFields }"/>
+                </div>
+                <div class="slds-size_1-of-3 slds-p-around_medium"/>
+                <div class="slds-size_1-of-3 slds-p-around_medium">
+                    <label class="lookup-label">{! v.obsFieldLabelMap.train__c }</label>
+                    <c:EIS_TypeaheadSearch aura:id="Train__c" isExpanded="true" 
+                                           selectedItemLabel="{! v.obsTemplate.Train__r.Name }" />
+                </div>
+                <div class="slds-size_1-of-3 slds-p-around_medium">
+                    <ui:inputText aura:id="EngineNumber__c"
+                                  value="{! v.obsTemplate.EngineNumber__c }" maxlength="15"
+                                  required="{! v.obsRequiredFieldMap.EngineNumber__c }"
+                                  label="{! v.obsFieldLabelMap.enginenumber__c }" blur="{! c.updateObsTemplateFields }"/>
+                </div>
+                <div class="slds-size_1-of-3 slds-p-around_medium">
+                    <ui:inputNumber aura:id="NumberOfEngines__c"
+                                    value="{! v.obsTemplate.NumberOfEngines__c }" maxlength="7"
+                                    required="{! v.obsRequiredFieldMap.NumberOfEngines__c }"
+                                    label="{! v.obsFieldLabelMap.numberofengines__c }" blur="{! c.updateObsTemplateFields }"/>
+                </div>
+                <div class="slds-size_1-of-3 slds-p-around_medium">
+                    <ui:inputNumber aura:id="NumberOfCars__c"
+                                    value="{! v.obsTemplate.NumberOfCars__c }" maxlength="7"
+                                    required="{! v.obsRequiredFieldMap.NumberOfCars__c }"
+                                    label="{! v.obsFieldLabelMap.numberofcars__c }" blur="{! c.updateObsTemplateFields }"/>
+                </div>
+                <div class="slds-size_1-of-3 slds-p-around_medium"/>
+                <div class="slds-size_1-of-3 slds-p-around_medium"/>
+                <!--
+                    <div class="slds-size_1-of-2 slds-p-around_medium">
+                        <ui:inputTextArea aura:id="Comments__c"
+                                          value="{! v.obsTemplate.Comments__c }" maxlength="1500"
+                                          label="{! v.obsFieldLabelMap.comments__c }"
+                                          required="{! v.obsRequiredFieldMap.Comments__c }"/>
+                    </div>
+                    
+                    <div class="slds-size_1-of-2 slds-p-around_medium">
+                        <ui:inputTextArea aura:id="NeedsImprovement__c"
+                                          value="{! v.obsTemplate.NeedsImprovement__c }" maxlength="1500"
+                                          label="{! v.obsFieldLabelMap.needsimprovement__c }"
+                                          required="{! v.obsRequiredFieldMap.NeedsImprovement__c }"/>
+                    </div>
+                    -->
+            </aura:if>
+            <!-- Test 1878 -->
+            <aura:if isTrue="{! equals(v.selectedRecordType.Name, $Label.c.RevSys_Observation_RT_Label_Test_1878) }">
+                <!--
+                    <div class="slds-size_1-of-3 slds-p-around_medium">
+                        <label class="lookup-label">Primary Reporting Location </label>
+                        <c:EIS_TypeaheadSearch aura:id="OperatedFromCode__c" isExpanded="true" 
+                                            selectedItemLabel="{! v.obsTemplate.OperatedFromCode__r.Name }" />
+                    </div>
+                    <div class="slds-size_1-of-3 slds-p-around_medium">
+                        <ui:inputText aura:id="OperatedFromText__c"
+                                      value="{! v.obsTemplate.OperatedFromText__c }" 
+                                      label="Primary Reporting Location Description" 
+                                      blur="{! c.updateObsTemplateFields }"/>
+                    </div>
+
+                    <div class="slds-size_1-of-3 slds-p-around_medium"/>
+                  -->
+                <div class="slds-size_1-of-3 slds-p-around_medium">
+                    <ui:inputSelect aura:id="Position__c"
+                                    value="{! v.obsTemplate.Position__c }" label="{! v.obsFieldLabelMap.position__c }"
+                                    disabled="true"
+                                    required="{! v.obsRequiredFieldMap.Position__c }"
+                                    change="{! c.updateObsTemplateFields }">
+                        <ui:inputSelectOption label="{! $Label.c.Default_Picklist_Value_None }"  text="" value="true"/>
+                        <aura:iteration var="position" items="{! v.picklistMap.Position__c }">
+                            <ui:inputSelectOption label="{! position }" text="{! position }"/>
+                        </aura:iteration>
+                    </ui:inputSelect>
+                </div>
+                <div class="slds-size_1-of-3 slds-p-around_medium">
+                    <ui:inputSelect aura:id="SectionTower__c"
+                                    value="{! v.obsTemplate.SectionTower__c }" label="{! v.obsFieldLabelMap.sectiontower__c }"
+                                    disabled="{! empty(v.picklistMap.SectionTower__c) }"
+                                    required="{! v.obsRequiredFieldMap.SectionTower__c }"
+                                    change="{! c.updateObsTemplateFields }">
+                        <ui:inputSelectOption label="{! $Label.c.Default_Picklist_Value_None }" text="" value="true"/>
+                        <aura:iteration var="secpower" items="{! v.picklistMap.SectionTower__c }">
+                            <ui:inputSelectOption label="{! secpower }" text="{! secpower }"/>
+                        </aura:iteration>
+                    </ui:inputSelect>
+                </div>
+                <div class="slds-size_1-of-3 slds-p-around_medium">
+                    <ui:inputNumber aura:id="NumberOfDaysPosted__c"
+                                    value="{! v.obsTemplate.NumberOfDaysPosted__c }" maxlength="7"
+                                    required="{! v.obsRequiredFieldMap.NumberOfDaysPosted__c }"
+                                    label="{! v.obsFieldLabelMap.numberofdaysposted__c }" blur="{! c.updateObsTemplateFields }"/>
+                </div>
+                <div class="slds-size_1-of-3 slds-p-around_medium"/>
+                <div class="slds-size_1-of-3 slds-p-around_medium"/>
+                <!--
+                    <div class="slds-size_1-of-2 slds-p-around_medium">
+                        <ui:inputTextArea aura:id="Comments__c"
+                                          value="{! v.obsTemplate.Comments__c }" maxlength="1500"
+                                          label="{! v.obsFieldLabelMap.comments__c }"
+                                          required="{! v.obsRequiredFieldMap.Comments__c }"/>
+                    </div>
+                    
+                    <div class="slds-size_1-of-2 slds-p-around_medium">
+                        <ui:inputTextArea aura:id="NeedsImprovement__c"
+                                          value="{! v.obsTemplate.NeedsImprovement__c }" maxlength="1500"
+                                          label="{! v.obsFieldLabelMap.needsimprovement__c }"
+                                          required="{! v.obsRequiredFieldMap.NeedsImprovement__c }"/>
+                    </div>
+                    -->
+            </aura:if>
+        </div>        
+    </aura:if>
+</aura:component>

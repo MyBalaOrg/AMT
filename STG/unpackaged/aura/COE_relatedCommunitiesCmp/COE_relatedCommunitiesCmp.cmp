@@ -1,0 +1,48 @@
+<aura:component implements="flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes" controller="COERelatedCommuitiesController" >
+    <aura:attribute name="header" type="String" default="none"/>
+    <aura:attribute name="feedItems" type="FeedItem[]" />
+    
+    <aura:attribute name="showTileHeader" type="Boolean" description="Tile header can be hidden" default="true" />
+    <aura:attribute name="headerBackgroundcolor" type="String" description="Background color of the header" default="transparent" />
+    <aura:attribute name="titleFontColor" type="String" description="Title Font Color" default="black" />
+    <aura:attribute name="titleFontSize" type="Integer" description="Title Font Size" default="14" required="true" />
+    <aura:attribute name="tileContentBackgroundColor" type="String" description="Tile Content Background color" default="transparent" />
+    <aura:attribute name="showBorder" type="Boolean" description="Controls the border" default="true" />
+    <aura:attribute name="showDivider" type="Boolean" description="Controls the divider" default="true" />
+    <aura:attribute name="borderCornerRadius" type="Integer" description="Border Corder Radius" default="0" />
+    <aura:attribute name="shadow" type="String" description="3D shadow" default="0 2px 4px 0 rgba(0,0,0,0.2)" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <div class="comp" style="{! join(' ',
+                             v.showBorder ? 'border: 1px solid #d4d4d4;' : '',
+                             not(empty(v.borderCornerRadius)) ? 'border-radius: '+v.borderCornerRadius+'px;' : '',
+                             not(empty(v.shadow)) ? 'box-shadow: '+v.shadow+';' : '') }">
+        <div class="tileHeader slds-truncate" style="{! join(' ',
+                                       v.showTileHeader ? 'display: block;' : 'display: none;',
+                                       or(empty(v.headerBackgroundcolor),v.headerBackgroundcolor == 'none') ? '' : 'background-color: '+v.headerBackgroundcolor+';',
+                                       or(empty(v.titleFontColor),v.titleFontColor == 'none') ? '' : 'color: '+v.titleFontColor+';',
+                                       'font-size: ' + v.titleFontSize + 'px;',
+                                       v.showDivider ? 'border-bottom: 1px solid #d4d4d4;' : '') }">
+            <ui:outputText value="{! not(or(empty(v.header),v.header=='none')) ? v.header : '' }"/>
+        </div>
+        
+        <div class="ask-icon" >
+            <span class="commuity-icon-container" onclick="{!c.navigateToDiscussionForumLandingPage}">
+                <!--<img class="commuity-icon" src="{! $Resource.COE_Related_Communities_Icon }"/> -->
+                <lightning:icon title="Post a Question" iconName="standard:messaging_conversation" size="medium" alternativeText="Discussion forum"/>
+            </span>
+        </div>
+        
+        <div class="body" style="{!join(' ',
+                                       or(empty(v.tileContentBackgroundColor),v.tileContentBackgroundColor == 'none') ? '' : 'background-color: '+v.tileContentBackgroundColor+';')}" >
+            <aura:iteration items="{!v.feedItems}" var="eachFeedItem" >
+                <div id="{!eachFeedItem.Id}" class="feed-item" onclick="{!c.feedItemClicked}">
+                    <!--<lightning:icon iconName="standard:messaging_conversation" size="medium" alternativeText="Discussion forum"/>
+                    &nbsp;-->
+                    {!eachFeedItem.Title}
+                </div>
+            </aura:iteration>
+        </div>
+    </div>
+</aura:component>

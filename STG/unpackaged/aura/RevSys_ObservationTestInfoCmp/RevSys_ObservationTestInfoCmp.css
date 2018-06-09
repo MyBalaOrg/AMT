@@ -1,0 +1,12 @@
+.THIS .lookup-label {
+	color: rgb(112, 110, 107);
+}
+
+.THIS .box-height {
+	line-height: 1.875rem;
+	min-height: calc(1.875rem + (1px *2));
+}
+
+.THIS .time-box {
+	width: 70px;
+}

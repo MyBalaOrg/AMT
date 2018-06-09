@@ -1,0 +1,12 @@
+<design:component>
+    <design:attribute name = "positionOfBar" label = "Bar Position" datasource="fixed,absolute,relative" description="Render the position of the notification bar"/>
+    <design:attribute name = "positionTop" label = "Position:Top in px" default="unset" description="Render the top position of the notification bar"/>
+    <design:attribute name = "positionBottom" label = "Position:Bottom in px" default="unset" description="Render the bottom position of the notification bar"/>
+    <design:attribute name = "positionRight" label = "Position:Right in px" default="unset" description="Render the right position of the notification bar"/>
+    <design:attribute name = "positionLeft" label = "Position:Left in px" default="unset" description="Render the left position of the notification bar"/>
+    <design:attribute name = "inputNotificationString" label = "Input Text" default="" description="To store the text to be displayed in the notification bar"/>
+    <design:attribute name= "fontColor" label="Font Color" description="Font color of the text e.g. #FFA500" />
+    <design:attribute name= "fontFamily" label = "Font Family" default="Arial,sans-serif" description="Font Family of the text" />
+    <design:attribute name= "fontSize" label = "Font Size" default="13" description="Font Size of the text e.g. 13" />
+    <design:attribute name= "backgroundColor" label = "Background Color" default="white" description="Background color of the bar e.g. #FFA500" />
+</design:component>

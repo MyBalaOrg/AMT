@@ -1,0 +1,24 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes" >
+
+    <aura:attribute name="selectionState" type="Integer" default="1" access="public" />
+    <aura:attribute name="selectedRecordType" type="RecordType" access="public" />
+    <aura:attribute name="recordTypeToDisplayTestNumbers" type="String" access="public" />
+    <aura:attribute name="hasEmployee" type="Boolean" access="public" default="fault"/>
+    <aura:attribute name="hasTest" type="Boolean" access="public" default="fault"/>
+
+	<aura:if isTrue="{! equals(v.selectedRecordType.Id, v.recordTypeToDisplayTestNumbers) }">
+	    <lightning:progressIndicator class="slds-p-top_medium slds-p-left_medium" currentStep="{! 'step' + v.selectionState }" type="path">
+	    	<lightning:progressStep label="Select Employees" value="step1" />
+    		<lightning:progressStep label="Select Tests" value="step2"  />
+	    	<lightning:progressStep label="Results" value="step3"  />
+	    	<lightning:progressStep label="Review &amp; Submit" value="step4" />
+		</lightning:progressIndicator>
+		<aura:set attribute="else">
+		    <lightning:progressIndicator class="slds-p-top_medium slds-p-left_medium" currentStep="{! 'step' + v.selectionState }" type="path">
+		    	<lightning:progressStep label="Select Employee" value="step1" />
+		    	<lightning:progressStep label="Result" value="step2"  />
+		    	<lightning:progressStep label="Submitted" value="step3" aura:id="finalStep"/>
+			</lightning:progressIndicator>
+		</aura:set>
+	</aura:if>
+</aura:component>

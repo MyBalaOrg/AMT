@@ -1,0 +1,311 @@
+<!--/**
+*————————————————————————————————————————————————————
+* @Name             EIS_AuditInspectionReportV2
+* @Author           Kumar Suyash
+* @Created Date     07-12-2017
+* @Used By          EIS_Onsubmit_Inspection_Notification
+*————————————————————————————————————————————————————
+* @Description
+* Used to genrate Pdf for Inspection Forms
+* 
+*————————————————————————————————————————————————————
+* @Changes
+* Akshay 01/12/2018 - Changes to fix ARSS-153
+**/-->
+<apex:page showHeader="false" applyHtmlTag="false" applyBodyTag="false" renderAs="pdf" standardController="Audit_Inspections__c" extensions="EIS_Inspection_MainCtrlReport">
+    <html>
+        <head>
+            <style>
+                
+                tr:nth-child(odd) {
+                background-color: #FF0;
+                }
+                
+                tr:nth-child(even) {
+                background-color: #F0F;
+                }
+                
+                @page {size:portrait; margin:0.2in;}
+                
+                style{border:0.1px solid light grey;}
+                th{border:0.1px solid light grey; padding: 0.5px;}
+                
+                #detail{padding: 5px;}
+                
+                @media print  
+                {
+                div{
+                page-break-inside: avoid; 
+                }
+                }
+                h1,h3{
+                text-align: center;
+                }
+                .logo{
+                float: left;
+                padding: 10px;
+                }
+                
+                .audit{
+                float: right;
+                padding: 10px;
+                }
+                tr.datacell1 {
+                background-color: #C1FF33; 
+                }
+                tr.datacell2 {
+                background-color: #33E3FF; 
+                }
+                tr.datacell3 {
+                background-color: #84B6FA; 
+                }
+                tr.datacell4 {
+                background-color: #80ffbf; 
+                }
+                tr.datacell5 {
+                background-color: #ffff80; 
+                }
+                .odd {
+                background-color: #FCF7F7;
+                }
+                
+                .even {
+                background-color: #E3DCDB;
+                }
+            </style>           
+        </head>
+        
+        <apex:form >  
+            <!--h4 style="text-align:left"> PH Code : {!Audit_Inspections__c.PH_Code__c } </h4-->  
+            <div class='audit'>
+                <apex:image id="logo" url="{!$Resource.Amtrak_App_logo}" width="200" height="100">  </apex:image>
+                <h4 style="text-align:right"> Score : {!Audit_Inspections__c.PH_Score__c } </h4>                    
+            </div>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <table style="width:100%">
+                <tr>
+                    <td style="text-align:center;font-size:20px;"><b>Amtrak Public Health </b></td>
+                </tr>
+                <tr>
+                    <td style="text-align:center;font-size:15px;"><b>AEPHIS (Amtrak Environmental/Public Health Information Systems) </b></td>
+                </tr>
+                <tr>
+                    <td style="text-align:center;font-size:15px;"><b><h4>  <u>{!Audit_Inspections__c.PH_Code__c}</u>  </h4></b></td>
+                </tr>
+                <tr>
+                    <td style="text-align:center;font-size:15px;"><b><h4>  <u>{!Audit_Inspections__c.RecordType.Name}</u>  </h4></b></td>
+                </tr>
+            </table>
+            <!--apex:detail subject="{!Audit_Inspections__c.Id}" relatedList="false" title="false" id="detail" /-->
+            
+            <apex:outputPanel rendered="{!IF(Audit_Inspections__c.RecordType.DeveloperName='Food_Car_Inspection_Form', true,false) }">
+                <apex:pageBlock >                  
+                    <table id="Color" width="100%" border="0.1px" style="border-collapse:collapse" cellpadding="1px" >
+                        <apex:repeat value="{!auditIns}" var="audInsp">                       
+                            <tr class="odd">
+                                <td width="50%"> <b>Inspector Name:</b> {!audInsp.Inspector_Name__c} </td>
+                                <td width="50%"> <b>Inspection Date/Time:</b> {!audInsp.Date_and_Time__c} </td>
+                            </tr>                   
+                            <tr class="even">
+                                <td width="50%"> <b>Food Car#:</b> {!audInsp.Food_Car_Number__c} </td> 
+                                <td width="50%">  </td>
+                            </tr> 
+                            <tr class="odd">
+                                <td width="50%"> <b>OBS Train Manager:</b> {!audInsp.OBS_Train_Manager_Name__c} </td>
+                                <td width="50%"> <b>OBS Train Manager Crew Base:</b> {!audInsp.OBS_Train_Manager_Crew_Base__c} </td>
+                            </tr> 
+                            <tr class="even">
+                                <td width="50%"> <b>LSA: </b>{!audInsp.LSA_Name__c}</td>
+                                <td width="50%"> <b>LSA Crew Base: </b>{!audInsp.LSA_Crew_Base__c} </td>
+                            </tr> 
+                            <tr class="odd">
+                                <td width="50%"> <b>Chef:</b> {!audInsp.Chef_Name__c} </td>
+                                <td width="50%"> <b>Chef Crew Base:</b> {!audInsp.Chef_Crew_Base__c} </td>
+                            </tr> 
+                            <tr class="even">
+                                <td width="50%"> <b>Pest Control Location: </b>{!audInsp.Pest_Control_Location__c} </td>
+                                <td width="50%"> <b>Pest Control Date:</b> {!audInsp.Pest_Control_Date__c} </td>
+                            </tr> 
+                            <tr class="odd">
+                                <td width="50%"> <b>Next PM Location:</b> {!audInsp.Next_PM_Location__c} </td>
+                                <td width="50%"> <b>Next PM Due Date:</b> {!audInsp.Next_PM_Due_Date__c} </td>
+                            </tr> 
+                            <tr class="even">                              
+                                <td width="50%"> <b>Inspected in Station:</b> {!audInsp.Inspected_in__c} </td>
+                                <td width="50%"> <b>Region:</b> {!audInsp.EIS_Region_Food_Ins__c} </td>
+                            </tr> 
+                            <tr class="odd">
+                                <td width="50%"> <b>Train#:</b> {!audInsp.EIS_Train__c} </td>
+                                <td width="50%"> <b>Route:</b> {!audInsp.EIS_Route__c} </td>
+                            </tr> 
+                            
+                            <tr class="even">
+                                <td width="50%"> <b>Mechanical:</b> {!audInsp.EIS_Mechanical_Food_Ins__c} </td>
+                                <td width="50%"> <b>Diner:</b> {!audInsp.EIS_End_Date__c} </td>
+                            </tr> 
+                            <tr class="odd">
+                                <td width="50%"> <b>Route/Location Inspected Start:</b> {!audInsp.Route_Location_Inspected_Start__c} </td>
+                                <td width="50%"> <b>Route/Location Inspected End:</b> {!audInsp.Route_Location_Inspected_End__c} </td>
+                            </tr> 
+                        </apex:repeat>
+                    </table>
+                </apex:pageBlock>
+            </apex:outputPanel>
+            <br/>
+            
+            <!--div style="page-break-after:always;" /-->
+            <apex:outputPanel rendered="{!IF(Audit_Inspections__c.RecordType.DeveloperName='Commissary_Inspection_Form' || Audit_Inspections__c.RecordType.DeveloperName='Vendor_Inspection_Form' || 
+                                        Audit_Inspections__c.RecordType.DeveloperName='Waterpoint_Inspection_Form', true,false) }">
+                <apex:pageBlock >                 
+                    <table id="Color" width="100%" border="0.1px" style="border-collapse:collapse" cellpadding="0px" >
+                        <apex:repeat value="{!auditIns}" var="audInsp">                       
+                            <tr class="odd">
+                                <td width="50%"> <b>Inspection Name:</b> {!audInsp.EIS_Audit_Name__c} </td>
+                                <td width="50%"> <b>Inspection Date/Time:</b> {!audInsp.Date_and_Time__c} </td>
+                            </tr>                   
+                            <tr class="even">
+                                <td width="50%"> <b>Inspector Name:</b> {!audInsp.Inspector_Name__c} </td> 
+                                <td width="50%"> <b>Facility Name:</b> {!audInsp.EIS_Site_Name_Audit_Inspection__c} </td>
+                            </tr> 
+                            <tr class="odd">
+                                <td width="50%"> <b>Employee Responsible:</b> {!audInsp.Employee_Responsible_Name__c} </td>
+                                <td width="50%"> <b>Region:</b> {!audInsp.PH_Region__c} </td>
+                            </tr> 
+                        </apex:repeat>
+                    </table>
+                </apex:pageBlock>
+            </apex:outputPanel>
+            <br/>
+            <apex:outputPanel rendered="{!IF((Audit_Inspections__c.RecordType.DeveloperName='Commissary_Inspection_Form' || 
+                                        Audit_Inspections__c.RecordType.DeveloperName='Vendor_Inspection_Form' ),true,false)}">
+                
+                <apex:pageBlock >
+                    <apex:pageblockTable value="{!refrigerationTempRecs}" var="refRecord" rowClasses="even,odd" styleClass="border-collapse:collapse" width="100%" cellpadding="0px" border="0.1px" >
+                    <apex:column headerValue="Refrigeration Temperatures:Location" value="{!refRecord.EIS_Location__c}" width="50%"/>
+                    <apex:column headerValue="Refrigeration Temperatures(°F)" width="50%" value="{!refRecord.EIS_Temperature__c}" />
+                </apex:pageblockTable>
+                    <br/>
+                </apex:pageBlock>                   
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!IF((Audit_Inspections__c.RecordType.DeveloperName='Commissary_Inspection_Form' || 
+                                        Audit_Inspections__c.RecordType.DeveloperName='Vendor_Inspection_Form' ),true,false)}">
+                
+                <apex:pageBlock >
+                    <apex:pageblockTable value="{!freezerTempRecs}" var="freezeRec" rowClasses="even,odd" styleClass="border-collapse:collapse" width="100%" cellpadding="0px" border="0.1px" >
+                    <apex:column headerValue="Freezer Temperatures:Location" value="{!freezeRec.EIS_Location__c}" width="50%"/>
+                    <apex:column headerValue="Freezer Temperatures(°F)" width="50%" value="{!freezeRec.EIS_Temperature__c}" />
+                    </apex:pageblockTable>
+                        <br/>
+                </apex:pageBlock>                   
+            </apex:outputPanel>
+            
+            <apex:outputPanel rendered="{!IF(Audit_Inspections__c.RecordType.DeveloperName='Commissary_Inspection_Form' ||
+                                        Audit_Inspections__c.RecordType.DeveloperName='Vendor_Inspection_Form',true,false)}">
+                
+                <apex:pageBlock >
+                    
+                <apex:pageblockTable value="{!handWashRecs}" var="handWashRec" rowClasses="even,odd" styleClass="border-collapse:collapse" width="100%" cellpadding="0px" border="0.1px" >
+                    <apex:column headerValue="Hand Wash Sinks:Hand Wash Type" value="{!handWashRec.EIS_Location__c}" width="50%"/>
+                    <apex:column headerValue="Hand Wash Temperature(°F)" width="50%" value="{!handWashRec.EIS_Temperature__c}" />
+                    </apex:pageblockTable>                    
+                    <br/>
+                </apex:pageBlock>                   
+            </apex:outputPanel>
+            
+            <apex:outputPanel rendered="{!IF(Audit_Inspections__c.RecordType.DeveloperName='Commissary_Inspection_Form' ||
+                                        Audit_Inspections__c.RecordType.DeveloperName='Vendor_Inspection_Form',true,false)}">
+                
+                <apex:pageBlock >
+                    <apex:pageblockTable value="{!internalTempRecs}" var="interTempRec" rowClasses="even,odd" styleClass="border-collapse:collapse" width="100%" cellpadding="0px" border="0.1px" >
+                    <apex:column headerValue="Temperatures:LOCATION TYPE" value="{!interTempRec.EIS_Temperature_Type__c}" />
+                    <apex:column headerValue="LOCATION/TRAIN #" value="{!interTempRec.EIS_Location__c}" />
+                        <apex:column headerValue="FOOD ITEM"  value="{!interTempRec.EIS_Food_Item__c}" />
+                        <apex:column headerValue="°F" value="{!interTempRec.EIS_Temperature__c}" />
+                    </apex:pageblockTable>  
+                </apex:pageBlock>                   
+            </apex:outputPanel>
+            
+            
+            <apex:outputPanel rendered="{!IF(Audit_Inspections__c.RecordType.DeveloperName='Food_Car_Inspection_Form',true,false)}">
+                <apex:pageBlock >
+                    <apex:pageblockTable value="{!Audit_Inspections__c}" var="audInsp" style="text-align:center;" rowClasses="odd,even" styleClass="style" width="100%" cellpadding="0px" border="0.1px" >
+                        <apex:column headerValue="OBS Points Missed" width="25%" value="{!audInsp.OBS_Points_Missed__c}" />
+                        <apex:column headerValue="OBS Critical Violations" width="25%" value="{!audInsp.OBS_Critical_Violations__c}" />
+                        <apex:column headerValue="Mech Points Missed" width="25%" value="{!audInsp.Mech_Points_Missed__c}" />
+                        <apex:column headerValue="Mech Critical Violations" width="25%" value="{!audInsp.Mech_Critical_Violations__c}" />
+                    </apex:pageblockTable>
+                </apex:pageBlock>               
+            </apex:outputPanel>
+            
+            
+            <apex:outputPanel rendered="{!IF(Audit_Inspections__c.RecordType.DeveloperName='Waterpoint_Inspection_Form',true,false)}">
+                <apex:pageBlock title="Hydrants Chlorine Residual">
+            <apex:pageblockTable value="{!hydrantsList}" var="hydrantRec" rowClasses="even,odd" styleClass="border-collapse:collapse" width="100%" cellpadding="0px" border="0.1px" >
+                    <apex:column headerValue="HYDRANT : LOCATION" value="{!hydrantRec.EIS_Location__c}" width="50%"/>
+                    <apex:column headerValue="{!$Label.EIS_Tracking_Unit_PPM}" width="50%" value="{!hydrantRec.EIS_Temperature__c}" />
+                    </apex:pageblockTable>                      
+                </apex:pageBlock>       
+            </apex:outputPanel>
+            
+            
+            <br/>
+            <apex:pageblock >
+                <apex:pageblockTable value="{!AllQuestions}" var="question" rowClasses="even,odd" styleClass="style" width="100%" cellpadding="0px" border="0.1px" >
+                    <apex:column style="text-align:center;" headerValue="Sr No" value="{!question.ques.Sr_No__c}" width="10%"/>
+                    <apex:column headerValue="Questions" width="70%" value="Question: {!question.ques.Question__c}" />
+                    <apex:column style="text-align:center;" headerValue="Points" width="10%" value="{!question.ques.Weightage__c}" />
+                    <apex:column headerValue="Issue" width="10%" style="vertical-align:middle;text-align:center;">
+                        <apex:outputpanel rendered="{!question.checkQues}">
+                            <img src="/img/msg_icons/error16.png"  />
+                        </apex:outputpanel>
+                    </apex:column>
+                </apex:pageblockTable>
+            </apex:pageblock> 
+            
+            <h3>
+                <u>Questions With Findings</u>
+            </h3>
+            
+            //changes made by AKSHAY for ARSS-153
+                        <apex:pageblock >                  
+                    <apex:dataTable value="{!QuestionWrapperList}" var="qwrap" rowClasses="odd,even" styleClass="style" width="100%" cellpadding="5px" border="1px" >
+                        <apex:column headerValue="Questions" width="70%" value="Question: {!qwrap.question.EIS_Question_Text__c}" />
+                        <apex:column headerValue="Points" value="{!qwrap.question.Points__c}" />
+                        <apex:column headerValue="Criticality" value="{!qwrap.question.EIS_Criticality__c}" />             
+                        <apex:column headerValue="Corrected?" value="{!qwrap.question.EIS_Corrected__c}" />
+                        <apex:column breakBefore="true" colspan="5">
+                            <apex:dataTable value="{!qwrap.FindingList}" var="find" style="padding-left: 0px;" width="100%" cellpadding="5px" border="1px">
+                                <apex:column headerValue="Finding#" value="{!find.finding.Name}" width="10%"/>
+                                <apex:column headerValue="Finding" value="{!find.finding.EIS_Description__c}"/>  
+                                 <apex:column breakBefore="true" colspan="5">
+                                 
+                                 <apex:dataTable value="{!find.CorrectiveActionList}" rowClasses="odd,even" var="ca" width="100%" cellpadding="5px" border="1px" >
+              
+                        <apex:column headerValue="Corrective Action Description" value="{!ca.EIS_Description__c}" />
+                        <apex:column headerValue="Status" value="{!ca.EIS_Status__c}" />
+                        <apex:column headerValue="Assigned To" value="{!ca.EIS_Assigned_to__c}" />                      
+                       <apex:column style="text-align:center;" headerValue="Not Started Date" value="{!ca.EIS_Date_of_Not_Started_Status__c}" />
+                    <apex:column style="text-align:center;" headerValue="In Progress Date" value="{!ca.EIS_Date_of_In_Progress_Status__c}" />
+                    <apex:column style="text-align:center;" headerValue="Corrected Date" value="{!ca.EIS_Date_of_Corrected_Status__c}" />
+                    <apex:column style="text-align:center;" headerValue="Correction Failed Date" value="{!ca.EIS_Date_of_Correction_Failed_Status__c}" />
+                    </apex:dataTable>                                 
+                                 </apex:column>
+                       </apex:dataTable>
+                           </apex:column>
+                    </apex:dataTable>                    
+                    
+                </apex:pageblock>
+            <br/>
+            <apex:pageBlock >
+                <apex:outputPanel rendered="{!IF(Audit_Inspections__c.EIS_Additional_Notes__c != Null ,true,false)}">
+                    <apex:dataTable value="{!Audit_Inspections__c}" var="aI" width="100%" cellpadding="5px" border="1px" >
+                        <apex:column headerValue="Additional General Notes" value="{!aI.EIS_Additional_Notes__c}" />
+                    </apex:dataTable>
+                </apex:outputPanel> 
+            </apex:pageBlock>    
+        </apex:form>
+    </html>
+</apex:page>

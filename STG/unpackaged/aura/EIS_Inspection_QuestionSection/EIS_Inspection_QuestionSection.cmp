@@ -1,0 +1,86 @@
+<aura:component controller="EIS_Inspection_QuestionSectionCtrl">
+    <aura:attribute name="disableFindings" type="Boolean" access="public" default="false" />
+    <aura:attribute name="disableCorrectiveActions" type="Boolean" access="public" default="false" />
+    <aura:attribute name="inspection" type="Audit_Inspections__c" access="public" />
+    <aura:attribute name="section" type="EIS_Inspection_MainCtrl.QuestionSection" access="public" />
+    <aura:attribute name="displaySection" type="Boolean" default="true" access="public" />
+    <aura:attribute name="caCountList" type="List" access="private" default="[0,0,0,0]" />
+    
+	<div class="slds-grid slds-wrap slds-grid_pull-padded">
+        <div class="slds-p-horizontal_small slds-size_1-of-1" >
+            <div class="slds-section__title">
+                <div class="slds-button slds-section__title-action" onclick="{! c.toggleDisplaySection }" >
+                    <div class="slds-size_2-of-3" >
+                        <aura:if isTrue="{! v.displaySection }">
+                            <lightning:icon class="slds-p-right_x-small" iconName="utility:chevrondown" size="xx-small"/>
+                            <aura:set attribute="else">
+                                <lightning:icon class="slds-p-right_x-small" iconName="utility:chevronup" size="xx-small"/>
+                            </aura:set>
+                        </aura:if>
+                        <span class="slds-truncate" title="{! v.section.sectionHeader }">{! v.section.sectionHeader }</span>
+                    </div>
+                    <div class="slds-size_1-of-3" >
+                        <aura:if isTrue="{! !v.displaySection }">
+                            <div class="slds-grid slds-wrap">
+                                <div class="slds-p-right_small slds-size_1-of-2" >
+                                    <aura:if isTrue="{! (v.caCountList[0] + v.caCountList[1]) > 0 }">
+                                        <div style="font-size:small;">
+                                            <span><b>{! $Label.c.EIS_Form_Section_CA_Count_Critical }:</b></span>
+                                            <aura:if isTrue="{! v.caCountList[0] > 0 }">
+                                                <span style="color:#009602;"> C-<b>{! v.caCountList[0] }</b></span>
+                                            </aura:if>
+                                            <aura:if isTrue="{! v.caCountList[1] > 0 }">
+                                                <span style="color:#cc0000;"> U-<b>{! v.caCountList[1] }</b></span>
+                                            </aura:if>
+                                        </div>
+                                    </aura:if>
+                                </div>
+                                <div class="slds-size_1-of-2" >
+                                    <aura:if isTrue="{! (v.caCountList[2] + v.caCountList[3]) > 0 }">
+                                        <div style="font-size:small;">
+                                            <span><b>{! $Label.c.EIS_Form_Section_CA_Count_Non_Critical }:</b></span>
+                                            <aura:if isTrue="{! v.caCountList[2] > 0 }">
+                                                <span style="color:#009602;"> C-<b>{! v.caCountList[2] }</b></span>
+                                            </aura:if>
+                                            <aura:if isTrue="{! v.caCountList[3] > 0 }">
+                                                <span style="color:#D67510;"> U-<b>{! v.caCountList[3] }</b></span>
+                                            </aura:if>
+                                        </div>
+                                    </aura:if>
+                                </div>
+                            </div>
+                        </aura:if>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <aura:if isTrue="{! v.displaySection }">
+            <div class="slds-p-horizontal_medium slds-size_1-of-1">
+                <div class="slds-grid slds-wrap slds-p-horizontal_small">
+                    <div class="slds-size_9-of-12">
+                        <label>{! $Label.c.EIS_Inspection_Form_Question_Header_Items }</label>
+                    </div>
+                    <div class="slds-p-horizontal_large slds-size_1-of-12 slds-text-align_center">
+                        <label>{! $Label.c.EIS_Inspection_Form_Question_Header_Points }</label>
+                    </div>
+                    <div class="slds-p-horizontal_large slds-size_2-of-12 slds-text-align_center">
+                        <label>{! $Label.c.EIS_Inspection_Form_Question_Header_Issue }</label>
+                    </div>
+                </div>
+            </div>
+            
+            <aura:iteration var="questionItem" items="{! v.section.questionList }" indexVar="qIndex">
+                <div class="slds-p-horizontal_small slds-m-bottom_xxx-small slds-size_1-of-1">
+                    <c:EIS_Inspection_Question aura:id="inspection-question"
+                                               inspection="{! v.inspection }"
+                                               question_c="{! questionItem }"
+                                               disableFindings="{! v.disableFindings }"
+                                               disableCorrectiveActions="{! v.disableCorrectiveActions }"/>
+                </div>
+            </aura:iteration>
+        </aura:if>
+        
+    </div>
+    <br/>
+</aura:component>

@@ -1,0 +1,19 @@
+<!-- headerWithNavigationLinksCmp -->
+<aura:component implements="forceCommunity:availableForAllPageTypes" access="global">
+    <div class="page-header">
+        <div class="header-image">
+            <div class = "site-logo__img"/> 
+        </div>
+        <div class="header-buttons">
+            <div class="dropdown">
+                <div class="my-profile-desk">
+                    <span class="dropbtn"><lightning:icon class="icn" iconName="utility:user" size="small"/></span>
+                </div>
+                <span class="hidden user-logo"><lightning:icon class="icn user-logo" iconName="utility:user " size="x-small"/></span>
+                <div class="dropdown-content">
+                    <a href="{!$Label.c.Portal_Logout_URL}">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</aura:component>

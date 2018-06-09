@@ -1,0 +1,47 @@
+.THIS .info-icon {
+  background-color:#003a5d;
+  border-radius:12px;
+  color:white;
+  font-weight:900;  
+  height:25px;
+  width:25px;
+  text-align:center;
+  font-family:Georgia;
+  line-height:25px;
+  text-decoration:none;
+  display:inline-block;  
+}
+
+/* Chrome, Safari, Opera */
+/* Firefox */
+/* not currently supported */
+.THIS input[type="checkbox"] {
+    -webkit-appearance: radio; 
+    -moz-appearance: radio;    
+    -ms-appearance: radio;     
+}
+
+.THIS .radio-btns button {
+    border-radius:8px;
+  	-webkit-border-radius:8px; 
+  	-moz-border-radius:8px;     
+    background:white;
+    border:1px solid #ccc;
+    height:16px;
+    width:16px;
+    display:inline-block;
+    outline:0;
+    vertical-align:middle;
+}
+
+.THIS .radio-btns button.selected-risk, .THIS .radio-btns button.selected-safe {
+    background-color:#003a5d;  
+}
+
+@media all and (max-width: 767px) {
+	.THIS .radio-btns button {
+        height:20px;
+    	width:20px;
+        border-radius:50% 50% 50% 50%;
+    }  
+}

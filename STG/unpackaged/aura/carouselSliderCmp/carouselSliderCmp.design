@@ -1,0 +1,6 @@
+<design:component label="Amtrak Carousel Slider">
+    <design:attribute name="application" label="Application" datasource="apex://CarouselPicklistController" description="Provide the name of the application to get data from" />
+    <design:attribute name="carouselSliderButtonColor" label=" Carousel Slider Button Color" description="Provide the background color for the carousel sliding buttons. By default it will use color:- #167fa6" />
+    <design:attribute name="carouselSliderButtonColorActive" label=" Carousel Slider Active Button Color" description="Provide the background color for the active carousel sliding buttons By default it will use color:- #1ca1d3" />
+	<design:attribute name="shadow" label="3D shadow" description="Control the shadow of the tile"/>
+</design:component>

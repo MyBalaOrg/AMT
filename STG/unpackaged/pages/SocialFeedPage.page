@@ -1,0 +1,18 @@
+<apex:page sidebar="false" showheader="false" >
+    <script src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    
+    <table width="100%" >
+        <tr>
+            <td>                
+                <a class="twitter-timeline" 
+                    data-chrome="nofooter,noscrollbar,noheader" 
+                    data-dnt="true" 
+                    data-width="100%"
+                    data-theme="light" 
+                    show-replies="true"
+                    href="https://twitter.com/{!$CurrentPage.parameters.twitterAccount}">
+                </a>            
+            </td>   
+        </tr>         
+     </table>   
+</apex:page>

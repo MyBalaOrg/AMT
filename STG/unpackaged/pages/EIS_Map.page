@@ -1,0 +1,223 @@
+<!--/**
+*————————————————————————————————————————————————————
+* @Name             EIS_Map
+* @Author           Kumar Suyash
+* @Created Date     08-03-2017
+* @Used By          EIS_GeoLocatorRemoter
+*————————————————————————————————————————————————————
+* @Description
+* Used to disply Map
+* 
+*————————————————————————————————————————————————————
+* @Changes
+* 
+**/-->
+<apex:page docType="html-5.0" sidebar="false" showheader="false" readOnly="True" controller="EIS_GeoLocatorRemoter">
+    <apex:stylesheet value="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"  />
+    <apex:includeScript value="https://code.jquery.com/jquery-1.9.1.js" />
+    <apex:includeScript value="https://code.jquery.com/ui/1.10.3/jquery-ui.js" />
+    <script type="text/javascript">
+    j$ = jQuery.noConflict();
+    j$(document).ready(function () {
+        var dateToday = new Date();
+        j$( "#event_start_date" ).datepicker(
+            {
+                defaultDate: "+1w",
+                changeMonth: true,
+                changeYear: true,
+                numberOfMonths: 1,
+                yearRange: "-100:+50",
+                dateFormat:"mm-dd-yy",
+                minDate: new Date(1915, 1 - 1, 1),
+                onSelect: function(selectedDate) {
+                    j$("#event_end_date").datepicker("option", "minDate", selectedDate);
+                    j$("#event_end_date").datepicker("option", "defaultDate", selectedDate);           
+                },
+                altField: "#event_start_date_alternate",
+                altFormat: "yy-mm-dd"             
+                
+            })
+        
+        j$( "#event_end_date" ).datepicker(
+            {
+                defaultDate: "+1w",
+                changeMonth: true,
+                changeYear: true,
+                numberOfMonths: 1,
+                yearRange: "-100:+50",
+                dateFormat:"mm-dd-yy",
+                minDate: new Date(1915, 1 - 1, 1),
+                
+                altField: "#event_end_date_alternate",
+                altFormat: "yy-mm-dd",             
+                
+            })
+        j$('[id$=theTable]').DataTable( {
+            "bSort" : false,
+            "bPaginate": false,
+            "bFilter": false,
+            "bInfo": false,
+            "scrollY": 200,
+            "scrollX": true
+        } )
+    });  
+    </script>    
+    
+    <head>
+        <style type="text/css">
+            html { height: 100% }
+            body { height: 100%; margin: 0; padding: 0 }
+            #map-canvas { 
+            font-family: Arial;
+            font-size:12px;
+            line-height:normal !important;
+            height:100%;
+            width:75%;
+            float:right;
+            background:transparent;
+            }
+            #geotable {
+            font-family: Arial;
+            font-size:12px;
+            line-height:normal !important;
+            height:auto;
+            width:25%;
+            float:left;
+            background:transparent;
+            }
+            div.outer { position: relative; height: 24px; }
+            div.outer img { position: absolute; right: 0; bottom: 0; }
+        </style>
+        
+        <script>
+        function callSearchMethod(){
+            //alert('hi..'+j$("#event_end_date").val());
+            searchIncident(j$( "#event_start_date" ).val(),j$("#event_end_date").val());
+            //loadSpills(j$( "#event_start_date" ).val(),j$("#event_end_date").val());
+            loadScript();
+        }
+        function callResetMethod(){
+            //alert('hi..'+j$("#event_end_date").val());
+            resetIncidents();
+            j$("#event_start_date").datepicker('setDate', null);
+            j$("#event_end_date").datepicker('setDate', null);
+            loadScript();
+        }
+        
+        //Setting up Google Map Api with GOOGLE MAP KEY
+        var GOOGLE_MAP_KEY = "{!$Label.GOOGLE_MAP_KEY}" ;
+        function loadScript() {
+            var script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = '{!$Label.Google_Map_Api}' +
+                '&key='+GOOGLE_MAP_KEY+'&callback=initialize'; //& needed
+            document.body.appendChild(script);
+        }
+        window.onload = loadScript;
+        </script>
+        <script>
+        var map;
+        //Print Method 
+        function myFunction() {
+            window.print();
+            return false; 
+        }
+        //Method used to initialize Map
+        function initialize() {
+            var mapOptions = {
+                center: new google.maps.LatLng(41.850033, -87.6500523),
+                zoom: 4
+            };
+            map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+            //alert(j$( "#event_start_date" ).val());
+            loadSpills(j$( "#event_start_date" ).val(),j$("#event_end_date").val());
+            //loadSpills(null,null);
+        }
+        //Method to load spills values into the Map
+        function loadSpills(a,b) {
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.EIS_GeoLocatorRemoter.getAllIncidents}',a,b,
+                                                      function(result, event){
+                                                          if (event.status) {
+                                                              
+                                                              for (var i=0; i<result.length; i++) {
+                                                                  var id = result[i].Id;
+                                                                  var name = result[i].EIS_Incident_Details_For_Map__c;
+                                                                  var lat = result[i].SpillLocation__Latitude__s;
+                                                                  var lng = result[i].SpillLocation__Longitude__s ;
+                                                                  addMarker(id, name, lat, lng);
+                                                              }
+                                                          } else {
+                                                              alert(event.message);
+                                                          }
+                                                      },
+                                                      {escape: true}
+                                                     );
+        }
+        //Method used to add market into Map
+        function addMarker(id, name, lat, lng) {
+            var marker = new google.maps.Marker({
+                position: new google.maps.LatLng(lat, lng),
+                map: map,
+                title: name 
+            });
+            google.maps.event.addListener(marker, 'click', function(event) {
+                window.top.location = '/' + id;
+            });
+        }
+        //Method used to focus on marker
+        function showLocation(latlng) {
+            if(latlng!=','){
+                var latLongArray = latlng.split(",");
+                var lat = parseFloat(latLongArray[0]);
+                var lng = parseFloat(latLongArray[1]);
+                map.setCenter(new google.maps.LatLng(lat, lng));
+                map.setZoom(12); 
+            }
+            
+        }
+        </script>
+    </head>
+    <body>
+        <apex:form >
+            <apex:actionFunction action="{!SearchIncidents}" name="searchIncident" reRender="Rec">
+                <apex:param name="startDatevf" value=""/>
+                <apex:param name="endDatevf" value=""/>
+            </apex:actionFunction>
+            
+            <apex:actionFunction action="{!resetSearch}" name="resetIncidents" reRender="Rec"/>
+            <table>
+                <br/><h4 style="background-color:rgb(255,255,0)"><u> Choose the Incident Date Range: </u></h4> <br/><br/>
+                <tr>
+                    <th>Start Date: <input type="text" value="{! incidentStartDate }" name="event_start_date" id="event_start_date" /></th>
+                    <th>End Date: <input type="text" name="event_end_date" id="event_end_date" /></th>
+                    <th>  <input type="button" value="Search Records" onclick="callSearchMethod()" style="background: #003E7E;color: #FFF;border: medium none;line-height: 10px;padding: 8px 10px;font-size:12px;"/></th> 
+                    <th>  <input type="button" value="Reset" onclick="callResetMethod()"  style="background: #003E7E;color: #FFF;border: medium none;line-height: 10px;padding: 8px 10px;font-size:12px;"/></th> 
+                </tr>
+                
+            </table>
+            <br/> <br/>
+            
+        </apex:form>
+        <div id="geotable">
+            <apex:pageBlock >
+                <apex:outputPanel layout="block" style="overflow:auto;width:25%px;height:720px" id="Rec" >
+                    Total records : {!IncidentList.size}  <br/><br/>
+                    <apex:pageBlockTable value="{!IncidentList}" var="record" styleClass="pageBlockTable"  rendered="{!IncidentList.size<49999}">
+                        <apex:column value="{!record.Name}" headerValue=" ID"/>
+                        <apex:column value="{!record.EIS_Site__c}"/>
+                        <apex:column headervalue="Click-View" onclick="showLocation('{!record.SpillLocation__Latitude__s},{!record.SpillLocation__Longitude__s}');">
+                            <apex:outputText rendered="{!IF(AND(record.SpillLocation__Latitude__s==null,record.SpillLocation__Longitude__s==null),false,true)}"  style=" text-decoration: underline; cursor:pointer; " value="View"/>
+                        </apex:column>
+                    </apex:pageBlockTable>
+                    
+                    <apex:pageBlockSection rendered="{!IncidentList.size>=49999}"> <apex:outputText > {!$Label.EIS_Map_Limit_on_Records} </apex:outputText> </apex:pageBlockSection>
+                </apex:outputPanel>
+            </apex:pageBlock>
+        </div> 
+        <div id="map-canvas"/>
+        <div class="outer">
+            <apex:outputLink onclick="myFunction()"><apex:image url="/img/content/contribute16.png" title="Print Page"/></apex:outputLink>
+        </div>
+        
+    </body>
+</apex:page>

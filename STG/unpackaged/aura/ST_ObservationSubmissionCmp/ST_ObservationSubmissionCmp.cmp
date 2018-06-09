@@ -1,0 +1,163 @@
+<!--
+/**
+*___________________________________________________
+*@Name: ST_ObservationSubmissionCmp
+*@Author: Max Paquin mpaquin@goaldc.com
+*@Created Date: 4/19/2017
+*@Used By: SafeTrends App
+*___________________________________________________
+*@Description:
+*
+*___________________________________________________
+*@Changes
+* MM-DD-YYY. Explanation of the change.
+**/
+-->
+<aura:component implements="force:appHostable,lightning:actionOverride" controller="ST_ObservationController">
+    
+    <!-- List of attributes -->
+    <aura:attribute name="obs" type="Observation__c" default="{ 'sobjectType': 'Observation__c',
+                                                              'Name': '',
+                                                              'Observer_ID_Process_Team__c' : '',
+                                                              'Coached_ID_Process_Team__c' : '',
+                                                              'Number_of_Workers_Observed__c' : '',
+                                                              'Date__c' : '',
+                                                              'Craft__c' : '',
+                                                              'Process__c' : '',
+                                                              'Location__c' : '',
+                                                              'Area__c' : '',
+                                                              'Shift__c' : '',
+                                                              'Overall_Comments__c' : '',
+                                                              }"/>
+    
+    <aura:attribute name="defaultLocation" type="Location__c" description="default location loaded if user has access to only 1"
+                    default="{'sobjectType': 'Location',
+                             'Name' :'',
+                             }"/>
+    
+    <aura:attribute name="defaultProcess" type="Process__c" description="contains process record for the user having just one process"/>
+    <aura:attribute name="disableLocation" type="Boolean" default="false" description="Value set if the user has access to only 1 location"/>										                    
+    <aura:attribute name="sbiList" type="SBI__c[]" default="[]" description="Contains the list of SBI records associated with a department"/>                  
+    <aura:attribute name="initialRiskSBIs" type="SBI__c[]" description="attribute used to hold the list of SBI in state 2"/>
+    <aura:attribute name="selectedRiskSBIs" type="SBI__c[]" description="attribute used to hold the list of SBI that are labeled as risk in state 3"/>
+    <aura:attribute name="selectedSafeSBIs" type="SBI__c[]" description="attribute used to hold the list of SBI that are labeled as safe in sate 2"/>
+    <aura:attribute name="processList" type="Process__c[]" description="attribute to hold the list of processes associated with a user who is part of multiple process teams"/>
+    <aura:attribute name="isSingleProcess" default="false" type="Boolean" description="True if only single process is assigned to the user"/>
+    <aura:attribute name="placeholderObserver" type="String" description="Placeholder for current User Name and FederationIdentifier"/>	
+    <aura:attribute name="dmlMessage" type="String" default="Your Observation was successfully submitted!" description=" display submit message from state 5"/>	
+    <aura:attribute name="dmlStatus" type="boolean" default="true" description="Boolean set when the observation is submitted"/>								                    
+    <aura:attribute name="isObserver" type="boolean" default="false"/>
+    <aura:attribute name="defaultAreas" type="Location__c[]" description="list of area based on location selected"/>
+    <!-- attributes used for styling -->											                    
+    <aura:attribute name="device" type="String"	default=""/>
+    <aura:attribute name="isMobile" type="Boolean" default="false"/>
+    <aura:attribute name="currentUserProcessTeam" type="Process_Team__c"/>
+    
+    <!-- attributes for navigation -->
+    <aura:attribute name="state" type="Integer" access="GLOBAL" default="0" description="Manage which screen the user is seeing"/> 
+    <aura:attribute name="percentage" type="String" default="0%" description="attribute used for the progress bar"/>
+    
+    <!--List of event handlers and publisher-->
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/> 
+    <aura:handler name="ST_ObservationSubmissionEvt" event="c:ST_ObservationSubmissionEvt" action="{!c.getVariables}"/>
+    
+    
+    <!-- form header-->
+    <header>
+        <div class="slds-grid slds-grid--align-spread">
+            <div class="slds-border--bottom slds-size--1-of-1">
+                <h1 class="slds-text-heading--large slds-m-around--medium"><strong> Amtrak | Safe Trends </strong></h1> 
+            </div>
+        </div>		
+    </header>
+    <br/><br/>
+    <!-- form header end-->
+    
+    <div class="slds-form--stacked slds-p-around--medium">
+        
+        <!--    progress bar start    -->
+        <div class="slds-container--center slds-container--medium progress-component">
+            <div class="slds-m-around--medium">
+                <div class="slds-wizard" role="navigation">
+                    <ol class="slds-wizard__list">
+                        <li class="slds-wizard__item slds-is-active">
+                            <a href="javascript:void(0);" class="slds-wizard__link">
+                                <span class="slds-wizard__marker"></span>
+                                <span class="slds-wizard__label slds-text-title--caps slds-truncate">Basic</span>
+                            </a>
+                        </li>     
+                        <li class="slds-wizard__item slds-is-active">
+                            <a href="javascript:void(0);" class="slds-wizard__link">
+                                <span class="slds-wizard__marker"></span>
+                                <span class="slds-wizard__label slds-text-title--caps slds-truncate">Findings</span>
+                            </a>
+                        </li>
+                        <li class="slds-wizard__item slds-is-active">
+                            <a href="javascript:void(0);" class="slds-wizard__link">
+                                <span class="slds-wizard__marker"></span>
+                                <span class="slds-wizard__label slds-text-title--caps slds-truncate">Descriptions</span>
+                            </a>
+                        </li>       
+                        <li class="slds-wizard__item slds-is-active">
+                            <a href="javascript:void(0);" class="slds-wizard__link">
+                                <span class="slds-wizard__marker"></span>
+                                <span class="slds-wizard__label slds-text-title--caps slds-truncate">Comments</span>
+                            </a>
+                        </li>
+                    </ol>
+                    <span class="slds-wizard__progress">
+                        <span class="slds-wizard__progress-bar" ></span>
+                        <span class="slds-progress-bar__value" style="{!'width:'+v.percentage}">
+                            <span class="slds-assistive-text">Progress: {!v.percentage}</span>
+                        </span>
+                    </span>
+                </div>	
+            </div>    
+        </div>
+        <!--    progress bar end    -->
+        
+        <!--    state 1 adn 4 start    --> 
+        <div aura:id="stateOneDiv" class="{!v.state == 1 || v.state == 4 ? '' : 'toggle'}">
+            <!-- 		state 1 component		-->
+            
+            <c:ST_ObservationCmp aura:id="ST_ObservationCmp" 
+                                 state="{!v.state}" 
+                                 processList="{!v.processList}"
+                                 isSingleProcess="{!v.isSingleProcess}"
+                                 defaultProcess="{!v.defaultProcess}"
+                                 observer="{!v.currentUserProcessTeam}"
+                                 location="{!v.defaultLocation}"
+                                 disableLocation="{!v.disableLocation}"
+                                 Areas="{!v.defaultAreas}"
+                                 isObserver="{!v.isObserver}"/>	
+        </div>
+        <!--    state 1 and 4 end    -->
+        
+        <!--    state 2  & 3 start    --> 
+        <div aura:id="stateTwoDiv" class="{!v.state == 2 || v.state == 3 ? '' : 'toggle'}" >
+            
+            <c:ST_SBICmp aura:id="ST_SBICmp" state="{!v.state}" sbiList="{!v.sbiList}"/>
+            
+        </div>
+        <!--    state 2 & 3 end    -->
+        
+        <!--    state 5 start    --> 
+        <div aura:id="stateFiveDiv" class="{!v.state == 5 ? '' : 'toggle'}">
+            <div class="slds-align--absolute-center slds-p-around--x-large">
+                <aura:if isTrue="{!v.dmlStatus}">
+                    <lightning:icon iconName="action:approval" size="large" alternativeText="Observation successfully submitted."/>
+                    <aura:set attribute="else">
+                        <lightning:icon iconName="action:close" size="large" alternativeText="Error"/>
+                    </aura:set>
+                </aura:if>
+            </div>
+            <h1 class="slds-text-heading--medium slds-m-bottom--medium slds-text-align--center"><strong>{!v.dmlMessage}</strong></h1> 
+            
+            <h1 class="slds-text-heading--medium slds-text-align--center">Return to <a href="#" onclick="{!c.goToStandardPage}">Home</a></h1>
+            <h1 class="slds-text-heading--medium slds-text-align--center">Create <a href="#" onclick="{!c.goToObservationApp}">new Observation</a></h1>
+            
+        </div>
+        <!--    state 5 end    -->
+        
+    </div>
+</aura:component>

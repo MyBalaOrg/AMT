@@ -1,0 +1,60 @@
+/**
+ * dreamforce17-theme - Generates the assets used for Peak Lightning
+ * @version 1.0.0
+ * @author 7Summits
+ *
+ * COMPILED FILE DO NOT DIRECTLY EDIT
+ */
+.THIS {
+ /* background-color: #fff; */
+ /*    background-color: #f2f6f7; */
+    background-color:transparent;
+}
+.THIS .peak-header-fixed {
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+.THIS .headerShadow-single {
+  /* Removing the border as it adds space between header and hero carousel */
+  /*border-bottom: 1px solid #ccc; */ 
+}
+.THIS .headerShadow-small {
+  border-bottom: 3px solid #ccc;
+}
+.THIS .headerShadow-medium {
+  border-bottom: 6px solid #ccc;
+}
+.THIS .headerShadow-large {
+  border-bottom: 10px solid #ccc;
+}
+.THIS .headerShadow-xl {
+  border-bottom: 20px solid #ccc;
+}
+
+/*
+.THIS .peak-body{
+    min-height: 100% !important;
+    padding: 0 0 100px !important; 
+    position: relative !important;
+}
+.THIS .peak-footer
+{
+    position: absolute !important;
+    bottom: 0 !important;
+    height: 100px !important;
+    width: 100% !important;
+}
+
+*/
+
+/* start- color change on row icon for mobile*/
+.THIS .forceCommunityGlobalNavigation .slds-button--icon-bare svg{
+    fill:#FFFFFF;
+}
+.THIS .forceCommunityGlobalNavigation .slds-button--icon-bare svg:hover {
+    fill:#FFFFFF !important; 
+}
+/* End- color change on row icon for mobile*/

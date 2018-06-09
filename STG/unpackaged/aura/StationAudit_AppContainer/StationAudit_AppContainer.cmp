@@ -1,0 +1,16 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    <aura:attribute name="parentId" type="Id"/>
+    <aura:attribute name="stationAuditType" type="String"/>
+    <aura:attribute name="showLoadImage" type="Boolean" access="public" default="false"/>
+     
+	<aura:handler name="init" value="{!this}" action="{!c.init}" /> 
+    
+    <!-- Lightning Flow Component -->
+    <lightning:flow aura:id="flowData" onstatuschange="{!c.handleStatusChange}" /> 
+    
+    <!-- File Upload Component -->
+    <aura:if isTrue="{!v.showLoadImage}"> 
+        <c:FileUpload parentId="{!v.parentId}" />
+    </aura:if>
+    
+</aura:component>

@@ -1,0 +1,104 @@
+<!--
+*@Changes
+* Lakshmi 12/26/2017 - Changes to fix ARSS-142
+-->
+<aura:component controller="EIS_Audit_ObservationCtrl">
+    <aura:attribute name="audit" type="Audit_Inspections__c" access="public" />
+    <aura:attribute name="question" type="Questions__c" access="public" />
+    <aura:attribute name="userIsAPM" type="Boolean" access="public" default="false" />
+    <aura:attribute name="disableFindings" type="Boolean" access="public" default="false" />
+    <aura:attribute name="disableCorrectiveActions" type="Boolean" access="public" default="false" />
+    <aura:attribute name="customObservation" type="EIS_Audit_BodyCtrl.Observation" access="public" />
+    <aura:attribute name="obsNum" type="Integer" access="public" default="1"/>
+    <aura:attribute name="enableEngineering" type="boolean" default="true"/>
+    <aura:attribute name="enableEnvironment" type="boolean" default="true"/>
+    <aura:attribute name="enableMaterial" type="boolean" default="true"/>
+    <aura:attribute name="enableMechanical" type="boolean" default="true"/>
+    <aura:attribute name="enableTransportation" type="boolean" default="true"/>
+    
+    <aura:registerEvent name="deleteObservation" type="c:EIS_Audit_UpdateObjectEvent"/>
+    <aura:registerEvent name="updateDepartmentScore" type="c:EIS_Audit_UpdateObjectEvent"/>
+    <aura:registerEvent name="toggleLightningSpinner" type="c:EIS_BooleanEvent" />
+    
+    <aura:handler name="init" value="this" action="{!c.doInit}"/>
+    <aura:handler name="missingFinding" event="c:EIS_BooleanEvent" action="{! c.handleMissingFindingEvent }"/>
+    <aura:handler name="deleteCorrectiveAction" event="c:EIS_Audit_UpdateObjectEvent" action="{! c.handleDeleteCorrectiveAction }"/>
+    
+	<div class="slds-grid slds-wrap slds-m-bottom_small slds-p-bottom_xx-small observation-box">
+        <div class="slds-p-horizontal_xx-small slds-size_1-of-2">
+            <div class="slds-p-horizontal_xx-small slds-p-bottom_xx-small slds-size_1-of-1">
+                <div class="slds-float_right slds-p-right_small">
+                    <ui:inputCheckbox class="slds-float_right slds-p-right_small repeat-finding" change="{! c.toggleRepeatFinding }" 
+                                      label="{! $Label.c.EIS_Form_Checkbox_Repeat_Finding }" labelClass="slds-float_left slds-p-horizontal_x-small"
+                                      disabled="{! or(v.disableFindings, !v.userIsAPM) }" value="{! v.customObservation.finding.EIS_Repeat_Finding__c }"/>
+                </div>
+                
+                <label><span class="required-field-style">* </span>{! $Label.c.EIS_Form_Label_Observation + ' ' + v.obsNum }</label>
+                <aura:if isTrue="{! and(!empty(v.customObservation.finding.Id), !v.disableFindings) }">
+                    <span class="slds-m-left_large" onclick="{! c.onclickDeleteObservation }">
+                        <c:EIS_LightningIcon iconName="utility:delete" iconSize="x-small"
+                                             cursor="pointer" hoverColor="icon-trash"/>
+                    </span>
+                </aura:if>
+                <textarea aura:id="observation-description" disabled="{! v.disableFindings }"
+                          class="slds-textarea observation-desc" placeholder="{! $Label.c.EIS_Form_Placeholder_Enter_Text }" 
+                          value="{! v.customObservation.finding.EIS_Description__c }"
+                          data-field-name="v.customObservation.finding.EIS_Description__c"
+                          data-aura-id="observation-description"
+                          onblur="{! c.updateObservationFields }" />
+                <c:EIS_ErrorMessage aura:id="observation-description-error"
+                                    message="{! $Label.c.EIS_Form_Error_Msg_Missing_Finding }"/>
+            </div>
+            <div class="slds-p-horizontal_xx-small slds-p-bottom_x-small slds-size_1-of-1">
+                <label>{! $Label.c.EIS_Form_Label_Regulatory_Citation }</label>
+                <input type="text" aura:id="regulatory-citation" disabled="{! v.disableFindings }"
+                       class="slds-input" placeholder="{! $Label.c.EIS_Form_Placeholder_Enter_Text }"
+                       value="{! v.customObservation.finding.EIS_Regulatory_Citation__c }"
+                       data-field-name="v.customObservation.finding.EIS_Regulatory_Citation__c"
+                       data-aura-id="regulatory-citation"
+                       onblur="{! c.updateObservationFields }" />
+                <c:EIS_ErrorMessage aura:id="regulatory-citation-error"
+                                    message="{! $Label.c.EIS_Form_Error_Msg_Missing_Citation }"/>
+            </div>
+            <div class="slds-p-horizontal_xx-small slds-p-bottom_x-small slds-size_1-of-1">
+                <label>{! $Label.c.EIS_Form_Label_Department_Responsible }</label>
+                <div class="slds-grid slds-wrap">
+                    <aura:iteration var="dr" items="{! v.customObservation.customDeptList }" indexVar="drIndex">
+                        <div class="slds-size_1-of-3 slds-p-horizontal_xxx-small slds-p-top_xx-small">
+                            <button class="{! 'slds-size_1-of-1 slds-button slds-button_' + (dr.selected ? 'brand' : 'neutral') }"
+                                    value="{! drIndex }" onclick="{! c.onclickDeptResponsibility }"
+                                    disabled="{!(dr.label == 'Engineering' &amp;&amp; !v.enableEngineering) || (dr.label == 'Environment' &amp;&amp; !v.enableEnvironment) || (dr.label == 'Material' &amp;&amp; !v.enableMaterial) || (dr.label == 'Mechanical' &amp;&amp; !v.enableMechanical) || (dr.label == 'Transportation' &amp;&amp; !v.enableTransportation)}">
+                                {! dr.label }
+                            </button>
+                        </div>       
+                    </aura:iteration>
+                </div>
+            </div>
+            <div class="slds-p-top_x-small slds-size_1-of-1">
+                <aura:if isTrue="{! !empty(v.customObservation.finding.Id) }">
+                    <c:EIS_FileAttchment_Wrapper parentId="{! v.customObservation.finding.Id }" 
+                                                 label="{! $Label.c.EIS_Form_Button_Attachment }" 
+                                                 disable="{! v.disableFindings }" />
+                </aura:if>
+            </div>
+        </div>
+        
+        <div class="slds-p-horizontal_xx-small slds-size_1-of-2">
+            <aura:iteration var="ca" items="{! v.customObservation.caList }" indexVar="caIndex">
+                <c:EIS_Audit_CorrectiveAction aura:id="inspection-corrective-action"
+                                              audit="{! v.audit }" question="{! v.question }" finding="{! v.customObservation.finding }"
+                                              userIsAPM="{! v.userIsAPM }" disableCorrectiveActions="{! v.disableCorrectiveActions }"
+                                              ca="{! ca }" caNum="{! caIndex + 1 }" />
+            </aura:iteration>
+            <aura:if isTrue="{! !v.disableCorrectiveActions }">
+                <div class="slds-m-top_x-small slds-align_absolute-center">
+                    <span onclick="{! c.addCorrectiveAction }">
+                        <c:EIS_LightningIcon iconName="utility:new" iconSize="small"
+                                             cursor="pointer" hoverColor="icon-brand"
+                                             label="{! $Label.c.EIS_Form_Icon_Label_Add_CA }" />
+                    </span>
+                </div>
+			</aura:if>            
+        </div>
+    </div>
+</aura:component>

@@ -1,0 +1,81 @@
+<!--
+// ****************************************************************************************************************
+// Component: SObject List Component 
+// Author:  Nathan Shinn, Deloitte Digital
+// Date:    Feb 14, 2017
+// Description: Used to render a list of records given a query or list of SObjects
+//
+// Used in: VerticalOrgChartComponent
+// Modifications: 
+// 1.00: Created     
+//
+-->
+<aura:component controller="OC_SObjectListController" 
+                implements="force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes" access="global">
+    <!-- Attributes used to initialize the component's data -->  
+	<aura:attribute name="query" type="String" description="sobject query string" 
+                    required="true" default="SELECT Name FROM Account Limit 10"/>
+    <aura:attribute name="lstSobject" type="SObject[]" />
+    <aura:attribute name="lstFieldApi" type="string[]" />
+    <aura:attribute name="lstFieldLabel" type="string[]" />
+    <aura:attribute name="supressFirstCol" type="boolean" />
+   
+    <!-- Event handlers for loading and refreshing the grid -->
+   <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+   <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
+   <aura:handler event="c:OC_RequerySObjectList" action="{!c.requery}"/>
+   <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+    
+    <!-- Timer/hour-glass icon -->
+   <center><ui:spinner aura:id="spinner"/></center>
+    
+    
+    <!-- the table contianing the data -->
+    <table id="example" 
+           class="slds-table slds-truncate slds-table--bordered slds-table--cell-buffer" 
+           cellspacing="0" width="95%"
+           style="table-layout:fixed">
+        <thead> 
+            <tr>
+               <th>Select Details </th>
+               <aura:iteration var="fldlbl" items="{!v.lstFieldLabel}" indexVar="idx">
+                   <aura:if isTrue="{! and(v.supressFirstCol==true,idx==0)}">
+                    <aura:set attribute="else">
+               			<th>{!fldlbl}</th>
+                   	</aura:set>
+                   </aura:if>
+                </aura:iteration>
+            </tr>
+        </thead>
+         <tbody>
+            <aura:iteration items="{!v.lstSobject}" var="item">
+            <tr>
+                
+                <td>
+                    <aura:if isTrue="{!item.selectorStyle != ''}">
+                    	<div class="slds-truncate" 
+                             style="{!item.selectorStyle}" 
+                             title="col"><c:OC_navigateToSObject objSobject="{!item}" 
+                                                              styleOverride="{!item.selectorStyle}"/></div>
+               		<aura:set attribute="else">
+               			<div class="slds-truncate" title="col"><c:OC_navigateToSObject objSobject="{!item}"/></div>
+               		</aura:set>
+                    </aura:if>
+                    
+               </td>
+               <aura:iteration var="fldApi" items="{!v.lstFieldApi}" indexVar="idx">
+                   <aura:if isTrue="{! and(v.supressFirstCol==true,idx==0)}">
+                   	<aura:set attribute="else">
+               			<td style="word-wrap:break-word;">
+                           <div class="slds-truncate" title="colc">
+                               <c:OC_displaySobjectFields objSobject="{!item}" fieldapi="{!fldApi}"/></div>
+                        </td>
+                   	</aura:set>
+                   </aura:if>
+                </aura:iteration>
+            </tr>
+            </aura:iteration>
+            
+        </tbody>
+    </table>
+</aura:component>

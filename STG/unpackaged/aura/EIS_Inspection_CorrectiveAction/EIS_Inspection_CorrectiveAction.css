@@ -1,0 +1,23 @@
+.THIS .has-error {
+    border-color: #c23934 !important;
+}
+
+.THIS .slds-button_brand[disabled] {
+    background-color: rgb(0, 112, 210) !important;
+    border: 1px solid rgb(0, 112, 210) !important;
+}
+
+.THIS.corrective-action-box {
+    box-shadow: -2px 3px 4px rgba(0,0,0,0.17);
+    border-radius: 1em;
+}
+
+.THIS .inputDate{
+    padding-left: 5px;
+    padding-right: 5px;
+    width: 93px;
+}
+
+.THIS #corrDate a{
+    display: none;
+}

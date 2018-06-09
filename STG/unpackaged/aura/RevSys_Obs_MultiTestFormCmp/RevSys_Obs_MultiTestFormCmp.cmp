@@ -1,0 +1,170 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes"
+                access="global" controller="RevSys_Obs_RecordDetailCtrl" >
+    <ltng:require scripts="{! $Resource.amtrak_helper_functions }" afterScriptsLoaded="{! c.scriptsLoaded }" />
+    
+    <aura:attribute name="selectedEmpList" type="SearchTabularItemWrapper[]" access="public" />
+    <aura:attribute name="selectedEmpIdSet" type="String" default="" access="public" />
+    <aura:attribute name="selectedRecordType" type="RecordType" access="public" />
+    <aura:attribute name="obsTemplate" type="Observation__c" access="public" />
+    <aura:attribute name="testEntryWrapperList" type="RevSys_TestEntryWrapper[]" access="public" />
+    <aura:attribute name="osrWrapperList" type="RevSys_OccSpecReqWrapper[]" access="public" />
+    
+    <aura:attribute name="obsFieldLabelMap" type="Map" access="public" 
+                    description="All keys in this Map are lower case version of the Observation__c field's Developer Name"/>
+    <aura:attribute name="allInfoReqFieldsMap" type="Map" access="public" />
+    <aura:attribute name="allEntryReqFieldsMap" type="Map" access="public" />
+    <aura:attribute name="scoreListMap" type="Map" access="public" />
+    <aura:attribute name="needImprovementMap" type="Map" access="public" />
+    <aura:attribute name="testQuestionMap" type="Map" access="public" />
+    <aura:attribute name="obsRecordTypes" type="RecordType[]" access="public" />
+    <aura:attribute name="selectionState" type="Integer" default="1" access="public" />
+    <aura:attribute name="recordTypeToDisplayTestNumbers" type="String" access="private" />
+    <aura:attribute name="nextButtonLabel" type="String" default="Next" access="private" />
+    <aura:attribute name="headerTitle" type="String" default="Select Form" access="public" />
+    <aura:attribute name="testCompleted" type="Boolean" default="false" access="private" />
+    
+    <aura:handler name="toggleLightningSpinner" event="c:RevSys_GeneralPurposeEvt" action="{! c.handleToggleLightningSpinner }"/>
+    <aura:handler name="saveRecord" event="c:RevSys_GeneralPurposeEvt" action="{! c.reloadTestWrapper }"/>
+    
+    <!-- added by Rajat -->
+    <aura:handler name="errorMessageOnTestEntryfor1872" event="c:RevSys_GeneralPurposeEvt" action="{! c.showErrorOnTestEntryfor1872 }"/>
+    
+    <lightning:spinner aura:id="fidget-spinner" variant="brand" size="large" class="fidget-spinner-style"/>
+    
+    <div class="slds-grid">        
+        <div class="slds-col slds-size_3-of-4 slds-p-bottom_small">
+            <div class="slds-size_1-of-1 slds-text-title_caps slds-align_absolute-center slds-p-top_medium" style="font-size:1.5rem;">{! v.headerTitle }</div>
+            <c:RevSys_Obs_SelectTestCmp aura:id="select-test-cmp" selectionState="{! v.selectionState }" cmpState="1"
+                                        obsTemplate="{! v.obsTemplate }" obsRecordTypes="{! v.obsRecordTypes }"
+                                        selectedRecordType="{! v.selectedRecordType }" />
+            
+            <c:RevSys_Obs_TestInfoCmp aura:id="test-info-cmp" selectionState="{! v.selectionState }" cmpState="2"
+                                      obsTemplate="{! v.obsTemplate }" obsFieldLabelMap="{! v.obsFieldLabelMap }" selectedRecordType="{! v.selectedRecordType }" />
+            
+            <c:RevSys_Obs_SelectTestNumberCmp aura:id="select-test-number-cmp" selectionState="{! v.selectionState }" cmpState="3"
+                                              osrWrapperList="{! v.osrWrapperList }" obsTemplate="{! v.obsTemplate }" obsFieldLabelMap="{! v.obsFieldLabelMap }" />
+            
+            <c:RevSys_Obs_SelectEmployeeCmp aura:id="select-employee-cmp" selectionState="{! v.selectionState }" cmpState="4"
+                                            selectedEmpList="{! v.selectedEmpList }" selectedEmpIdSet="{! v.selectedEmpIdSet }"
+                                            selectedRecordType="{! v.selectedRecordType }" />
+            
+            <c:RevSys_Obs_TestEntryCmp aura:id="test-entry-cmp" selectionState="{! v.selectionState }" cmpState="5" 
+                                       testEntryWrapperList="{! v.testEntryWrapperList }" obsFieldLabelMap="{! v.obsFieldLabelMap }"
+                                       selectedRecordType="{! v.selectedRecordType }" />
+            
+            <c:RevSys_Obs_TestResultCmp aura:id="test-result-cmp" selectionState="{! v.selectionState }" cmpState="6"
+                                        obsFieldLabelMap="{! v.obsFieldLabelMap }"
+                                        selectedRecordType="{! v.selectedRecordType }"/>
+        </div>
+        
+        <div class="slds-col slds-size_1-of-4">
+            <div class="slds-page-header" style="height: 100% !important;">
+                <div class="slds-p-bottom_medium">             
+                    <h1 class="slds-page-header__title slds-truncate slds-align-middle">Record Type</h1>
+                    <p class="slds-text-body_large slds-line-height_reset slds-p-left_medium">{! v.selectedRecordType.Name }</p>
+                </div>
+                <div class="slds-p-bottom_medium"> 
+                    <article class="slds-tile">
+                        <h1 class="slds-page-header__title slds-truncate slds-align-middle">Common Information</h1>
+                        <div class="slds-tile__detail slds-p-left_medium">
+                            <dl class="slds-list_horizontal slds-wrap">
+                                <aura:if isTrue="{! equals(v.selectedRecordType.Name, $Label.c.RevSys_Observation_RT_Label_Test_1872) }">
+                                    <dt class="slds-item_label slds-text-color_weak slds-truncate">{! v.obsFieldLabelMap.railroadrule__c }:</dt>
+                                    <dd class="slds-item_detail slds-truncate">{! v.obsTemplate.RailroadRule__c }</dd>
+                                    
+                                    <dt class="slds-item_label slds-text-color_weak slds-truncate">{! v.obsFieldLabelMap.regionproperty__c }:</dt>
+                                    <dd class="slds-item_detail slds-truncate">{! v.obsTemplate.RegionProperty__c }</dd>
+                                    
+                                    <dt class="slds-item_label slds-text-color_weak slds-truncate">{! v.obsFieldLabelMap.state__c }:</dt>
+                                    <dd class="slds-item_detail slds-truncate">{! v.obsTemplate.State__c }</dd>
+                                    
+                                    <dt class="slds-item_label slds-text-color_weak slds-truncate">{! v.obsFieldLabelMap.mpsg__c }:</dt>
+                                    <dd class="slds-item_detail slds-truncate">{! v.obsTemplate.MpSg__c }</dd>
+                                    
+                                    <dt class="slds-item_label slds-text-color_weak slds-truncate">{! v.obsFieldLabelMap.mpsgnumber__c }:</dt>
+                                    <dd class="slds-item_detail slds-truncate">{! v.obsTemplate.MpSgNumber__c }</dd>
+                                    
+                                    <dt class="slds-item_label slds-text-color_weak slds-truncate">{! v.obsFieldLabelMap.speed_check_method__c }:</dt>
+                                    <dd class="slds-item_detail slds-truncate">{! v.obsTemplate.Speed_Check_Method__c }</dd>
+                                    
+                                    <dt class="slds-item_label slds-text-color_weak slds-truncate">{! v.obsFieldLabelMap.speed__c }:</dt>
+                                    <dd class="slds-item_detail slds-truncate">{! v.obsTemplate.Speed__c }</dd>
+  
+                                    <aura:set attribute="else">
+                                        <!-- BEGIN non 1872 form test fields -->
+                                        <dt class="slds-item_label slds-text-color_weak slds-truncate">Date and Time:</dt>
+                                        <dd class="slds-item_detail slds-truncate">
+                                            <ui:outputDate value="{! v.obsTemplate.Date__c }"/>
+                                            {! ' ' + v.obsTemplate.TimeHH__c + ':' + v.obsTemplate.TimeMM__c }
+                                        </dd>
+                                        
+                                        <dt class="slds-item_label slds-text-color_weak slds-truncate">{! v.obsFieldLabelMap.operatedfromcode__c }:</dt>
+                                        <dd class="slds-item_detail slds-truncate">{! v.obsTemplate.OperatedFromCode__r.Name }</dd>
+                                        
+                                        <dt class="slds-item_label slds-text-color_weak slds-truncate">{! v.obsFieldLabelMap.operatedfromtext__c }:</dt>
+                                        <dd class="slds-item_detail slds-truncate">{! v.obsTemplate.OperatedFromText__c }</dd>
+                                        
+                                        <dt class="slds-item_label slds-text-color_weak slds-truncate">{! v.obsFieldLabelMap.operatedtocode__c }:</dt>
+                                        <dd class="slds-item_detail slds-truncate">{! v.obsTemplate.OperatedToCode__r.Name }</dd>
+                                        
+                                        <dt class="slds-item_label slds-text-color_weak slds-truncate">{! v.obsFieldLabelMap.operatedtotext__c }:</dt>
+                                        <dd class="slds-item_detail slds-truncate">{! v.obsTemplate.OperatedToText__c }</dd>
+                                        
+                                        <dt class="slds-item_label slds-text-color_weak slds-truncate">{! v.obsFieldLabelMap.train__c }:</dt>
+                                        <dd class="slds-item_detail slds-truncate">{! v.obsTemplate.Train__r.Name }</dd>
+                                        
+                                        <dt class="slds-item_label slds-text-color_weak slds-truncate">{! v.obsFieldLabelMap.enginenumber__c }:</dt>
+                                        <dd class="slds-item_detail slds-truncate">{! v.obsTemplate.EngineNumber__c }</dd>
+                                        
+                                        <dt class="slds-item_label slds-text-color_weak slds-truncate">{! v.obsFieldLabelMap.numberofengines__c }:</dt>
+                                        <dd class="slds-item_detail" style="word-wrap:break-word;">{! v.obsTemplate.NumberOfEngines__c }</dd>
+                                        
+                                        <dt class="slds-item_label slds-text-color_weak slds-truncate">{! v.obsFieldLabelMap.numberofcars__c }:</dt>
+                                        <dd class="slds-item_detail" style="word-wrap:break-word;">{! v.obsTemplate.NumberOfCars__c }</dd>
+                                    </aura:set>
+                                </aura:if>
+                            </dl>
+                        </div>
+                    </article>
+                </div>
+                <aura:if isTrue="{! equals(v.selectedRecordType.Name, $Label.c.RevSys_Observation_RT_Label_Test_1872) }">
+                    <div class="slds-p-bottom_medium">             
+                        <h1 class="slds-page-header__title slds-truncate slds-align-middle">Test Numbers</h1>
+                        <p class="slds-text-body_large slds-line-height_reset slds-p-left_medium">
+                            <aura:iteration var="osrWrapper" items="{! v.osrWrapperList }" indexVar="osrIndex">
+                                {! osrWrapper.selected ? osrWrapper.testNumber + '.  ' : '' }
+                            </aura:iteration>
+                        </p>
+                    </div>
+                </aura:if>
+                <div class="slds-p-bottom_medium">             
+                    <h1 class="slds-page-header__title slds-truncate slds-align-middle">Employees</h1>
+                    <p class="slds-text-body_large slds-line-height_reset slds-p-left_medium">
+                        <aura:iteration var="selectedEmp" items="{! v.selectedEmpList }" indexVar="osrIndex">
+                            {! selectedEmp.fieldValues[0] + '.  '}
+                        </aura:iteration>
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="slds-docked-form-footer ">
+            <div class="slds-size_3-of-4 slds-align_absolute-center">
+                <div class="slds-size_1-of-2 slds-p-vertical_xx-small">
+                    <button class="slds-button slds-button_brand slds-p-horizontal_xx-large slds-p-vertical_xx-small footer-btn" 
+                            disabled="{! or(lessthan(v.selectionState, 2), greaterthan(v.selectionState, 5)) }" 
+                            onclick="{! c.onclickPreviousButton }">
+                        Previous
+                    </button>
+                    <button class="slds-button slds-button_brand slds-float_right slds-p-horizontal_xx-large slds-p-vertical_xx-small footer-btn"
+                            disabled="{! v.testCompleted }" 
+                            onclick="{! c.onclickNextButton }">
+                        {! v.nextButtonLabel }
+                    </button>
+                </div>
+            </div>
+            <div class="slds-size_1-of-4"></div>
+        </div>
+        
+    </div>
+</aura:component>

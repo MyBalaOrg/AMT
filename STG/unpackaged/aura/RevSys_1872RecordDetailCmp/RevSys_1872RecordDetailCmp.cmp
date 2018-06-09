@@ -1,0 +1,69 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="RevSys_ObservationController">
+
+    <ltng:require scripts="{! $Resource.amtrak_helper_functions }" afterScriptsLoaded="{! c.scriptsLoaded }" />
+
+    <aura:attribute name="observation" type="Observation__c" access="public" default="{'sobjectType':'Observation__c'}"/>
+    <aura:attribute name="occupationSpecificReq" type="OccupationSpecificRequirement__c" access="public" default="{'sobjectType':'OccupationSpecificRequirement__c'}"/>
+    <aura:attribute name="fieldLabelMap" type="Map" access="public" />
+    <aura:attribute name="picklistMap" type="Map" default="{}" access="public"/>
+    <aura:attribute name="picklistMapRegionState" type="Map" default="{}" access="public" />
+    <aura:attribute name="picklistMapStateSubDivision" type="Map" default="{}" access="public" />
+    <aura:attribute name="requiredFieldMap" type="Map" access="public" />
+    <aura:attribute name="testEntry" type="RevSys_TestEntryWrapper" access="public" />
+    <aura:attribute name="recordType" type="RecordType" access="public" />
+    <aura:attribute name="resultRequiredFieldMap" type="Map" default="{}" access="public"/>
+    <aura:attribute name="speedCheckMethodList" type="String[]" default="[]" access="public"/>
+    <aura:attribute name="readOnlyFields" type="Object[]" access="global"/>
+    <aura:attribute name="loadDetail" type="Boolean" access="public" default="false"/>
+    <aura:attribute name="isTargetAdmin" type="Boolean" access="public" default="false"/>
+
+    <aura:handler name="fetchSearchItems" event="c:EIS_Audit_UpdateObjectEvent" action="{! c.handleFetchSearchItemsEvent }"/>
+    <aura:handler name="searchItemSelected" event="c:EIS_Audit_UpdateObjectEvent" action="{! c.handleSearchItemSelectedEvent }"/>
+    <aura:handler name="toggleLightningSpinner" event="c:RevSys_GeneralPurposeEvt" action="{! c.handleToggleLightningSpinner }"/>
+    <aura:handler name="updateEmployeeStatus" event="c:RevSys_GeneralPurposeEvt" action="{! c.handleupdateEmployeeStatus }"/>
+
+    <lightning:spinner aura:id="fidget-spinner" variant="brand" size="large" class="fidget-spinner-style"/>
+    
+    <aura:registerEvent name="toggleLightningSpinner" type="c:RevSys_GeneralPurposeEvt" />
+
+    <aura:if isTrue="{! v.loadDetail }">
+        <div class="slds-grid slds-wrap slds-m-bottom_small">
+            <div class="slds-grid slds-wrap slds-size_1-of-1 slds-p-around_small">
+                <div class="slds-size_1-of-3"></div>
+                <div class="slds-size_1-of-3 slds-grid slds-wrap">
+                    <c:RevSys_Obs_ButtonCmp non1872="{! false }" recordId="{! v.recordId }" />
+                    <c:RevSys_Obs_ButtonCmp non1872="{! false }" recordId="{! v.recordId }" showChangeTest="true" />
+                </div>
+                <div class="slds-size_1-of-3"></div>
+            </div>
+            <div class="slds-col slds-size_1-of-2">
+                <c:RevSys_ObservationEmployeeInfoCmp aura:id="obsEmployeeInfo" observation="{! v.observation }" readOnlyFields="{! v.readOnlyFields }" showSectionHeader="true" />
+            </div>
+            <div class="slds-col slds-size_1-of-2">
+                <div class="slds-section slds-is-open slds-size_1-of-1 slds-p-horizontal_x-small slds-m-bottom_small">
+                    <h3 class="slds-section__title slds-theme_shade slds-p-horizontal_small">
+                        <span clss="slds-truncate">{! v.recordType.Name } Overview</span>            
+                    </h3>
+                    <lightning:recordViewForm recordId="{! v.recordId }" objectApiName="Observation__c">
+                        <div class="slds-grid slds-wrap slds-p-horizontal_medium slds-p-top_medium slds-clearfix">
+                            <div class="slds-size_1-of-2"><lightning:outputField fieldName="TestNumber__c" /></div>
+                            <div class="slds-size_1-of-2"><lightning:outputField fieldName="TestName__c"/></div>
+                            <!--
+                            <div class="slds-col slds-size_1-of-2 slds-p-horizontal_medium slds-p-bottom_small slds-p-top_medium">
+                                <aura:if isTrue="{! v.requiredFieldMap.TestNumber__c }"><span class="required">*</span></aura:if>
+                                <label class="lookup-label">Test Number</label>
+                                <c:EIS_TypeaheadSearch aura:id="OccupationSpecificRequirement__c" isExpanded="true" 
+                                                       selectedItemLabel="{! v.testEntry.OccupationSpecificRequirement__r.Test_Number__c }" />
+                            </div>
+                            -->
+                        </div>
+                    </lightning:recordViewForm>
+                    <c:RevSys_ObservationEmployeeTestResultEntryCmp aura:id="testInfo" testEntryResult="{! v.testEntry }" fieldLabelMap="{! v.fieldLabelMap }" picklistMap="{! v.picklistMap }" requiredFieldMap="{! v.requiredFieldMap }" picklistMapRegionState="{! v.picklistMapRegionState }" showCopyButton="false" isNew="false" picklistMapStateSubDivision="{! v.picklistMapStateSubDivision }" isTargetAdmin="{! v.isTargetAdmin }" />
+                </div>
+            </div>
+        </div>
+        <div class="slds-docked-form-footer slds-align_absolute-center">
+            <ui:button label="Update Test" class="slds-button_brand" press="{! c.updateTest }" disabled="{! or(and(v.observation.SPARTN_ReadOnly__c,not(v.isTargetAdmin)), not(v.testEntry.completed)) }" />
+        </div>
+    </aura:if>
+</aura:component>

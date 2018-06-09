@@ -1,0 +1,336 @@
+<!--
+/**
+*___________________________________________________
+*@Name: ST_ObservationCmp
+*@Author: Jialin Ding
+*@Created Date: 4/20/2017
+*@Used By: SafeTrends App
+*___________________________________________________
+*@Description: Observation Component to handle obervation detail input
+*
+*___________________________________________________
+*@Changes
+* 07-27-2017. 
+**/
+-->
+<aura:component controller="ST_ObservationController">
+    <!-- List of attributes -->
+    <aura:attribute name="newObservation" type="Observation__c" description="Access observation object"
+                    default="{ 'sobjectType': 'Observation__c',
+                             'Observer_ID_Process_Team__c': '',
+                             'Process__c': '',
+                             'Coached_ID_Process_Team__c': '',
+                             'Location__c': '',
+                             'Number_of_Workers_Observed__c': '',
+                             'Area__c': '',
+                             'Date__c': '',
+                             'Department__c': '',
+                             'Shift__c': '',
+                             'Craft__c': '',
+                             'Overall_Comments__c': ''
+                             }"/>
+    <!--
+<aura:attribute name="currentUser" type="User" description="Access current user object"/>
+-->
+    <aura:attribute name="state" type="Integer" access="GLOBAL" default="1" description="Manage which screen the user is seeing"/>
+    <aura:attribute name="Areas" type="Location__c[]" description="list of area based on location selected"/>
+    <aura:attribute name="defaultProcess" type="Process__c" description="default process linked to the current user"/>
+    <aura:attribute name="defaultCraft" type="String"/>
+    <aura:attribute name="observerProcessTeamList" type="Process_Team__c[]" description="List used to hold values returned when searching for an Observer"/>
+    <aura:attribute name="observer" type="Process_Team__c" description="represent the user that is the observer"
+                    default="{'sobjectType': 'Process_Team__c',
+                             'Process__c' : '',
+                             'Name' : '',
+                             'Id': '',
+                             'Team_Member_Status__c': '',
+                             'Team_Role__c':'',
+                             'User__c':''
+                             }"/>  
+    <aura:attribute name="coachList" type="Process_Team__c[]" description="List used to hold values returned when searching for a Coach"/>
+    <aura:attribute name="coach" type="Process_Team__c" description="represent the user that is the coach"
+                    default="{'sobjectType': 'Process_Team__c',
+                             'Process__c' : '',
+                             'Name' : '',
+                             'Id': '',
+                             'Team_Member_Status__c': '',
+                             'Team_Role__c':'',
+                             'User__c':''
+                             }"/>
+    <aura:attribute name="currentUserProcessTeam" type="Process_Team__c" description="Process Teams which the user is part of"/>
+    <aura:attribute name="isObserver" type="Boolean" default="false" description="used to check if the current user is an observer for the selected process"/>
+    <aura:attribute name="locationList" type="Location__c[]" description="List used to hold values returned when searching for a Location"/>
+    <aura:attribute name="location" type="Location__c" description="represent the selected location" 
+                    default="{'sobjectType': 'Location',
+                             'Name' :'',
+                             }"/>
+    <aura:attribute name="defaultAreas" type="Location__c[]" description="contain a list of default Areas if we only have 1 location"/>
+    <aura:attribute name="processList" type="Process__c" description="List of processes related to the user"/>
+    <aura:attribute name="isSingleProcess" default="false" type="Boolean" description="True if only single process is assigned to the user"/>
+    <aura:attribute name="disableLocation" type="Boolean" default="false" description="Value set if the user has access to only 1 location"/>
+    <aura:attribute name="todaysDate" type="Date"/>
+    <aura:attribute name="emptyObserverPlaceholder" type="boolean" default="false" description="use for, make disbale placeholder" />
+    <aura:attribute name="emptyLocationPlaceholder" type="boolean" default="false" description="use for, make disbale placeholder" />
+    <aura:attribute name="selectedProcess" type="String" description="holds the selected process"/>
+    <aura:attribute name="isSingleCraft" type="Boolean" default="false"/>
+    
+    <aura:attribute name="defaultLocation" type="Location__c" description="default location loaded if user has access to only 1"
+                    default="{'sobjectType': 'Location',
+                             'Name' :'',
+                             }"/>
+    <!--attribute for dependent picklist-->
+    <aura:attribute name="objInfo" type="string" default="Observation__c" description="store object Info." />
+    <aura:attribute name="depnedentFieldMap" type="map" description="store controller(key)--> dependent(values) picklist value as a map." />
+    <aura:attribute name="isDependentDisable" type="boolean" default="true" description="use for, make disbale depandent field." />
+    
+    <!-- List of handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <aura:registerEvent name="ST_ObservationSubmissionEvt" type="c:ST_ObservationSubmissionEvt" description="Event used to pass information to ST_ObservationSubmissionCmp"/>
+    
+    <!-- Input Form using components -->
+    <div class="slds-container--large slds-container--center">
+        <!-- Input session for state 1 start -->
+        <div class="{!v.state == 1 ? 'slds-visible slds-is-expanded' : 'slds-hidden slds-is-collapsed'}">
+            <!-- Input row 1 start -->
+            <div class="slds-grid slds-wrap slds-grid--pull-padded">
+                
+                <!-- Sarang 7/27 Change the order of the divs as per the new enhancement -->  
+                <div class="slds-p-horizontal--small slds-size--1-of-2">
+                    <div class="slds-form-element slds-is-required">
+                        
+                        <aura:if isTrue="{!v.isSingleProcess}">
+                            
+                            <lightning:input aura:id="ob_process" 
+                                             label="Process"
+                                             placeholder="{!v.defaultProcess.Name}"
+                                             required="true"
+                                             messageWhenValueMissing="Process Cannot be blank."
+                                             disabled="true"
+                                             />
+                            
+                            <aura:set attribute="else">
+                                
+                                <ui:inputSelect aura:id="ob_process" label="Process"
+                                                class="slds-input"
+                                                labelClass="slds-form-element__label"
+                                                required="true"
+                                                value="{!v.selectedProcess}" 
+                                                change="{!c.onProcessChange}"
+                                                >
+                                    <ui:inputSelectOption text="" label="Choose Process"/>
+                                    <aura:iteration items="{!v.processList}" var="process">
+                                        <ui:inputSelectOption text="{!process.Id}" label="{!process.Name}"/>
+                                    </aura:iteration>
+                                </ui:inputSelect>
+                                
+                            </aura:set>
+                            
+                        </aura:if>
+                        
+                    </div>
+                </div>
+                
+                
+                <div class="slds-p-horizontal--small slds-size--1-of-2">
+                    <div class="slds-form-element slds-is-required">
+                        
+                        <ui:inputText aura:id="ob_location" label="Location"
+                                      class="slds-input"
+                                      labelClass="slds-form-element__label"
+                                      disabled="{!v.disableLocation}"
+                                      placeholder="{!v.emptyLocationPlaceholder == false ? v.location.Name : 'Search Location'}"
+                                      required="true"
+                                      keyup="{!c.findLocations}"
+                                      updateOn="keyup"
+                                      blur="{!c.emptyLocationCheck}"
+                                      focus="{!c.clearPlaceholderLocation}"/>
+                        
+                        
+                        <div aura:id="locationResultDiv" class="{!v.locationList.length != 0 ?'slds-box slds-is-absolute' : 'slds-hide'}" style="z-index:10000; background-color:white">
+                            <ul aura:id="locationResultUl" class="slds-has-dividers--top">
+                                <aura:iteration var="location" items="{!v.locationList}" indexVar="userIndex">
+                                    <a><li class="slds-item" onclick="{!c.selectLocation}" id="{!location.Id}">{!location.Name}</li></a>
+                                </aura:iteration>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Input row 1 end -->
+            <!-- Input row 2 start -->
+            <div class="slds-grid slds-wrap slds-grid--pull-padded">
+                <div class="slds-p-horizontal--small slds-size--1-of-2">
+                    <div class="slds-form-element slds-is-required">
+                        
+                        
+                        <ui:inputText aura:id="ob_observer" label="Observer"
+                                      class="slds-input"
+                                      labelClass="slds-form-element__label"
+                                      required="true"
+                                      disabled="{!v.isObserver}"
+                                      placeholder="{!v.emptyObserverPlaceholder == false ? v.observer.Name : 'Search Observer'}"
+                                      keyup="{!c.findObservers}"
+                                      updateOn="keyup"
+                                      focus="{!c.clearPlaceholderObserver}"/>
+                        
+                        <div aura:id="observerResultDiv" class="{!v.observerProcessTeamList.length != 0 ?'slds-box slds-is-absolute' : 'slds-hide'}" style="z-index:10000; background-color:white">
+                            <ul aura:id="observerResultUl" class="slds-has-dividers--top ">
+                                <aura:iteration var="processTeam" items="{!v.observerProcessTeamList}" indexVar="userIndex">
+                                    <a><li class="slds-item" onclick="{!c.selectObserver}" id="{!processTeam.Id}">{!processTeam.Name}</li></a>
+                                </aura:iteration>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="slds-p-horizontal--small slds-size--1-of-2">
+                    <ui:inputSelect aura:id="ob_area" label="Area"
+                                    class="slds-input"
+                                    labelClass="slds-form-element__label"
+                                    required="false">
+                        <ui:inputSelectOption text="" label="Choose Area"/>
+                        <aura:iteration items="{!v.Areas}" var="area">
+                            <ui:inputSelectOption text="{!area.Id}" label="{!area.Name}"/>
+                        </aura:iteration>
+                    </ui:inputSelect>
+                </div>
+                
+                
+                
+            </div>
+            <!-- Input row 2 end -->
+            <!-- Input row 3 start -->
+            <div class="slds-grid slds-wrap slds-grid--pull-padded">
+                
+                <div class="slds-p-horizontal--small slds-size--1-of-2">
+                    <div class="slds-form-element slds-is-required">
+                        <ui:inputText aura:id="ob_coach" label="Coach"
+                                      class="slds-input"
+                                      labelClass="slds-form-element__label"
+                                      placeholder="Search People"
+                                      required="false"
+                                      keyup="{!c.findCoaches}"
+                                      updateOn="keyup"/>
+                        <div aura:id="coachResultDiv" class="{!v.coachList.length != 0 ?'slds-box slds-is-absolute' : 'slds-hide'}" style="z-index:10000; background-color:white">
+                            <ul aura:id="coachesultUl" class="slds-has-dividers--top">
+                                <aura:iteration var="coach" items="{!v.coachList}" indexVar="userIndex">
+                                    <a><li class="slds-item" onclick="{!c.selectCoach}" id="{!coach.Id}">{!coach.Name}</li></a>
+                                </aura:iteration>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="slds-p-horizontal--small slds-size--1-of-2">
+                    <div class="slds-form-element slds-is-required">
+                        <ui:inputSelect aura:id="ob_department" label="Department"
+                                        class="slds-select"
+                                        labelClass="slds-form-element__label"
+                                        required="true" 
+                                        change="{!c.onControllerFieldChange}"
+                                        blur="{!c.validateDepartment}">
+                        </ui:inputSelect>
+                    </div>
+                </div>
+                
+            </div>
+            <!-- Input row 3 end -->
+            <!-- Input row 4 start -->
+            <div class="slds-grid slds-wrap slds-grid--pull-padded">                
+                <div class="slds-p-horizontal--small slds-size--1-of-2">
+                    <div class="slds-form-element slds-is-required">
+                        
+                        <ui:inputNumber aura:id="ob_numberOfWorker" label="Number of Workers Observed"
+                                        class="slds-input"
+                                        labelClass="slds-form-element__label"
+                                        placeholder="Enter Number of Workers"
+                                        required="true"
+                                        blur="{!c.validNumberCheck}"/>
+                    </div>
+                </div>
+                
+                 <div class="slds-p-horizontal--small slds-size--1-of-2">
+                                  
+                    
+                        
+                            <ui:inputSelect aura:id="ob_craft" label="Craft"
+                                            class="slds-select"
+                                            labelClass="slds-form-element__label"
+                                            required="false"
+                                            disabled="{!v.isDependentDisable}"
+                                            />
+                        
+                    
+          
+                </div>
+                
+            </div>
+            <!-- Input row 4 end -->
+            <!-- Input row 5 start -->
+            <div class="slds-grid slds-wrap slds-grid--pull-padded">
+                
+                <div class="slds-p-horizontal--small slds-size--1-of-2">
+                    <div class="slds-form-element slds-is-required">
+                        <ui:inputDate aura:id="ob_date" label="Date"
+                                      class="slds-input"
+                                      labelClass="slds-form-element__label"
+                                      displayDatePicker="true"
+                                      required="true"
+                                      format="MM/DD/YYYY"
+                                      value="{!v.todaysDate}"
+                                      blur="{!c.validateDate}"/>
+                    </div>
+                </div>
+                
+                <div class="slds-p-horizontal--small slds-size--1-of-2">
+                    <ui:inputSelect aura:id="ob_shift" label="Shift"
+                                    class="slds-select"
+                                    labelClass="slds-form-element__label"
+                                    required="false"
+                                    />
+                </div>
+                
+            </div>
+            <!-- Input row 5 end -->
+        </div>
+        <!-- Input session for state 1 end -->
+        
+        
+        <!-- Input session for state 4 Start -->
+        <div class="{!v.state == 4 ? 'slds-visible slds-is-expanded' : 'slds-hidden slds-is-collapsed'}">
+            <!--header section start-->
+            <div aura:id="overallCommentHeader">
+                <h1 class="slds-text-heading--medium"><Strong>Overall Comments</Strong></h1> 
+                <br/>
+                <p>Would you like to add additional comments for this observation?</p>
+            </div>    		       
+            <br /><br />
+            <!-- header section end-->
+            <!-- form input section start -->
+            <form class="slds-form--stacked">
+                <div class="slds-form-element__control">
+                    <ui:inputTextArea aura:id="ob_overallCmt"
+                                      class="dynamic slds-input"
+                                      labelClass="slds-form-element__label"
+                                      value="{!v.newObservation.Overall_Comments__c}"  
+                                      rows="5"
+                                      resizable="true"
+                                      />
+                </div>
+            </form>
+            <!-- form input section end -->
+        </div>
+        <!-- Input session for state 4 End -->
+        <br/><br/>
+        <!--Button section start-->
+        <lightning:layout horizontalAlign="spread">
+            <div class="{!v.state == 4 ? 'slds-visible slds-is-expanded' : 'slds-hidden slds-is-collapsed'}">
+                <lightning:button label="Back" onclick="{!c.backButtonClicked}"/>
+            </div>
+            <div class="slds-grid slds-grid--align-end">
+                <lightning:button label="Cancel" onclick="{!c.cancelButtonClicked}"/>
+                <lightning:button aura:id="nextButton" label="{!v.state == 4 ? 'Submit' : 'Next'}" variant="brand" onclick="{!c.nextButtonClicked}"/>
+            </div>
+        </lightning:layout>
+    </div>
+</aura:component>

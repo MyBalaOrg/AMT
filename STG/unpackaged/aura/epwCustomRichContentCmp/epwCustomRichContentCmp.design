@@ -1,0 +1,25 @@
+<design:component label="Custom Rich Content v2.0" >
+    <design:attribute name="showTileHeader" label="Show Tile Header" description="Show tile header?" />
+    <design:attribute name="tileHeader" label="Tile Header" description="Header of the tile" />
+    <design:attribute name="headerBackgroundcolor" label="Header Background Color" description="Background color of the header e.g. #FF00FD" />
+    
+    <design:attribute name="titleFontColor" label="Title Font Color" description="Title Font Color e.g. #FF00FD" />
+    <design:attribute name="titleFontSize" label="Title Font Size" description="Title Font Size" />
+    <design:attribute name="tileContentBackgroundColor" label="Tile Content Background color" description="Tile Content Background color" />
+    
+	<design:attribute name="application" label="Application*" description="Application from which the content is to be fetched" datasource="apex://CustomRichContentPicklistController" />
+	<design:attribute name="objectName" label="Object*" description="Object (API Name) from which the content is to be fetched"/>
+    <design:attribute name="recordType" label="Record Type*" description="Record type (Label) from which the content is to be fetched"/>
+    <design:attribute name="fieldName" label="Field*" description="Field (API Name) from which the content is to be fetched"/>
+    <!--<design:attribute name="recordId" label="ID" description="The Title of the record that will be displayed"/>-->
+    <design:attribute name="title" label="Title*" description="The Title of the record that will be displayed"/>
+    <design:attribute name="height" label="Height in px" description="Height of the component"/>
+    <design:attribute name="showBorder" label="Show border" description="Control the border's visibility"/>
+    <design:attribute name="showDivider" label="Show divider" description="Control the divider's visibility"/>
+    <design:attribute name="borderCornerRadius" label="Border Corder Radius in px" description="Control the radius of the tile border."/>
+    <design:attribute name="shadow" label="3D shadow" description="Control the shadow of the tile, ex : '0 2px 4px 0 rgba(0,0,0,0.2)'"/>
+    <design:attribute name="showLogo" label="Show Logo Image" description="Control the visibility of logo image"/>
+    <design:attribute name="imageCircle" label="Make Logo Image a Circle" description="Changes the image to a circle" />
+    <design:attribute name="tileFooter" label="Tile Footer" description="Tile Footer" />
+    <design:attribute name="tileFooterURL" label="Tile Footer URL" description="Tile Footer URL" />
+</design:component>

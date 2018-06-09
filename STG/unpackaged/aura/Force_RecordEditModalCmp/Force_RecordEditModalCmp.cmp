@@ -1,0 +1,28 @@
+<aura:component >
+    <aura:attribute name="modalTitle" type="String" access="public" />
+    <aura:attribute name="recordId" type="String" access="public" />
+    <aura:attribute name="openModal" type="Boolean" access="public" />
+    <aura:attribute name="objectName" type="String" access="public" />
+    
+    <aura:registerEvent name="saveRecord" type="c:RevSys_GeneralPurposeEvt" />
+    
+    <aura:handler name="onSaveSuccess" event="force:recordSaveSuccess" action="{! c.handleSaveSuccess }"/>
+    
+	<div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header">
+                <h2 id="header99" class="slds-text-heading_medium">{! v.modalTitle }</h2>
+            </div>
+            
+            <div class="slds-modal__content slds-p-around_medium">
+                <force:recordEdit aura:id="edit" recordId="{! v.recordId }"/>
+            </div>
+            
+            <div class="slds-modal__footer">
+                <button class="slds-button slds-button_neutral" onclick="{! c.cancel }">Cancel</button>
+                <button class="slds-button slds-button_brand" onclick="{! c.save }">Save</button>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</aura:component>

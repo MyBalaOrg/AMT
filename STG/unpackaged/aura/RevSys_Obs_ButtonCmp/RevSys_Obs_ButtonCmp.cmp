@@ -1,0 +1,58 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+                access="global" controller="RevSys_Obs_ButtonCmpController">
+	<ltng:require scripts="{! $Resource.amtrak_helper_functions }" afterScriptsLoaded="{! c.scriptsLoaded }" />
+    
+    <aura:attribute name="non1872" type="Boolean" access="public" default="false"/>
+    <aura:attribute name="loadComponent" type="boolean" default="false" access="public" />
+    <aura:attribute name="showChangeTest" type="boolean" default="false" access="public" />
+    <aura:attribute name="showTestSearch" type="boolean" default="false" access="public" />
+    <aura:attribute name="showUpdate" type="boolean" default="false" access="public" />
+    <aura:attribute name="selectedList" type="SearchTabularItemWrapper[]" access="public" />
+    <aura:attribute name="selectedItemIdSet" type="String" default="" access="public" />
+    
+    <lightning:spinner aura:id="fidget-spinner" variant="brand" size="large" class="fidget-spinner-style"/>
+    <aura:registerEvent name="updateObsTest" type="c:RevSys_GeneralPurposeEvt" />
+    <aura:registerEvent name="closeSearchModal" type="c:RevSys_GeneralPurposeEvt" />
+
+    <!--<aura:attribute name="1872Record" type="Observation__c"  description="Holds the record" />-->
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler event="force:refreshView" action="{!c.doInit}" />   
+    <aura:handler name="toggleLightningSpinner" event="c:RevSys_GeneralPurposeEvt" action="{! c.handleToggleLightningSpinner }"/>
+    <aura:handler name="performSearch" event="c:RevSys_GeneralPurposeEvt" action="{! c.handleAllTestSearch }"/>    
+    
+    <aura:if isTrue="{!v.loadComponent}">
+        <aura:if isTrue="{! not(v.showChangeTest) }" >
+            <button id="removeBtn" class="slds-button slds-button_brand slds-align_absolute-center" onclick="{!c.softDelete}">Soft Delete
+            </button>
+            <aura:set attribute="else" >
+                <button id="removeBtn" class="slds-button slds-button_brand slds-align_absolute-center" onclick="{!c.openSearchTestNumber}">Change Test Number
+                </button>
+            </aura:set>
+        </aura:if>
+
+        <aura:if isTrue="{! v.showTestSearch }" >
+            <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+                <div class="slds-modal__container">
+                    <div class="slds-modal__header">
+                        <h2 id="header99" class="slds-text-heading_medium">Change Test Number</h2>
+                    </div>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <c:Search_TabularResultCmp aura:id="search-test-cmp" label="Search Test" selectedItemIdSet="{! v.selectedItemIdSet }"                           placeholder="Test Number or Test Name"
+                                                   selectedList="{! v.selectedList }" 
+                                                   selectedItemsTitle="Select Test Number" modalTitle="Employee Search Results"  
+                                                   isMultiSelect="false" showInlineResult="true" />
+                    </div>
+                    <div class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick="{! c.closeSearchResultModal }">Close</button>
+                        <aura:if isTrue="{! v.showUpdate }">
+                            <button class="slds-button slds-button_brand" onclick="{! c.handleUpdateObservationTest }">Update</button>
+                        </aura:if>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+
+        </aura:if>       
+    </aura:if>
+</aura:component>

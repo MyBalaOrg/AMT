@@ -1,0 +1,25 @@
+<aura:component access="GLOBAL">	
+
+    <aura:attribute name="isShown" type="Boolean" default="false" />
+    <aura:attribute name="title" type="String" default="Modal Header" /> 
+    <aura:attribute name="description" type="String" default="Modal Body" /> 
+    <aura:handler event="c:showModal" action="{!c.getModalVal}"/> 
+    <aura:handler name="init" value="{!this}" action="{!c.showModal}" />
+    
+    <div class="slds">
+        <div aura:id="modal-parent" aria-hidden="true" role="dialog" class="slds-modal">
+            <div class="slds-modal__container">
+                <div class="slds-modal__header">
+                    <h2 aura:id="modal-header" class="slds-text-heading--medium">{!v.title}</h2>
+                    <div onclick="{!c.cancelModal}">
+                        <c:svgIcon svgPath="/resource/SLDS/v212/assets/icons/utility-sprite/svg/symbols.svg#close" iePngPath="/resource/SLDS/v212/assets/icons/utility/close_60.png" size="small" name="event" press="{!c.cancelModal}" class="slds-modal__close" />
+                	</div>
+                </div>
+                <div class="slds-modal__content slds-p-around--large">
+                    <p>{!v.description}</p>
+                </div>             
+            </div>
+        </div>
+        <div aura:id="modal-backdrop"  class="slds-backdrop"></div>
+    </div>
+</aura:component>

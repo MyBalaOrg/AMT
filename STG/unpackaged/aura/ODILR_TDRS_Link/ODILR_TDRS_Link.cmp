@@ -1,0 +1,4 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:hasRecordId">
+    <ui:outputURL value="{! $Label.c.ODILR_TDRS_URL }" label="{! $Label.c.ODILR_TDRS_URL_Label }"
+                  class="slds-button slds-button_neutral"/>
+</aura:component>

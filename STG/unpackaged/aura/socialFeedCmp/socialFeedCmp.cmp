@@ -1,0 +1,52 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes,flexipage:availableForAllPageTypes">    
+    <!--attributes-->
+    <aura:attribute name="title" type="String" default="none" description="" />
+    <aura:attribute name="twitterAccount" type="String" default="Amtrak" description="" />
+    <aura:attribute name="height" type="Integer" default="425" description="" />
+    
+    <aura:attribute name="showTileHeader" type="Boolean" description="Tile header can be hidden" default="true" />
+    <aura:attribute name="headerBackgroundcolor" type="String" description="Background color of the header" default="transparent" />
+    <aura:attribute name="titleFontColor" type="String" description="Title Font Color" default="black" />
+    <aura:attribute name="titleFontSize" type="Integer" description="Title Font Size" default="14" required="true" />
+    <aura:attribute name="tileContentBackgroundColor" type="String" description="Tile Content Background color" default="transparent" />
+    <aura:attribute name="showBorder" type="Boolean" description="Controls the border" default="true" />
+    <aura:attribute name="showDivider" type="Boolean" description="Controls the divider" default="true" />
+    <aura:attribute name="borderCornerRadius" type="Integer" description="Border Corder Radius" default="0" />
+    <aura:attribute name="shadow" type="String" description="3D shadow" default="0 2px 4px 0 rgba(0,0,0,0.2)" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <!--/attributes-->
+    
+    <!--<div class="outerDv slds-tile slds-border_bottom slds-border_left slds-border_right slds-border_top">-->
+    <div class="outerDv slds-tile comp" style="{! join(' ',
+                                               v.showBorder ? 'border: 1px solid #d4d4d4;' : '',
+                                               not(empty(v.borderCornerRadius)) ? 'border-radius: '+v.borderCornerRadius+'px;' : '',
+                                               not(empty(v.shadow)) ? 'box-shadow: '+v.shadow+';' : '') }">
+        <div class="header slds-truncate" style="{! join(' ',
+                                                 v.showTileHeader ? 'display: block;' : 'display: none;',
+                                                 or(empty(v.headerBackgroundcolor),v.headerBackgroundcolor == 'none') ? '' : 'background-color: '+v.headerBackgroundcolor+';',
+                                                 or(empty(v.titleFontColor),v.titleFontColor == 'none') ? '' : 'color: '+v.titleFontColor+';',
+                                                 'font-size: ' + v.titleFontSize + 'px;',
+                                                 v.showDivider ? 'border-bottom: 1px solid #d4d4d4;' : '') }">
+            
+            <div class="tileHeader slds-truncate" style="!$Browser.formFactor != 'DESKTOP' ? 'cursor: pointer;' : '' " onclick="{!$Browser.formFactor != 'DESKTOP' ? c.toggleHeader : ''}">
+               
+              <section class="slds-clearfix">
+                    <div class="slds-float--left ">
+                        <aura:if isTrue="{!$Browser.formFactor != 'DESKTOP' ? true : false}">
+                            <lightning:icon class="slds-show icn" aura:id="articleOne" iconName="utility:add" size="x-small" alternativeText="Indicates add"/>
+                            <lightning:icon class="slds-hide icn" aura:id="articleOne" iconName="utility:dash" size="x-small" alternativeText="Indicates dash"/>
+                        </aura:if>
+                    </div>
+                    <div class="slds-m-left--large slds-truncate">{! not(or(empty(v.title),v.title=='none')) ? v.title : '' }</div>
+                </section>
+            </div>
+        </div>
+        <div aura:id="compBody" style="{!join(' ',
+                                       or(empty(v.tileContentBackgroundColor),v.tileContentBackgroundColor == 'none') ? '' : 'background-color: '+v.tileContentBackgroundColor+';')}" >
+            <div align="center" style="{!'height: ' + (v.height) + 'px; margin: auto;'}">            
+                <iframe src="{!$SfdcSite.pathPrefix + '/apex/SocialFeedPage?twitterAccount=' + v.twitterAccount}" height="{!v.height}" width="100%" frameBorder="0" scrolling="0"/>    
+            </div>
+        </div>
+    </div>
+</aura:component>

@@ -1,0 +1,15 @@
+<aura:component >
+    <aura:attribute name="parentId" type="String" access="public" />
+    <aura:attribute name="label" type="String" access="public" default="Choose file ..." />
+    <aura:attribute name="disable" type="Boolean" access="public" default="false" />
+    <aura:attribute name="showComponent" type="Boolean" access="public" default="false" />
+    
+    <span onclick="{! c.toggleBooleanField }" class="slds-m-bottom_small slds-m-right_small slds-float_right">
+        <c:EIS_LightningIcon iconName="{! (v.showComponent ? 'utility:contract' : 'utility:expand') }" iconSize="x-small"
+                             cursor="pointer" hoverColor="icon-brand"
+                             label="{! (v.showComponent ? $Label.c.EIS_Form_Icon_Label_Hide_Attachment : $Label.c.EIS_Form_Icon_Label_Show_Attachment) }" />
+    </span>
+    <aura:if isTrue="{! v.showComponent }">
+        <c:EIS_FileAttachment parentId="{! v.parentId }" label="{! v.label }" disable="{! v.disable }" />
+    </aura:if>
+</aura:component>

@@ -1,0 +1,10 @@
+.THIS {
+    background-color: white;
+    border-radius: 0.5em;
+}
+
+.THIS.fidget-spinner-style {
+    position: fixed;
+    width: 100%;
+    opacity: 0.5;
+}

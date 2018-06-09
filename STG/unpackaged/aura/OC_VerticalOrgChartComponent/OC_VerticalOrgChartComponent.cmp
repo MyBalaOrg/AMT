@@ -1,0 +1,268 @@
+<!-- 
+********************************************************************************************************************************************************************************************************************************************
+*	@Name			OC_VerticalOrgChartComponent
+*	@Author			Luke Kanter, Deloitte Digital
+*	@Created Date	14th Feb 2017
+*	@Used By		OrganizationChart.app	
+*	@Controller		OC_OrgChartTopLevelApexController
+********************************************************************************************************************************************************************************************************************************************
+*	@Description	This is a lightning component which forms a top level components to display the hierarchy 
+*					of Employee Data. This component also include other components as part of the Org Chart.
+********************************************************************************************************************************************************************************************************************************************
+*	@Attribute		selectedContact		OC_OrgChartTopLevelApexController.Employee
+*	@Attribute		manager				OC_OrgChartTopLevelApexController.Employee
+*	@Attribute		listOfSubordinates	OC_OrgChartTopLevelApexController.Employee[]
+*	@Atrribute		url					String
+*	@Attribute		searchUrl			String
+*	@Attribute		searchFieldList		String
+*	@Attribute		lstFieldApi			string[]
+*	@Attribute		lstFieldLabel		string[]
+*	@Attribute		expFieldApi			string[]
+*	@Attribute		expFieldLabel		string[]
+*	@Attribute		showHierarchy		Boolean
+*	@Attribute		showCard			Boolean
+*
+*	@EventHandler	updateLookupIdEvent	OC_UpdateLookupId
+*	@EventHandler	OrgChartSelectionEvent	OC_OrgChartSelectionEvent
+********************************************************************************************************************************************************************************************************************************************
+*	@Changes
+********************************************************************************************************************************************************************************************************************************************	
+-->
+<aura:component controller="OC_OrgChartTopLevelApexController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" >
+    
+    <!--CSS FOR PRINT FUNCTION-->
+    <style>
+        @media print
+        {    
+        .no-print, .no-print *
+        {
+        display: none !important;
+        }
+        }
+    </style>
+    
+    <!--###### ATTRIBUTES ###### -->
+    <aura:attribute name="selectedEntity" type="OC_OrgChartTopLevelApexController.Employee"/>
+    <aura:attribute name="selectedContact" type="Contact"/>
+    <aura:attribute name="manager" type="OC_OrgChartTopLevelApexController.Employee"/>
+    <aura:attribute name="listOfSubordinates" type="OC_OrgChartTopLevelApexController.Employee[]"/>
+    <aura:attribute name="url" type="String"/>
+    <aura:attribute name="searchUrl" type="String"/>
+    <aura:attribute name="searchFieldList" type="String"/>
+    <aura:attribute name="lstFieldApi" type="string[]" />
+    <aura:attribute name="lstFieldLabel" type="string[]" />
+    <aura:attribute name="expFieldApi" type="string[]" />
+    <aura:attribute name="expFieldLabel" type="string[]" />
+    <aura:attribute name="showHierarchy" type="Boolean" default="true" />
+    <aura:attribute name="showCard" type="Boolean" default="true" />
+    <aura:attribute name="buttonLabel" type="string" default="Export All"/>
+    <aura:attribute name="exportALLReportURL" type="String"/>
+    <aura:attribute name="documentName" type="String"/>
+    <aura:attribute name="hasManager" type="Boolean"/>
+    <aura:attribute name="hasSubordinates" type="Boolean"/>
+    <aura:attribute name="hireDate" type="Date"/>
+    <aura:attribute name="fieldMap" type="Map" />
+    
+    <!--###### HANDLERS ###### -->
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:handler name="updateLookupIdEvent" event="c:OC_UpdateLookupId" action="{!c.handleUpdate}"/>
+    <aura:handler name="selectEvent" event="c:OC_OrgChartSelectionEvent" action="{!c.switchSelection}"/>
+    
+    <!--###### START BODY ###### -->
+    <div class="no-print slds-grid" style="padding:5px;">
+        <!--APPLICATION TITLE-->
+        <div aura:id="header" style="font-weight: bold;color: #005883;" class="slds-text-heading--large">ORGANIZATION CHART</div>
+        <!--FUNCTION AND NAVIGATION BUTTONS-->
+        <div aura:id="headerButtons" class="slds-col--bump-left">
+            
+            <!--PRINT BUTTON-->
+            <button aura:id="button" class="slds-button slds-button--neutral" onclick="{!c.printChart}" 
+                    style="background-color: #005883; border: 2px solid #005883;color: white;">Print</button>
+            
+            <button aura:id="viewJobAid" style="background-color: #005883; border: 2px solid #005883;color: white;"  onclick="{!c.downloadJobAid}"
+                    class="slds-button slds-button--neutral">View Job Aid</button>
+            
+            <!-- Sarang/Jialin 06/08/2017 - Create new export button to open a modal ENHC 3-->
+            <c:OC_Export_Subordinates selectedEmployee="{!v.selectedEntity}"/>
+            
+            
+            <!-- EXPORT ALL BUTTON -->
+            <a style="margin:5px" href="{!v.exportALLReportURL}">
+                <button style="background-color: #005883; border: 2px solid #005883;color: white;" 
+                        class="slds-button slds-button--neutral">Export All</button>
+            </a>
+            
+            <!--ADVANCED SEARCH BUTTON-->
+            <a style="margin:5px" href="{!v.searchUrl}">
+                <button style="background-color: #005883; border: 2px solid #005883;color: white;" 
+                        class="slds-button slds-button--neutral">Advanced Search</button>
+            </a>
+            <!--NAVIGATE TO INTRANET BUTTON-->
+            <a href="http://intranet.corp.nrpc/index.jsp">
+                <button style="background-color: #005883; border: 2px solid #005883;color: white;" 
+                        class="slds-button slds-button--neutral">Return to Intranet</button>
+            </a>
+        </div>
+    </div>
+    <div class="slds-grid" >
+        <div aura:id="contactCard" class="no-print slds-col slds-size--1-of-4">
+            
+            <!--START CONTACT DETAILS CARD-->
+            <article class="slds-card" style="height:100%; padding:1px;">
+                <!--SEARCH BAR-->
+                
+                <c:OC_SObjectSearch label="Search Employee" 
+                                    pluralLabel="Employees" 
+                                    sObjectAPIName="Position__P"
+                                    listIconSVGPath="standard:contact"
+                                    listIconClass="slds-icon-standard-contact"
+                                    fieldList="{!v.searchFieldList}"    
+                                    />
+                
+                <!--CARD HEADER-->
+                <div class="slds-card__header slds-grid">
+                    <header class="slds-media slds-media--center slds-has-flexi-truncate">
+                        <div class="slds-media__figure">
+                            <span class="slds-icon_container slds-icon-standard-contact" title="description of icon when needed">
+                                <lightning:icon class="icn" iconName="standard:contact" size="small" alternativeText=""/>
+                            </span>
+                        </div>
+                        <!--###### If the position is vacant display text "Vacant Position" ###### -->
+                        <aura:if isTrue="{!v.selectedEntity.isVacant == false}">
+                            <div class="slds-media__body">
+                                <h2>
+                                    <a href="javascript:void(0);" class="slds-card__header-link slds-truncate">
+                                        <span style="color : #005883;" class="slds-text-heading--small">
+                                            {!v.selectedContact.FirstName + ' ' + v.selectedContact.MiddleName + ' ' + v.selectedContact.LastName + ' ' + v.selectedContact.Suffix}
+                                        </span>
+                                    </a>
+                                </h2>
+                            </div>
+                            <aura:set attribute="else">
+                                <div class="slds-media__body">
+                                    <h2>
+                                        <a href="javascript:void(0);" class="slds-card__header-link slds-truncate">
+                                            <span style="color : #005883;" class="slds-text-heading--small">
+                                                Vacant Position
+                                            </span>
+                                        </a>
+                                    </h2>
+                                </div>
+                            </aura:set>
+                        </aura:if>
+                    </header>
+                </div>
+                
+                <!--CARD BODY AND SELECTED CONTACT FIELDS-->
+                <div class="slds-card__body">
+                    <div class="slds-grid slds-wrap ">
+                        <aura:iteration items="{!v.fieldMap}" var="field">
+                            <!--PLACEHOLDER FOR FIELD LABELS AND VALUES-->
+                        </aura:iteration>
+                        <!--START CARD FIELDS-->
+                        <div class="slds-col" style="padding:25px;">
+                            <div style="white-space: nowrap;font-weight: bold;" class="slds-text-body--regular">Position ID:&nbsp;&nbsp;</div>
+                            <ui:outputText class="slds-text-body--regular" value="{!v.selectedEntity.position.Position_ID__c}"/>
+                            <br/><br/>
+                            <div style="white-space: nowrap;font-weight: bold;" class="slds-text-body--regular">Position Title:&nbsp;&nbsp;</div>
+                            <ui:outputText class="slds-text-body--regular" value="{!v.selectedEntity.position.Position_Title__c}"/>
+                            <br/><br/>
+                            <div style="white-space: nowrap;font-weight: bold;" class="slds-text-body--regular">Position Abbrv:&nbsp;&nbsp;</div>
+                            <ui:outputText class="slds-text-body--regular" value="{!v.selectedEntity.position.Position_Abbrv__c}"/>
+                            <br/><br/>
+                            <div style="white-space: nowrap;font-weight: bold;" class="slds-text-body--regular">Job Title:&nbsp;&nbsp;</div>
+                            <ui:outputText class="slds-text-body--regular" value="{!v.selectedEntity.position.Job_Title__c}"/>
+                            <br/><br/>
+                            <div style="white-space: nowrap;font-weight: bold;" class="slds-text-body--regular">Job Abbrev:&nbsp;&nbsp;</div>
+                            <ui:outputText class="slds-text-body--regular" value="{!v.selectedEntity.position.Job_Abbrev__c}"/>
+                            <br/><br/>
+                            <div style="white-space: nowrap;font-weight: bold;" class="slds-text-body--regular">Org Unit ID:&nbsp;&nbsp;</div>
+                            <ui:outputText class="slds-text-body--regular" value="{!v.selectedEntity.position.Org_Unit_Number__c}"/>
+                            <br/><br/>
+                            <div style="white-space: nowrap;font-weight: bold;" class="slds-text-body--regular">Org Unit Name:&nbsp;&nbsp;</div>
+                            <ui:outputText class="slds-text-body--regular" value="{!v.selectedEntity.position.Organization_Unit_Name__c}"/>
+                            <br/><br/>
+                            <div style="white-space: nowrap;font-weight: bold;" class="slds-text-body--regular">Cost Center:&nbsp;&nbsp;</div>
+                            <ui:outputText class="slds-text-body--regular" value="{!v.selectedEntity.position.Cost_Center__c}"/>
+                            <br/><br/>
+                            <div style="white-space: nowrap;font-weight: bold;" class="slds-text-body--regular">Personnel Area:&nbsp;&nbsp;</div>
+                            <ui:outputText class="slds-text-body--regular" value="{!v.selectedEntity.position.Personnel_Area__c}"/>
+                            <br/><br/>
+                            <div style="white-space: nowrap;font-weight: bold;" class="slds-text-body--regular">Personnel Subarea:&nbsp;&nbsp;</div>
+                            <ui:outputText class="slds-text-body--regular" value="{!v.selectedEntity.position.Personnel_SubArea__c}"/>
+                            <br/><br/>
+                            <div style="white-space: nowrap;font-weight: bold;" class="slds-text-body--regular">Employee Group Desc:&nbsp;&nbsp;</div>
+                            <ui:outputText class="slds-text-body--regular" value="{!v.selectedEntity.position.Employee_Group_Text__c}"/>
+                            <br/><br/>
+                            <div style="white-space: nowrap;font-weight: bold;" class="slds-text-body--regular">Employee Subgroup Desc:&nbsp;&nbsp;</div>
+                            <ui:outputText class="slds-text-body--regular" value="{!v.selectedEntity.position.Employee_Subgroup_Text__c}"/>
+                            <br/><br/>
+                            <div style="white-space: nowrap;font-weight: bold;" class="slds-text-body--regular">Work Schedule:&nbsp;&nbsp;</div>
+                            <ui:outputText class="slds-text-body--regular" value="{!v.selectedContact.Work_Schedule__c}"/>
+                            <br/><br/>
+                            <div style="white-space: nowrap;font-weight: bold;" class="slds-text-body--regular">Time Admin:&nbsp;&nbsp;</div>
+                            <ui:outputText class="slds-text-body--regular" value="{!v.selectedContact.Time_Admin__c}"/>
+                            <br/><br/>
+                            <div style="white-space: nowrap;font-weight: bold;" class="slds-text-body--regular">Payroll Admin:&nbsp;&nbsp;</div>
+                            <ui:outputText class="slds-text-body--regular" value="{!v.selectedContact.Payroll_Admin__c}"/>
+                            <br/><br/>
+                            <div style="white-space: nowrap;font-weight: bold;" class="slds-text-body--regular">Org Key:&nbsp;&nbsp;</div>
+                            <ui:outputText class="slds-text-body--regular" value="{!v.selectedContact.Org_Key__c}"/>
+                            <br/><br/>
+                            <div style="white-space: nowrap;font-weight: bold;" class="slds-text-body--regular">Corp Function:&nbsp;&nbsp;</div>
+                            <ui:outputText class="slds-text-body--regular" value="{!v.selectedContact.Corp_Function__c}"/>
+                            <br/><br/>
+                            <div style="white-space: nowrap;font-weight: bold;" class="slds-text-body--regular">Hire Date:&nbsp;&nbsp;</div>
+                            <ui:outputDate class="slds-text-body--regular" value="{!v.selectedContact.Hire_Date__c}"/>  
+                        </div>
+                        <!--END CARD FIELDS-->
+                    </div>
+                </div>
+                
+                
+                <!--CARD FOOTER-->
+                <div class="slds-card__footer"/>
+            </article>
+            <!--END CONTACT DETAILS CARD-->
+        </div>
+        <div aura:id="hierarchy" class="slds-col slds-size--3-of-4">
+            <!--MANAGER AND SELECTED CONTACT TREE-->
+            <div class="slds-grid--vertical slds-align--absolute-center">
+                <!--MANAGER TREE+TILE-->
+                <div style="height:50px; width:0px; position:relative;"/>
+                
+                <aura:if isTrue="{!v.manager != null &amp;&amp; v.hasManager == true}" >                    
+                    <c:OC_SmallContactTile selectedContact="{!v.manager}" level="manager" />
+                    <div style="height:50px; width:0px; position:relative; border-left:2px solid darkgray;"/>    
+                </aura:if>
+                
+                <aura:if isTrue="{!v.manager == null &amp;&amp; v.hasManager == false}" >
+                    <div style="height:50px; width:0px; position:relative;"/>
+                </aura:if>
+                
+                <!--SELECTED CONTACT TILE-->
+                <c:OC_SmallContactTile selectedContact="{!v.selectedEntity}" level="selected" />
+                <!--SUBORDINATE TREE-->
+                <aura:if isTrue="{!v.selectedEntity.hasSubordinates == true}">
+                    <div style="height:50px; width:0px; position:relative; border-left:2px solid darkgray;"/>
+                    <div style="overflow: auto; border:2px solid darkgray; width:95%;">
+                        <!--SUBORDINATE CONTACT TILES-->        
+                        <div class="slds-grid slds-wrap slds-grid--align-space slds-p-vertical--medium">
+                            
+                            <aura:iteration items="{!v.listOfSubordinates}" var="sub">
+                                <div class="slds-p-vertical--medium">
+                                    <c:OC_SmallContactTile selectedContact="{!sub}" level="subordinate" />
+                                </div>
+                            </aura:iteration>
+                            
+                        </div>
+                    </div>
+                </aura:if>
+                
+            </div>
+            <!--SPACE AT FOOT OF PAGE BELOW BOX OF SUBORDINATES-->
+            <div style="height:40px;"/>
+        </div>
+    </div>
+    <!--END BODY-->
+</aura:component>

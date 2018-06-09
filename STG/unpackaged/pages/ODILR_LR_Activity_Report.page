@@ -1,0 +1,165 @@
+<apex:page sidebar="false" StandardController="Case" extensions="ODILR_LRActivityReportController" docType="html-5.0" renderAs="{!renderType}" showHeader="false" applyHtmlTag="false" applyBodyTag="false">
+<html>
+<head>
+            <style>
+                @page {size:potrait;}
+                
+                style{border:0.8px solid black;}
+                th{border:0.8px solid black; padding: 5px; font-size:11.8px}
+                td{font-size:11.8px;}
+                
+                #detail{padding: 5px;}
+                
+                @media print  
+                {
+                div{
+                //page-break-inside: avoid; 
+                }
+                }
+                h1,h2,h3,h5,h6{
+                text-align: center;
+                }
+                h3{
+                text-align: left;
+                }
+            
+                   
+                .logo{
+                 float: centre;
+                 padding: 5px;
+                }
+                
+                .audit{
+                 border:0.8px solid black;
+                }
+              
+                tr.datacell1 {
+                                    background-color: #C1FF33; 
+                                }
+                tr.datacell2 {
+                                    background-color: #FCE3A5; 
+                                }
+                tr.datacell3 {
+                                    background-color: #a83f43; 
+                                }
+                tr.datacell4 {
+                                    background-color: #80ffbf; 
+                                }
+                tr.datacell5 {
+                                    background-color: #ffff80; 
+                                }
+                .odd {
+                        background-color: #FCF7F7;
+                }
+
+                .even {
+                    background-color: #E3DCDB;
+                }
+
+           </style> 
+        </head>
+      
+<apex:form >
+<!-- Page Block for displaying the fields to be selected-->
+<apex:pageBlock >
+<apex:pageBlockButtons location="bottom">
+<apex:commandButton value="Find" action="{!fetchRecords}"/>
+<apex:commandButton value="Print" action="{!renderPage}" rendered="{!clicked}"/>
+</apex:pageBlockButtons>
+<apex:pageBlockSection columns="2" rendered="{!NOT(pclicked)}">
+<apex:pageBlockSectionItem >
+From Date:<apex:input type="date" value="{!fromDate}"/>
+</apex:pageBlockSectionItem>
+<apex:pageBlockSectionItem >
+End Date:<apex:input type="date" value="{!endDate}"/>
+</apex:pageBlockSectionItem>
+<apex:pageBlockSectionItem >
+LR Office:<apex:selectList value="{!selectedlrlevel}" size="1">
+<apex:selectOptions value="{!LRLevel}">
+</apex:selectOptions>
+</apex:selectList>
+</apex:pageBlockSectionItem>
+<apex:pageBlockSectionItem >
+Type:<apex:selectList value="{!selectedtype}" size="1">
+<apex:selectOptions value="{!reportType}">
+</apex:selectOptions>
+</apex:selectList>
+</apex:pageBlockSectionItem>
+<apex:pageBlockSectionItem >
+<apex:selectRadio value="{!selectedlevel}">
+<apex:selectOptions value="{!level}">
+</apex:selectOptions>
+</apex:selectRadio>
+</apex:pageBlockSectionItem>
+</apex:pageBlockSection>
+</apex:pageBlock>
+<apex:outputPanel rendered="{!pclicked}">
+<div class="logo">  
+        <h3>  <u>Report Results:</u>  </h3>                                                    
+                <table class="logo" id="Color" width="100%" border="0.1px" style="border-collapse:collapse" cellpadding="5px" >                  
+                        <tr class="odd">
+                            <td width="50%"> <b>From Date:</b> {!fromDate} </td>
+                            <td width="50%"> <b>End Date:</b> {!endDate} </td>
+                        </tr>                                              
+                        <tr class="even">
+                            <td width="50%"> <b>LR Office:</b> {!selectedlrlevel} </td>
+                            <td width="50%"> <b>Type:</b> {!selectedtype} </td>
+                        </tr> 
+                        <tr class="odd">
+                            <td width="50%"> <b>Level:</b> {!selectedlevel} </td>
+                            <td width="50%"> <b>Current Date:</b> {!currentDate} </td>
+                        </tr>        
+                </table>
+            </div>
+            <br/>
+</apex:outputPanel>
+<apex:outputPanel rendered="{!clicked}">
+<div class="logo">  
+        <h3>  <u>LR Activity Report:</u>  </h3>  
+        <br/>                                                  
+                <table class="logo" id="Color" width="100%" border="0.1px" style="border-collapse:collapse" cellpadding="5px">                  
+                        <tr class="datacell2">
+                        <th rowspan="2">Union</th>
+                        <th colspan="3">Open-Day Previous to Measurement Period</th>
+                        <th colspan="5">Activity - During Measurement Period</th>
+                        <th colspan="4">Open-Last Day of Measurement Period</th>
+                        </tr> 
+                        <tr class="even">
+                        <th width="7.2%">Abeyance</th>
+                        <th width="7.2%">Active</th>
+                        <th width="7.2%">Others</th>
+                        <th width="7.2%">Recieved</th>
+                        <th width="7.2%">Abeyance</th>
+                        <th width="7.2%">Denied</th>
+                        <th width="7.2%">Withdrawn</th>
+                        <th width="7.2%">Paid</th>
+                        <th width="7.2%">Active</th>
+                        <th width="7.2%">Abeyance</th>
+                        <th width="7.2%">Others</th>
+                        <th width="7.2%">Handled</th>
+                        </tr>
+                        <apex:repeat value="{!unionNamesSet}" var="b">
+                        <tr class="odd">
+                        <td width="10%" class="audit">{!b}</td>
+                        <td width="7.2%" class="audit">{!previousUnion[b]["Abeyance"]}</td>
+                        <td width="7.2%" class="audit">{!previousUnion[b]["Active"]}</td>
+                        <td width="7.2%" class="audit">{!previousUnion[b]["Others"]}</td>
+                        <td width="7.2%" class="audit">{!currentUnion[b]["Received"]}</td>
+                        <td width="7.2%" class="audit">{!currentUnion[b]["Abeyance"]}</td>
+                        <td width="7.2%" class="audit">{!currentUnion[b]["Denied"]}</td>
+                        <td width="7.2%" class="audit">{!currentUnion[b]["Withdrawn"]}</td>
+                        <td width="7.2%" class="audit">{!currentUnion[b]["Paid"]}</td>
+                        <td width="7.2%" class="audit">{!nextUnion[b]["Active"]}</td>
+                        <td width="7.2%" class="audit">{!nextUnion[b]["Abeyance"]}</td>
+                        <td width="7.2%" class="audit">{!nextUnion[b]["Others"]}</td>
+                        <td width="7.2%" class="audit">{!nextUnion[b]["Handled"]}</td>
+                        </tr>
+                        </apex:repeat>           
+                </table></div>
+            <br/>
+</apex:outputPanel>
+</apex:form>
+<!--Apex pages tag to add the Error message to the page-->
+<apex:pagemessages ></apex:pagemessages>
+</html>
+</apex:page>

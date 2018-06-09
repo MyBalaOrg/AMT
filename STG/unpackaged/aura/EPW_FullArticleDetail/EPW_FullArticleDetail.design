@@ -1,0 +1,10 @@
+<design:component >
+	<design:attribute name="showPublishedDate" label="Show Published Date" description="Flag to show Published Date"/>
+    <design:attribute name="titleFontSize" label="Title Font Size" description="Add Font Size to Title. Default 12pt"/>
+    <design:attribute name="titlePaddingTop" label="Padding-Top for Title" description="Add top padding to Title. Default 15px"/>
+    <design:attribute name="titlePaddingBottom" label="Padding-Bottom for Title" description="Add bottom padding to Title. Default 15px"/>
+    <design:attribute name="contentPaddingLeft" label="Padding-Left for Content" description="Add Left padding to Title. Default 10px"/>
+     <design:attribute name="contentPaddingRight" label="Padding-Right for Content" description="Add Right padding to Title. Default 10px"/>
+    <design:attribute name="backgroundColor" label="Background Color" description="Add Background. Default Transparent"/>
+    <design:attribute name="contentWidth" label="Content Width as Percentage" description="Width of the content as a percentage of parent"/>
+    </design:component>

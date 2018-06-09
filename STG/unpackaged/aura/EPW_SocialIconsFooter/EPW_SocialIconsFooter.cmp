@@ -1,0 +1,153 @@
+<!-- footerWithSocialIconsCmp -->
+<aura:component implements="forceCommunity:availableForAllPageTypes">  
+    
+    <!--<ltng:require scripts='/resource/jQuery' afterScriptsLoaded="{!c.doInit}"/>-->
+    
+    <!--attributes-->
+    <aura:attribute name="navigationURL1" type="String" description="" />
+    <aura:attribute name="navigationIcon1" type="String" description="" />
+    <aura:attribute name="navigationURL2" type="String" description=""/>
+    <aura:attribute name="navigationIcon2" type="String" description="" />
+    <aura:attribute name="navigationURL3" type="String" description="" />
+    <aura:attribute name="navigationIcon3" type="String" description="" />
+    <aura:attribute name="navigationURL4" type="String" description="" />
+    <aura:attribute name="navigationIcon4" type="String" description="" />
+    <aura:attribute name="navigationURL5" type="String" description="" />
+    <aura:attribute name="navigationIcon5" type="String" description="" />
+    <aura:attribute name="navigationURL6" type="String" description="" />
+    <aura:attribute name="navigationIcon6" type="String" description="" />
+    <aura:attribute name="navigationURL7" type="String" description="" />
+    <aura:attribute name="navigationIcon7" type="String" description="" />
+    <aura:attribute name="navigationURL8" type="String" description="" />
+    <aura:attribute name="navigationIcon8" type="String" description="" />
+    <aura:attribute name="header" type="String" default="none"/>
+    <aura:attribute name="navigationURL9" type="String" description="" />
+    <aura:attribute name="navigationIcon9" type="String" description="" />
+    <aura:attribute name="navigationURL10" type="String" description="" />
+    <aura:attribute name="navigationIcon10" type="String" description="" />
+    <aura:attribute name="footerText" type="String" default="none"/>
+    <aura:attribute name="shadow" type="String" description="3D shadow" default="0 2px 4px 0 rgba(0,0,0,0.2)" />
+    
+    <!--attributes for rich text content-->
+    <aura:attribute name="application" type="String" description="Application from which the content is to be fetched" />
+    <aura:attribute name="objectName" type="String" description="Object (API Name) from which the content is to be fetched" />
+    <aura:attribute name="recordType" type="String" description="Record type (Label) from which the content is to be fetched" />
+    <aura:attribute name="fieldName" type="String" description="Field (API Name) from which the content is to be fetched" />
+    <aura:attribute name="title" type="String" description="The Title of the record that will be displayed" />
+    <aura:attribute name="height" type="Integer" description="Height of the component"/>
+    
+    <aura:attribute name="urlTitle" type="String" description="URL Title" />
+    <aura:attribute name="url" type="String" description="URL" />
+    
+    <!-- Community header height -->
+    <aura:attribute name="heightOfCommunityHeaderCmp" type="Integer" description="Height of the community header component" default="50"/>
+    
+    <!--<aura:handler name="init" value="{!this}" action="{!c.doInit}" />-->
+    <aura:handler event="aura:doneRendering" action="{!c.doInit}"/>
+    
+    <!--/attributes-->
+    <div class="footerClass" aura:id="footer-component" id="footer-component-id">
+        <footer id = "footer" role="contentinfo" >
+            <div id="main-component" class="slds-scope footer" style="{! join(' ',
+                                                                      not(empty(v.shadow)) ? 'box-shadow: '+v.shadow+';' : '') }"> 
+                
+                
+                
+                <lightning:layout multipleRows="true" horizontalAlign="end">
+                    
+                    <!-- Add all social media icons -->
+                    <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="4" largeDeviceSize="4" >
+                        <div align="center" class="iconsmargin">  
+                            <aura:if isTrue="{!v.navigationURL1}">
+                                <span class="slds-avatar slds-avatar--x-large iconspacing" >
+                                    <a href="{!v.navigationURL1}" target="_blank"><img src="{!v.navigationIcon1}"/></a>    
+                                </span>
+                            </aura:if> 
+                            <aura:if isTrue="{!v.navigationURL2}">
+                                <span class="slds-avatar slds-avatar--x-large iconspacing" >
+                                    <a href="{!v.navigationURL2}" target="_blank"><img src="{!v.navigationIcon2}"/></a>    
+                                </span> 
+                            </aura:if> 
+                            <aura:if isTrue="{!v.navigationURL3}">
+                                <span class="slds-avatar slds-avatar--x-large iconspacing" >
+                                    <a href="{!v.navigationURL3}" target="_blank"><img src="{!v.navigationIcon3}"/></a>    
+                                </span> 
+                            </aura:if> 
+                            <aura:if isTrue="{!v.navigationURL4}">
+                                <span class="slds-avatar slds-avatar--x-large iconspacing" >
+                                    <a href="{!v.navigationURL4}" target="_blank"><img src="{!v.navigationIcon4}"/></a>    
+                                </span> 
+                            </aura:if> 
+                            <aura:if isTrue="{!v.navigationURL5}">
+                                <span class="slds-avatar slds-avatar--x-large iconspacing" >
+                                    <a href="{!v.navigationURL5}" target="_blank"><img src="{!v.navigationIcon5}"/></a>    
+                                </span> 
+                            </aura:if> 
+                            <aura:if isTrue="{!v.navigationURL6}">
+                                <span class="slds-avatar slds-avatar--x-large iconspacing" >
+                                    <a href="{!v.navigationURL6}" target="_blank"><img src="{!v.navigationIcon6}"/></a>    
+                                </span> 
+                            </aura:if> 
+                            <aura:if isTrue="{!v.navigationURL7}">
+                                <span class="slds-avatar slds-avatar--x-large iconspacing" >
+                                    <a href="{!v.navigationURL7}" target="_blank"><img src="{!v.navigationIcon7}"/></a>    
+                                </span> 
+                            </aura:if> 
+                            <aura:if isTrue="{!v.navigationURL8}">
+                                <span class="slds-avatar slds-avatar--x-large iconspacing" >
+                                    <a href="{!v.navigationURL8}" target="_blank"><img src="{!v.navigationIcon8}"/></a>    
+                                </span> 
+                            </aura:if> 
+                            <aura:if isTrue="{!v.navigationURL9}">
+                                <span class="slds-avatar slds-avatar--x-large iconspacing" >
+                                    <a href="{!v.navigationURL9}" target="_blank"><img src="{!v.navigationIcon9}"/></a>    
+                                </span> 
+                            </aura:if> 
+                            <aura:if isTrue="{!v.navigationURL10}">
+                                <span class="slds-avatar slds-avatar--x-large iconspacing" >
+                                    <a href="{!v.navigationURL10}" target="_blank"><img src="{!v.navigationIcon10}"/></a>    
+                                </span> 
+                            </aura:if> 
+                        </div>  
+                    </lightning:layoutItem>
+                    
+                    <!-- /Add all social media icons -->
+                    <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="4" largeDeviceSize="4" >
+                    </lightning:layoutItem>
+                    
+                    
+                    
+                    
+                </lightning:layout>     
+                <lightning:layout multipleRows="true" horizontalAlign="center">
+                    <!-- Footer Logo-->
+                    <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="4" largeDeviceSize="4" >
+                        <div class="logoclass">           
+                            <img class = "footer-logo__img " src="{!$Resource.Amtrak_Blue}"/> 
+                        </div>
+                    </lightning:layoutItem>
+                    <!-- Footer Logo-->
+                </lightning:layout>
+                <!--Footer Text/-->
+                <lightning:layout multipleRows="true" horizontalAlign="center">
+                    <div  class="textClass">{! not(or(empty(v.footerText),v.footerText=='none')) ? v.footerText : '' }</div>
+                </lightning:layout> 
+                <!--Footer Text/-->
+				
+                <!--Footer url/-->
+                <lightning:layout multipleRows="true" horizontalAlign="center">
+                    <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="4" largeDeviceSize="4" >
+                        <aura:if isTrue="{!and(not(empty(v.urlTitle)), not(empty(v.urlTitle)))}" >
+                            <a class="link" onclick="{!c.navigateToURL}">
+                                {!v.urlTitle}
+                            </a>
+                        </aura:if> 
+                    </lightning:layoutItem>
+                </lightning:layout> 
+                <!--Footer url/-->
+                
+            </div>
+        </footer> 
+    </div>
+    
+</aura:component>

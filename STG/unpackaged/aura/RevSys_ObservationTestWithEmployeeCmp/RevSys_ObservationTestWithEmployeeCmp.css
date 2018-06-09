@@ -1,0 +1,93 @@
+.THIS {
+    
+}
+
+.THIS .container {
+    width: 100px;
+    height: 50px;
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    overflow: hidden;
+    text-align: center;
+    transform: translate(-50%, -50%);
+}
+
+.THIS .gauge-a {
+    z-index: 1;
+    position: absolute;
+    background-color: rgba(255,255,255,.2);
+    width: 100px;
+    height: 50px;
+    top: 0%;
+    border-radius: 250px 250px 0px 0px;
+}
+
+.THIS .gauge-b {
+    z-index: 3;
+    position: absolute;
+    background-color: rgba(255,255,255,1);
+    width: 31px;
+    height: 31px;
+    top: 38px;
+    margin-left: 35px;
+    margin-right: auto;
+    border-radius: 17px 17px 0px 0px;
+}
+
+.THIS .gauge-c {
+    z-index: 2;
+    position: absolute;
+    background-color: #DBDDDA;
+    width: 100px;
+    height: 50px;
+    top: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 0px 0px 200px 200px;
+    transform-origin: center top;
+    transition: all 1.3s ease-in-out;
+    transform:rotate(.5turn);
+}
+
+.THIS .gauge-c-green {
+    background-color: #4C982D;
+}
+
+.THIS .gauge-c-red {
+    background: linear-gradient(90deg, gray 70%, red 30%);
+}
+
+.THIS .gauge-c-orange-50 {
+    background: linear-gradient(90deg, gray 50%, #CE5F00 50%);
+}
+
+.THIS .gauge-c-orange-70 {
+    background: linear-gradient(90deg, gray 30%, #CE5F00 70%);
+}
+
+.THIS .gauge-c-orange-40 {
+    background: linear-gradient(90deg, gray 70%, #CE5F00 30%);
+}
+
+.THIS .container:hover .gauge-c {  
+    transform:rotate(.5turn);
+}
+
+.THIS .container:hover .gauge-data { 
+    color: rgba(255,255,255,1); 
+}
+
+.THIS .gauge-data {
+    z-index: 4;
+    color: rgba(255,255,255,1);
+    font-size: 1.0em;
+    line-height: 6px;
+    position: absolute;
+    width: 100px;
+    height: 50px;
+    top: 22px;
+    margin-left: auto;
+    margin-right: auto;
+    transition: all 1s ease-out;
+}
